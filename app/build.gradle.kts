@@ -41,8 +41,15 @@ android {
 }
 
 dependencies {
-    implementation(platform("com.google.firebase:firebase-bom:34.2.0"))
+
     implementation("com.google.firebase:firebase-analytics")
+    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
+
+    // Firebase Authentication (no version number needed, BoM manages it)
+    implementation("com.google.firebase:firebase-auth-ktx")
+
+    // Google Sign-In
+    implementation("com.google.android.gms:play-services-auth:20.7.0") // stable version
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
