@@ -9,9 +9,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.rememberNavController
 import com.example.burgerapp.navigation.AuthNavGraph
 import com.example.burgerapp.ui.theme.BurgerAppTheme
-import com.example.burgerapp.viewmodel.AuthViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import androidx.lifecycle.ViewModelProvider
 
 class MainActivity : ComponentActivity() {
 
@@ -20,7 +20,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        authViewModel = AuthViewModel(application)
+        // ✅ Proper way without Application parameter
+        authViewModel = ViewModelProvider(this)[AuthViewModel::class.java]
 
         // Configure Google Sign-In
         val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)

@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import com.example.burgerapp.ui.ui.ForgotPasswordScreen
 import com.example.burgerapp.ui.ui.LoginScreen
 import com.example.burgerapp.ui.ui.RegisterScreen
-import com.example.burgerapp.viewmodel.AuthViewModel
+import com.example.burgerapp.AuthViewModel
 
 @Composable
 fun AuthNavGraph(
