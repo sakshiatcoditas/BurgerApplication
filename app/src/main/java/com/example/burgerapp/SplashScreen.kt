@@ -3,6 +3,7 @@ package com.example.burgerapp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -15,15 +16,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.burgerapp.R
+import com.example.burgerapp.ui.theme.LobsterFont
 
 @Composable
 fun SplashScreen() {
-    val lobsterFont = FontFamily(Font(R.font.lobster_regular))
+  //  val lobsterFont = FontFamily(Font(R.font.lobster_regular))
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFB22222))
+            .background(MaterialTheme.colorScheme.primary)
     ) {
         // Centered title
         Box(
@@ -33,7 +35,7 @@ fun SplashScreen() {
         ) {
             Text(
                 text = "Foodgo",
-                fontFamily = lobsterFont,
+                fontFamily = LobsterFont,
                 fontSize = 60.sp,
                 color = Color.White
             )
