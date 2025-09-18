@@ -44,7 +44,7 @@ fun SplashScreen() {
 
         // Loader2: extreme bottom-left
         Image(
-            painter = painterResource(id = R.drawable.loader2),
+            painter = painterResource(id = R.drawable.splash_image_left2),
             contentDescription = "Loader 2",
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -54,7 +54,7 @@ fun SplashScreen() {
 
         // Loader1: also sticks to bottom, overlapping Loader2 a bit
         Image(
-            painter = painterResource(id = R.drawable.loader1),
+            painter = painterResource(id = R.drawable.splash_image_right1),
             contentDescription = "Loader 1",
             modifier = Modifier
                 .align(Alignment.BottomStart) // sticks to bottom
