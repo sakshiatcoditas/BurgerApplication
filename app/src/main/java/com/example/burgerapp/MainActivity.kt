@@ -18,39 +18,30 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val authViewModel: AuthViewModel by viewModels() // Hilt injects ViewModel
+    private val authViewModel: AuthViewModel by viewModels()
+    private lateinit var googleSignInManager: GoogleSignInManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Configure Google Sign-In
-        val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-            .requestIdToken(getString(R.string.default_web_client_id))
-            .requestEmail()
-            .build()
+        googleSignInManager = GoogleSignInManager(this, authViewModel)
 
-        val googleSignInClient = GoogleSignIn.getClient(this, gso)
-
-        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-            try {
-                val account = task.getResult(Exception::class.java)
-                account?.let { authViewModel.firebaseAuthWithGoogle(it) }
-            } catch (e: Exception) {
-                authViewModel.setAuthMessage(e.message ?: getString(R.string.google_login_failed))
-            }
+        val launcher = registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult()
+        ) { result ->
+            googleSignInManager.handleSignInResult(result.data)
         }
 
         setContent {
             BurgerAppTheme {
-                Surface(color = Color.White) {
+                Surface(color = androidx.compose.ui.graphics.Color.White) {
                     val navController = rememberNavController()
 
                     AuthNavGraph(
                         navController = navController,
                         authViewModel = authViewModel,
-                        onGoogleLoginClick = { launcher.launch(googleSignInClient.signInIntent) },
-                        onGoogleRegisterClick = { launcher.launch(googleSignInClient.signInIntent) }
+                        onGoogleLoginClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) },
+                        onGoogleRegisterClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) }
                     )
                 }
             }
