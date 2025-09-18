@@ -1,5 +1,16 @@
 <resources>
     <string name="app_name">BurgerApp</string>
     <string name="default_web_client_id">YOUR_WEB_CLIENT_ID_HERE</string>
+    <string name="google_login_failed">Google login failed</string>
+    <string name="login_success">Login successful</string>
+    <string name="login_failed">Login failed</string>
+    <string name="register_success">Registration successful</string>
+    <string name="register_failed">Registration failed</string>
+    <string name="reset_email_sent">Reset email sent</string>
+    <string name="reset_email_failed">Failed to send reset email</string>
+    <string name="google_login_success">Google login successful</string>
+
+<string name="forgot_password">Forgot password</string>
+
 
 </resources>

@@ -140,6 +140,7 @@ fun RegisterScreen(
 
             TextButton(onClick = onNavigateToLogin) {
                 Text("Already have an account? Login", color = Color.White)
+
             }
         }
     }

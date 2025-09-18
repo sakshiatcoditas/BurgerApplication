@@ -12,6 +12,7 @@ import com.example.burgerapp.ui.theme.BurgerAppTheme
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import androidx.lifecycle.ViewModelProvider
+import com.google.android.gms.common.internal.StringResourceValueReader
 
 class MainActivity : ComponentActivity() {
 
@@ -38,7 +39,7 @@ class MainActivity : ComponentActivity() {
                 val account = task.getResult(Exception::class.java)
                 account?.let { authViewModel.firebaseAuthWithGoogle(it) }
             } catch (e: Exception) {
-                authViewModel.setAuthMessage(e.message ?: "Google login failed")
+                authViewModel.setAuthMessage(e.message ?:getString(R.string.google_login_failed))
             }
         }
 

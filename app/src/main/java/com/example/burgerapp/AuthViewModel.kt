@@ -2,9 +2,9 @@ package com.example.burgerapp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -23,44 +23,45 @@ class AuthViewModel : ViewModel() {
 
     fun login(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
-            _authMessage.value = "Email and password cannot be empty"
+            _authMessage.value = AuthMessages.EMPTY_EMAIL_PASSWORD
+
             return
         }
         viewModelScope.launch {
             auth.signInWithEmailAndPassword(email, password)
-                .addOnSuccessListener { _authMessage.value = "Login successful" }
-                .addOnFailureListener { _authMessage.value = it.message ?: "Login failed" }
+                .addOnSuccessListener { _authMessage.value = AuthMessages.LOGIN_SUCCESS }
+                .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.LOGIN_FAILED }
         }
     }
 
     fun register(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
-            _authMessage.value = "Email and password cannot be empty"
+            _authMessage.value = AuthMessages.EMPTY_EMAIL_PASSWORD
             return
         }
         viewModelScope.launch {
             auth.createUserWithEmailAndPassword(email, password)
-                .addOnSuccessListener { _authMessage.value = "Registration successful" }
-                .addOnFailureListener { _authMessage.value = it.message ?: "Registration failed" }
+                .addOnSuccessListener { _authMessage.value = AuthMessages.REGISTER_SUCCESS }
+                .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.REGISTER_FAILED }
         }
     }
 
     fun resetPassword(email: String) {
         if (email.isBlank()) {
-            _authMessage.value = "Email cannot be empty"
+            _authMessage.value = AuthMessages.EMPTY_EMAIL_PASSWORD
             return
         }
         viewModelScope.launch {
             auth.sendPasswordResetEmail(email)
-                .addOnSuccessListener { _authMessage.value = "Reset email sent" }
-                .addOnFailureListener { _authMessage.value = it.message ?: "Failed to send reset email" }
+                .addOnSuccessListener { _authMessage.value = AuthMessages.RESET_SUCCESS }
+                .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.RESET_FAILED}
         }
     }
 
     fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
         val credential = GoogleAuthProvider.getCredential(account.idToken, null)
         auth.signInWithCredential(credential)
-            .addOnSuccessListener { _authMessage.value = "Google login successful" }
-            .addOnFailureListener { _authMessage.value = it.message ?: "Google login failed" }
+            .addOnSuccessListener { _authMessage.value = AuthMessages.GOOGLE_SUCCESS }
+            .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.GOOGLE_FAILED }
     }
 }
