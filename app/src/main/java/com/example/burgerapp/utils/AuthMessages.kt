@@ -1,4 +1,4 @@
-package com.example.burgerapp
+package com.example.burgerapp.utils
 
 object AuthMessages{
     const val EMPTY_EMAIL_PASSWORD = "Email and password cannot be empty"
