@@ -6,18 +6,20 @@ import com.example.burgerapp.utils.AuthMessages
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AuthViewModel : ViewModel() {
-
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+@HiltViewModel
+class AuthViewModel @Inject constructor(
+    private val auth: FirebaseAuth
+) : ViewModel() {
 
     private val _authMessage = MutableStateFlow("")
     val authMessage: StateFlow<String> get() = _authMessage
 
-    // Public method to update messages
     fun setAuthMessage(message: String) {
         _authMessage.value = message
     }
@@ -25,7 +27,6 @@ class AuthViewModel : ViewModel() {
     fun login(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
             _authMessage.value = AuthMessages.EMPTY_EMAIL_PASSWORD
-
             return
         }
         viewModelScope.launch {
@@ -55,7 +56,7 @@ class AuthViewModel : ViewModel() {
         viewModelScope.launch {
             auth.sendPasswordResetEmail(email)
                 .addOnSuccessListener { _authMessage.value = AuthMessages.RESET_SUCCESS }
-                .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.RESET_FAILED}
+                .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.RESET_FAILED }
         }
     }
 

@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 
     id("com.google.gms.google-services")
+    id("com.google.dagger.hilt.android")
+    kotlin("kapt")
 }
 
 android {
@@ -43,8 +45,12 @@ android {
 
 dependencies {
 //    implementation("androidx.navigation:navigation-compose-android:2.9.4")
+    implementation("com.google.dagger:hilt-android:2.56.2")
+    implementation(libs.hilt.android) // Hilt runtime
+    kapt(libs.dagger.hilt.android.compiler) // Use the full alias defined in libs.versions.toml
+    implementation(libs.androidx.hilt.navigation.compose.v110alpha01)
 
- implementation(libs.firebase.analytics)
+    implementation(libs.firebase.analytics)
     implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
 
     // Firebase Authentication (no version number needed, BoM manages it)
