@@ -27,40 +27,40 @@ class AuthViewModel @Inject constructor(
 
     fun login(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
-            _authMessage.value = "Email/Password cannot be empty"
+            _authMessage.value = AuthMessages.EMPTY_EMAIL_PASSWORD
             return
         }
 
         repository.login(email, password)
-            .addOnSuccessListener { _authMessage.value = "Login Successful" }
-            .addOnFailureListener { _authMessage.value = it.message ?: "Login Failed" }
+            .addOnSuccessListener { _authMessage.value = AuthMessages.LOGIN_SUCCESS }
+            .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.LOGIN_FAILED }
     }
 
     fun register(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
-            _authMessage.value = "Email/Password cannot be empty"
+            _authMessage.value = AuthMessages.EMPTY_EMAIL_PASSWORD
             return
         }
 
         repository.register(email, password)
-            .addOnSuccessListener { _authMessage.value = "Registration Successful" }
-            .addOnFailureListener { _authMessage.value = it.message ?: "Registration Failed" }
+            .addOnSuccessListener { _authMessage.value = AuthMessages.REGISTER_SUCCESS }
+            .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.REGISTER_FAILED }
     }
 
     fun resetPassword(email: String) {
         if (email.isBlank()) {
-            _authMessage.value = "Email cannot be empty"
+            _authMessage.value = AuthMessages.EMPTY_EMAIL
             return
         }
 
         repository.resetPassword(email)
-            .addOnSuccessListener { _authMessage.value = "Reset Link Sent" }
-            .addOnFailureListener { _authMessage.value = it.message ?: "Reset Failed" }
+            .addOnSuccessListener { _authMessage.value = AuthMessages.GOOGLE_SUCCESS }
+            .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.GOOGLE_FAILED }
     }
 
     fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
         repository.firebaseAuthWithGoogle(account)
-            .addOnSuccessListener { _authMessage.value = "Google Sign-In Success" }
-            .addOnFailureListener { _authMessage.value = it.message ?: "Google Sign-In Failed" }
+            .addOnSuccessListener { _authMessage.value = AuthMessages.GOOGLE_SUCCESS }
+            .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.GOOGLE_FAILED }
     }
 }
