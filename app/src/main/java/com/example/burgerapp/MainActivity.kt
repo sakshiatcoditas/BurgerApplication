@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BurgerAppTheme {
-                Surface(color = androidx.compose.ui.graphics.Color.White) {
+                Surface(color = Color.White) {
                     val navController = rememberNavController()
 
                     AuthNavGraph(
