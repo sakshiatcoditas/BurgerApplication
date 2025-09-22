@@ -13,9 +13,9 @@ import com.example.burgerapp.viewmodel.AuthViewModel
 
 @Composable
 fun AuthNavGraph(
-    navController: NavHostController,
-    authViewModel: AuthViewModel,
-    onGoogleLoginClick: () -> Unit,
+    navController: NavHostController, // no need to pass
+    authViewModel: AuthViewModel, // use hilt
+    onGoogleLoginClick: () -> Unit, // wrong
     onGoogleRegisterClick: () -> Unit
 ) {
     val message by authViewModel.authMessage.collectAsState()

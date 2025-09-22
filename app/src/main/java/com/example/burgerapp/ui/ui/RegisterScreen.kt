@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,14 +46,14 @@ fun RegisterScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Create Account", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text(text = stringResource(R.string.create_account), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
 
             Spacer(Modifier.height(32.dp))
 
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email", color = Color.White) },
+                label = { Text(text = stringResource(R.string.email), color = Color.White) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -71,7 +72,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Password", color = Color.White) },
+                label = { Text(text = stringResource(R.string.password), color = Color.White) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -90,7 +91,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = confirmPassword,
                 onValueChange = { confirmPassword = it },
-                label = { Text("Confirm Password", color = Color.White) },
+                label = { Text(text = stringResource(R.string.confirm_password), color = Color.White) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -119,7 +120,7 @@ fun RegisterScreen(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = CherryRed)
             ) {
-                Text("Register", fontSize = 18.sp, color = CherryRed)
+                Text(text = stringResource(R.string.register), fontSize = 18.sp, color = CherryRed)
             }
 
             Spacer(Modifier.height(16.dp))
@@ -133,13 +134,13 @@ fun RegisterScreen(
             ) {
                 Icon(painter = painterResource(id = R.drawable.ic_google), contentDescription = "Google Sign-In", tint = Color.White)
                 Spacer(Modifier.width(8.dp))
-                Text("Register with Google", color = Color.White, fontSize = 16.sp)
+                Text(text = stringResource(R.string.register_with_google), color = Color.White, fontSize = 16.sp)
             }
 
             Spacer(Modifier.height(24.dp))
 
             TextButton(onClick = onNavigateToLogin) {
-                Text("Already have an account? Login", color = Color.White)
+                Text(text = stringResource(R.string.already_have_account), color = Color.White)
 
             }
         }

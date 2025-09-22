@@ -9,8 +9,23 @@
     <string name="reset_email_sent">Reset email sent</string>
     <string name="reset_email_failed">Failed to send reset email</string>
     <string name="google_login_success">Google login successful</string>
-
-<string name="forgot_password">Forgot password</string>
+    <string name="reset_link">"Enter your registered email address. We'll send you a reset link."</string>
+    <string name="email">Email</string>
+    <string name="send_reset_link">"Send Reset Link"</string>
+    <string name="back_to_login">"Back to Login"</string>
+    <string name="welcome_back">"Welcome Back"</string>
+    <string name="password">Password</string>
+    <string name="forgot_password_ask_user">"Forgot Password?"</string>
+    <string name="login_with_google">"Login with Google"</string>
+    <string name="login">"Login"</string>
+    <string name="dont_have_account">"Don't have an account? Register"</string>
+    <string name="create_account">"Create Account"</string>
+    <string name="no_password_match">"Passwords do not match"</string>
+    <string name="forgot_password">Forgot password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="register">Register</string>
+    <string name="register_with_google">Register with Google</string>
+    <string name="already_have_account">Already have an account? Login</string>
 
 
 </resources>

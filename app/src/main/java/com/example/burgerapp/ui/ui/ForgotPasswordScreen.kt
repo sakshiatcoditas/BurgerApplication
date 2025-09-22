@@ -13,6 +13,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.burgerapp.ui.theme.CherryRed
 import kotlinx.coroutines.launch
+import androidx.compose.ui.res.stringResource
+import com.example.burgerapp.R
+
+
 
 @Composable
 fun ForgotPasswordScreen(
@@ -40,12 +44,12 @@ fun ForgotPasswordScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Forgot Password", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text(text = stringResource(R.string.forgot_password), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
 
             Spacer(Modifier.height(16.dp))
 
             Text(
-                "Enter your registered email address. We'll send you a reset link.",
+               text = stringResource(R.string.reset_link),
                 fontSize = 16.sp,
                 color = Color.White
             )
@@ -55,7 +59,7 @@ fun ForgotPasswordScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email", color = Color.White) },
+                label = { Text(text = stringResource(R.string.email), color = Color.White) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -77,13 +81,13 @@ fun ForgotPasswordScreen(
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = CherryRed)
             ) {
-                Text("Send Reset Link", fontSize = 18.sp, color = CherryRed)
+                Text(stringResource(R.string.send_reset_link), fontSize = 18.sp, color = CherryRed)
             }
 
             Spacer(Modifier.height(16.dp))
 
             TextButton(onClick = onBackToLoginClick) {
-                Text("Back to Login", color = Color.White)
+                Text(stringResource(R.string.back_to_login), color = Color.White)
             }
         }
     }

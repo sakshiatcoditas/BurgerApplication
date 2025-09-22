@@ -32,6 +32,7 @@ class AuthViewModel @Inject constructor(
         }
 
         repository.login(email, password)
+            //on the basis of the state emit the message in the UI screens
             .addOnSuccessListener { _authMessage.value = AuthMessages.LOGIN_SUCCESS }
             .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.LOGIN_FAILED }
     }
