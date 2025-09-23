@@ -13,24 +13,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.burgerapp.ui.theme.CherryRed
 import kotlinx.coroutines.launch
-import androidx.compose.ui.res.stringResource
-import com.example.burgerapp.R
-
-
+import com.example.burgerapp.AuthState
 
 @Composable
 fun ForgotPasswordScreen(
     onSendResetClick: (String) -> Unit,
     onBackToLoginClick: () -> Unit,
-    message: String = ""
+    authState: AuthState
 ) {
     var email by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(message) {
-        if (message.isNotBlank()) {
-            coroutineScope.launch { snackbarHostState.showSnackbar(message) }
+    // react to auth state (success/error)
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Error -> coroutineScope.launch { snackbarHostState.showSnackbar(authState.message) }
+            is AuthState.Success -> coroutineScope.launch { snackbarHostState.showSnackbar(authState.message) }
+            else -> {}
         }
     }
 
@@ -44,12 +44,12 @@ fun ForgotPasswordScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = stringResource(R.string.forgot_password), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text("Forgot Password", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
 
             Spacer(Modifier.height(16.dp))
 
             Text(
-               text = stringResource(R.string.reset_link),
+                "Enter your registered email address. We'll send you a reset link.",
                 fontSize = 16.sp,
                 color = Color.White
             )
@@ -59,7 +59,7 @@ fun ForgotPasswordScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text(text = stringResource(R.string.email), color = Color.White) },
+                label = { Text("Email", color = Color.White) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -77,17 +77,32 @@ fun ForgotPasswordScreen(
 
             Button(
                 onClick = { onSendResetClick(email) },
-                modifier = Modifier.fillMaxWidth().height(50.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = CherryRed)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = CherryRed
+                )
             ) {
-                Text(stringResource(R.string.send_reset_link), fontSize = 18.sp, color = CherryRed)
+                Text("Send Reset Link", fontSize = 18.sp, color = CherryRed)
             }
 
             Spacer(Modifier.height(16.dp))
 
             TextButton(onClick = onBackToLoginClick) {
-                Text(stringResource(R.string.back_to_login), color = Color.White)
+                Text("Back to Login", color = Color.White)
+            }
+
+            // Loading indicator
+            if (authState is AuthState.Loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 24.dp),
+                    color = Color.White
+                )
             }
         }
     }

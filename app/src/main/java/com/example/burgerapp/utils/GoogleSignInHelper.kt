@@ -1,4 +1,4 @@
-package com.example.burgerapp
+package com.example.burgerapp.utils
 
 import android.content.Context
 import android.content.Intent
@@ -7,12 +7,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 
 class GoogleSignInManager(
-    private val context: Context,
+    context: Context,
     private val authViewModel: AuthViewModel
 ) {
 
     private val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-        .requestIdToken(context.getString(R.string.default_web_client_id))
+        .requestIdToken(context.getString(com.example.burgerapp.R.string.default_web_client_id))
         .requestEmail()
         .build()
 
@@ -24,8 +24,8 @@ class GoogleSignInManager(
             val account = task.getResult(Exception::class.java)
             account?.let { authViewModel.firebaseAuthWithGoogle(it) }
         } catch (e: Exception) {
-            authViewModel.setAuthMessage(
-                e.message ?: context.getString(R.string.google_login_failed)
+            authViewModel.setAuthStateError(
+                e.message ?: "Google login failed"
             )
         }
     }

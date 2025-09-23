@@ -1,4 +1,4 @@
-package com.example.burgerapp
+package com.example.burgerapp.ui.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -6,22 +6,25 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.burgerapp.R
 import com.example.burgerapp.ui.theme.LobsterFont
+import kotlinx.coroutines.delay
 
 @Composable
-fun SplashScreen() {
-  //  val lobsterFont = FontFamily(Font(R.font.lobster_regular))
+fun SplashScreen(onSplashFinished: () -> Unit) {
+    LaunchedEffect(Unit) {
+        delay(3000) // 3 seconds
+        onSplashFinished()
+    }
 
     Box(
         modifier = Modifier
@@ -30,8 +33,7 @@ fun SplashScreen() {
     ) {
         // Centered title
         Box(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
             Text(
@@ -48,19 +50,19 @@ fun SplashScreen() {
             contentDescription = "Loader 2",
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .offset(x = (-42).dp) // horizontal offset only
+                .offset(x = (-42).dp)
                 .size(width = 246.dp, height = 288.dp)
         )
 
-        // Loader1: also sticks to bottom, overlapping Loader2 a bit
+        // Loader1: also sticks to bottom, overlapping Loader2
         Image(
             painter = painterResource(id = R.drawable.splash_image_right1),
             contentDescription = "Loader 1",
             modifier = Modifier
-                .align(Alignment.BottomStart) // sticks to bottom
-                .offset(x = 134.dp) // horizontal shift
+                .align(Alignment.BottomStart)
+                .offset(x = 134.dp)
                 .size(width = 202.dp, height = 202.dp)
-                .zIndex(1f) // drawn above loader2
+                .zIndex(1f)
         )
     }
 }

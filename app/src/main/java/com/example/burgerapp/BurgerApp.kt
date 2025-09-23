@@ -4,3 +4,4 @@ import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class BurgerApp : Application()
+

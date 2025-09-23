@@ -46,7 +46,8 @@ android {
 dependencies {
 //    implementation("androidx.navigation:navigation-compose-android:2.9.4")
     implementation("com.google.dagger:hilt-android:2.56.2")
-    implementation(libs.hilt.android) // Hilt runtime
+    implementation(libs.hilt.android)
+    implementation(libs.firebase.crashlytics.buildtools) // Hilt runtime
     kapt(libs.dagger.hilt.android.compiler) // Use the full alias defined in libs.versions.toml
     implementation(libs.androidx.hilt.navigation.compose.v110alpha01)
 

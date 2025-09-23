@@ -1,8 +1,10 @@
 package com.example.burgerapp.repository
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -12,18 +14,20 @@ class AuthRepository @Inject constructor(
 ) {
 
     // Login with email/password
-    fun login(email: String, password: String) =
-        auth.signInWithEmailAndPassword(email, password)
+    suspend fun login(email: String, password: String): AuthResult =
+        auth.signInWithEmailAndPassword(email, password).await()
 
     // Register with email/password
-    fun register(email: String, password: String) =
-        auth.createUserWithEmailAndPassword(email, password)
+    suspend fun register(email: String, password: String): AuthResult =
+        auth.createUserWithEmailAndPassword(email, password).await()
 
     // Reset password
-    fun resetPassword(email: String) =
-        auth.sendPasswordResetEmail(email)
+    suspend fun resetPassword(email: String): Void? =
+        auth.sendPasswordResetEmail(email).await()
 
     // Firebase authentication with Google
-    fun firebaseAuthWithGoogle(account: GoogleSignInAccount) =
-        auth.signInWithCredential(GoogleAuthProvider.getCredential(account.idToken, null))
+    suspend fun firebaseAuthWithGoogle(account: GoogleSignInAccount): AuthResult =
+        auth.signInWithCredential(
+            GoogleAuthProvider.getCredential(account.idToken, null)
+        ).await()
 }

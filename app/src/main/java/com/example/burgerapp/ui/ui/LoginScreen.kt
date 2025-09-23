@@ -9,11 +9,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.burgerapp.AuthState
 import com.example.burgerapp.R
+
 import com.example.burgerapp.ui.theme.CherryRed
 import kotlinx.coroutines.launch
 
@@ -23,16 +24,20 @@ fun LoginScreen(
     onGoogleLoginClick: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
-    message: String = ""
+    authState: AuthState
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(message) {
-        if (message.isNotBlank()) {
-            coroutineScope.launch { snackbarHostState.showSnackbar(message) }
+    // Show snackbar on error
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Error -> coroutineScope.launch {
+                snackbarHostState.showSnackbar(authState.message)
+            }
+            else -> {}
         }
     }
 
@@ -46,14 +51,20 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(stringResource(R.string.welcome_back), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text(
+                "Welcome Back",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
 
             Spacer(Modifier.height(32.dp))
 
+            // Email field
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text(stringResource(R.string.email), color = Color.White) },
+                label = { Text("Email", color = Color.White) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -69,10 +80,11 @@ fun LoginScreen(
 
             Spacer(Modifier.height(16.dp))
 
+            // Password field
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text(stringResource(R.string.password), color = Color.White) },
+                label = { Text("Password", color = Color.White) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -91,37 +103,58 @@ fun LoginScreen(
                 onClick = onNavigateToForgotPassword,
                 modifier = Modifier.align(Alignment.End)
             ) {
-                Text(stringResource(R.string.forgot_password_ask_user), color = Color.White)
+                Text("Forgot Password?", color = Color.White)
             }
 
             Spacer(Modifier.height(24.dp))
 
+            // Login button
             Button(
                 onClick = { onLoginClick(email, password) },
-                modifier = Modifier.fillMaxWidth().height(50.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = CherryRed)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.White,
+                    contentColor = CherryRed
+                ),
+                enabled = authState !is AuthState.Loading // Disable during loading
             ) {
-                Text(stringResource(R.string.login), fontSize = 18.sp, color = CherryRed)
+                Text("Login", fontSize = 18.sp, color = CherryRed)
             }
 
             Spacer(Modifier.height(16.dp))
 
+            // Google login button
             OutlinedButton(
                 onClick = onGoogleLoginClick,
-                modifier = Modifier.fillMaxWidth().height(50.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(50.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White)
+                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.White),
+                enabled = authState !is AuthState.Loading
             ) {
-                Icon(painter = painterResource(id = R.drawable.ic_google), contentDescription = "Google Sign-In", tint = Color.White)
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_google),
+                    contentDescription = "Google Sign-In",
+                    tint = Color.White
+                )
                 Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.login_with_google), color = Color.White, fontSize = 16.sp)
+                Text("Login with Google", color = Color.White, fontSize = 16.sp)
             }
 
             Spacer(Modifier.height(24.dp))
 
             TextButton(onClick = onNavigateToRegister) {
-                Text(stringResource(R.string.dont_have_account), color = Color.White)
+                Text("Don't have an account? Register", color = Color.White)
+            }
+
+            // Show loader in the center when loading
+            if (authState is AuthState.Loading) {
+                Spacer(Modifier.height(24.dp))
+                CircularProgressIndicator(color = Color.White)
             }
         }
     }
