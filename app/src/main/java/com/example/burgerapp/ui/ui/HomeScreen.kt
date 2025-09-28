@@ -1,5 +1,6 @@
 package com.example.burgerapp.ui.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,40 +19,39 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.example.burgerapp.burger.Burger
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.burgerapp.burger.Burger
+import com.example.burgerapp.FavoriteViewModel
 
 // --- HomeScreen ---
-
-
-
 @Composable
 fun HomeScreen(
     burgers: List<Burger>,
     categories: List<String>,
-    navController: NavHostController // <-- added navController here
+    navController: NavHostController,
+    userEmail: String // logged-in user email
 ) {
     var searchText by remember { mutableStateOf("") }
     var selectedCategory by remember { mutableStateOf(categories.firstOrNull() ?: "All") }
     var selectedBottomItem by remember { mutableStateOf("Home") }
 
-    // Filtered burgers
     val filteredBurgers = burgers.filter { burger ->
-        val typeNormalized = burger.type.lowercase()           // e.g., "NonVeg" -> "nonveg"
-        val categoryNormalized = selectedCategory.replace("-", "").lowercase() // "Non-Veg" -> "nonveg"
+        val typeNormalized = burger.type.lowercase()
+        val categoryNormalized = selectedCategory.replace("-", "").lowercase()
         (selectedCategory == "All" || typeNormalized == categoryNormalized) &&
                 (searchText.isBlank() || burger.name.contains(searchText, ignoreCase = true))
     }
-
 
     Scaffold(
         bottomBar = {
@@ -72,7 +72,7 @@ fun HomeScreen(
                     selected = selectedBottomItem == "Profile",
                     onClick = {
                         selectedBottomItem = "Profile"
-                        navController.navigate("Profile") { launchSingleTop = true } // <-- navigate to Profile
+                        navController.navigate("Profile") { launchSingleTop = true }
                     },
                     icon = { Icon(Icons.Default.Person, contentDescription = "Profile") },
                     label = { Text("Profile") }
@@ -85,30 +85,26 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            // Top Bar
             HomeTopBar(searchText = searchText, onSearchChange = { searchText = it })
-
+            Spacer(modifier = Modifier.height(8.dp))
+            CategoryChips(categories = categories, selectedCategory = selectedCategory) { selectedCategory = it }
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Chips Row
-            CategoryChips(categories = categories, selectedCategory = selectedCategory) {
-                selectedCategory = it
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Burger Grid
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(2),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(filteredBurgers) { burger ->
-                    BurgerCard(burger = burger)
+            if (selectedBottomItem == "Home") {
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(2),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(filteredBurgers) { burger ->
+                        BurgerCard(burger = burger, userEmail = userEmail)
+                    }
                 }
+            } else if (selectedBottomItem == "Favorites") {
+                FavoriteScreen(userEmail = userEmail)
             }
         }
     }
@@ -173,7 +169,7 @@ fun HomeTopBar(searchText: String, onSearchChange: (String) -> Unit) {
     }
 }
 
-// --- Chips Row ---
+// --- Category Chips ---
 @Composable
 fun CategoryChips(
     categories: List<String>,
@@ -181,7 +177,6 @@ fun CategoryChips(
     onCategorySelected: (String) -> Unit
 ) {
     val scrollState = rememberScrollState()
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -221,14 +216,19 @@ fun CategoryChips(
 
 // --- BurgerCard ---
 @Composable
-fun BurgerCard(burger: Burger) {
-    var isFavorite by remember { mutableStateOf(false) }
+fun BurgerCard(
+    burger: Burger,
+    userEmail: String,
+    favoriteViewModel: FavoriteViewModel = hiltViewModel()
+) {
+    val favorites by favoriteViewModel.favorites.collectAsState()
+    val isFavorite = favorites[userEmail]?.any { it.burgerId == burger.burgerId } ?: burger.isFavorite
 
     Card(
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White), // White background
+        colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Column(
@@ -265,7 +265,9 @@ fun BurgerCard(burger: Burger) {
 
                 IconToggleButton(
                     checked = isFavorite,
-                    onCheckedChange = { isFavorite = it }
+                    onCheckedChange = {
+                        favoriteViewModel.toggleFavorite(userEmail, burger)
+                    }
                 ) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
@@ -280,6 +282,7 @@ fun BurgerCard(burger: Burger) {
 }
 
 
+// --- FavoriteScreen ---
 
 // --- Preview ---
 @Preview(showBackground = true)
@@ -287,12 +290,15 @@ fun BurgerCard(burger: Burger) {
 fun HomeScreenPreview() {
     val dummyBurgers = listOf(
         Burger("1", "Cheese Burger", "Delicious cheesy burger", "", 120.0, 4.5, "Veg"),
-        Burger("2", "Chicken Burger", "Juicy chicken patty", "", 150.0, 4.7, "Non-Veg"),
-        Burger("3", "Paneer Burger", "Paneer with masala", "", 130.0, 4.3, "Veg"),
-        Burger("4", "Double Patty Burger", "Big and heavy", "", 200.0, 4.8, "Non-Veg")
+        Burger("2", "Chicken Burger", "Juicy chicken patty", "", 150.0, 4.7, "Non-Veg")
     )
-    val dummyCategories = listOf("All", "Veg", "Non-Veg", "Combos", "Classic")
+    val dummyCategories = listOf("All", "Veg", "Non-Veg")
+    val dummyNavController = rememberNavController()
 
-    // Just for preview, passing dummy NavController
-    // You can remove this when using real NavController in your app
+    HomeScreen(
+        burgers = dummyBurgers,
+        categories = dummyCategories,
+        navController = dummyNavController,
+        userEmail = "preview@example.com"
+    )
 }

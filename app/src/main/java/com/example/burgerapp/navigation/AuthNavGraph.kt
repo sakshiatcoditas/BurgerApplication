@@ -103,7 +103,8 @@ fun AuthNavGraph(
             HomeScreen(
                 burgers = burgers,
                 categories = categories,
-                navController = navController
+                navController = navController,
+                userEmail = "preview@example.com"
             )
         }
 
