@@ -17,6 +17,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -45,9 +46,12 @@ fun HomeScreen(
 
     // Filtered burgers
     val filteredBurgers = burgers.filter { burger ->
-        (selectedCategory == "All" || burger.type.equals(selectedCategory, ignoreCase = true)) &&
+        val typeNormalized = burger.type.lowercase()           // e.g., "NonVeg" -> "nonveg"
+        val categoryNormalized = selectedCategory.replace("-", "").lowercase() // "Non-Veg" -> "nonveg"
+        (selectedCategory == "All" || typeNormalized == categoryNormalized) &&
                 (searchText.isBlank() || burger.name.contains(searchText, ignoreCase = true))
     }
+
 
     Scaffold(
         bottomBar = {
@@ -224,50 +228,58 @@ fun BurgerCard(burger: Burger) {
         modifier = Modifier
             .fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White), // White background
         elevation = CardDefaults.cardElevation(6.dp)
     ) {
-        Box {
-            Column(
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            // Image
+            AsyncImage(
+                model = burger.imageUrl.ifEmpty { "https://via.placeholder.com/150" },
+                contentDescription = burger.name,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(8.dp)
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(16.dp))
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Name, Type, Rating
+            Text(burger.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(burger.type, color = Color.Gray)
+            Text("⭐ ${burger.rating}", fontSize = 14.sp)
+            Spacer(modifier = Modifier.height(4.dp))
+
+            // Price + Favorite Icon Row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                AsyncImage(
-                    model = burger.imageUrl.ifEmpty { "https://via.placeholder.com/150" },
-                    contentDescription = burger.name,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(burger.name, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                Text(burger.type, color = Color.Gray)
-                Text("⭐ ${burger.rating}", fontSize = 14.sp)
-                Spacer(modifier = Modifier.height(4.dp))
                 Text("₹${burger.price}", fontWeight = FontWeight.Bold, color = Color(0xFFEF2A39))
-            }
 
-            IconToggleButton(
-                checked = isFavorite,
-                onCheckedChange = { isFavorite = it },
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(8.dp)
-                    .size(48.dp)
-            ) {
-                Icon(
-                    imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                    contentDescription = "Favorite",
-                    tint = if (isFavorite) Color(0xFFEF2A39) else Color.Gray,
-                    modifier = Modifier.size(32.dp)
-                )
+                IconToggleButton(
+                    checked = isFavorite,
+                    onCheckedChange = { isFavorite = it }
+                ) {
+                    Icon(
+                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                        contentDescription = "Favorite",
+                        tint = if (isFavorite) Color(0xFFEF2A39) else Color.Gray,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
             }
         }
     }
 }
+
+
 
 // --- Preview ---
 @Preview(showBackground = true)
