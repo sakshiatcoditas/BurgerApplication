@@ -1,6 +1,6 @@
 [versions]
 agp = "8.11.2"
-firebaseBomVersion = "32.3.1"
+
 hiltAndroid = "2.52"
 hiltAndroidCompiler = "2.52"
 hiltNavigationCompose = "1.2.0"
@@ -16,13 +16,14 @@ activityCompose = "1.11.0"
 composeBom = "2024.09.00"
 navigationRuntimeAndroid = "2.9.4"
 navigationCompose = "2.9.4"
-firebaseBom = "34.2.0"
+firebaseBom = "32.3.1"
 playServicesAuth = "20.7.0"
-firebaseAuthKtx = "24.0.1"
+firebaseAuthKtx = "22.0.1"
 firebase-analytics = "21.3.0"
 hilt = "2.52"
-firebaseFirestoreKtx = "26.0.0"
+firebaseFirestoreKtx = "24.0.1"
 firebaseCrashlyticsBuildtools = "3.0.6"
+firebaseDatabaseKtx = "20.0.0"
 
 [libraries]
 # AndroidX
@@ -30,7 +31,7 @@ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = 
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-hilt-navigation-compose-v110alpha01 = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationComposeVersion" }
 dagger-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
-firebase-bom-v3231 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
+
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -57,6 +58,7 @@ firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx"}
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
 firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
+firebase-database-ktx = { group = "com.google.firebase", name = "firebase-database-ktx", version.ref = "firebaseDatabaseKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

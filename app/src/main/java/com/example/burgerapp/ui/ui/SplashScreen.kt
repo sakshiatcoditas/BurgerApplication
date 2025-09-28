@@ -18,12 +18,21 @@ import androidx.compose.ui.zIndex
 import com.example.burgerapp.R
 import com.example.burgerapp.ui.theme.LobsterFont
 import kotlinx.coroutines.delay
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun SplashScreen(onSplashFinished: () -> Unit) {
+fun SplashScreen(
+    onNavigateToLogin: () -> Unit,
+    onNavigateToHome: () -> Unit
+) {
     LaunchedEffect(Unit) {
         delay(3000) // 3 seconds
-        onSplashFinished()
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            onNavigateToHome()
+        } else {
+            onNavigateToLogin()
+        }
     }
 
     Box(

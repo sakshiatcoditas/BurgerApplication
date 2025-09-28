@@ -1,6 +1,7 @@
 package com.example.burgerapp.module
 
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -13,5 +14,9 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+    
+    @Provides
+    @Singleton
+    fun provideFirebaseDatabase(): FirebaseDatabase = FirebaseDatabase.getInstance()
 }
-//is this right way ?
+

@@ -16,6 +16,7 @@ import javax.inject.Inject
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val repository: AuthRepository
+
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
@@ -81,11 +82,17 @@ class AuthViewModel @Inject constructor(
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             try {
-                repository.firebaseAuthWithGoogle(account)
-                _authState.value = AuthState.Success(AuthMessages.GOOGLE_SUCCESS)
+                repository.firebaseAuthWithGoogle(account) // suspending, waits until Firebase signs in
+                _authState.value = AuthState.Success(AuthMessages.GOOGLE_SUCCESS) // now emitted immediately after login
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: AuthMessages.GOOGLE_FAILED)
             }
         }
+    }
+
+
+
+    fun resetAuthState() {
+        _authState.value = AuthState.Idle
     }
 }

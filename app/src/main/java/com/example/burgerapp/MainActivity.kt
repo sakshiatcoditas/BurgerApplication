@@ -37,7 +37,8 @@ class MainActivity : ComponentActivity() {
                     AuthNavGraph(
                         navController = navController,
                         onGoogleLoginClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) },
-                        onGoogleRegisterClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) }
+                        onGoogleRegisterClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) },
+                        googleSignInClient = googleSignInManager.googleSignInClient
                     )
                 }
             }

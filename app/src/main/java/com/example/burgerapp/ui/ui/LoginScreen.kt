@@ -12,6 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.burgerapp.AuthState
 import com.example.burgerapp.R
 
@@ -24,7 +25,8 @@ fun LoginScreen(
     onGoogleLoginClick: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
-    authState: AuthState
+    authState: AuthState,
+    navController: NavHostController
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }

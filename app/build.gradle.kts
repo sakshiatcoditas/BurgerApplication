@@ -44,22 +44,22 @@ android {
 }
 
 dependencies {
-//    implementation("androidx.navigation:navigation-compose-android:2.9.4")
-    implementation("com.google.dagger:hilt-android:2.56.2")
+    // Hilt
     implementation(libs.hilt.android)
-    implementation(libs.firebase.crashlytics.buildtools) // Hilt runtime
-    kapt(libs.dagger.hilt.android.compiler) // Use the full alias defined in libs.versions.toml
+    kapt(libs.dagger.hilt.android.compiler)
     implementation(libs.androidx.hilt.navigation.compose.v110alpha01)
 
-    implementation(libs.firebase.analytics)
-    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
-
-    // Firebase Authentication (no version number needed, BoM manages it)
+    // Firebase BOM - manages all Firebase library versions
+    implementation(platform(libs.firebase.bom))
+    
+    // Firebase libraries (versions managed by BOM)
     implementation(libs.firebase.auth.ktx)
-    implementation(libs.play.services.auth)
-
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.database.ktx)
+    implementation(libs.firebase.crashlytics.buildtools)
+    
     // Google Sign-In
-    //implementation("com.google.android.gms:play-services-auth:20.7.0") // stable version
+    implementation(libs.play.services.auth)
 
     // Navigation
     implementation(libs.androidx.navigation.runtime.android)
@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.androidx.material3)
 
 
+    implementation("io.coil-kt:coil-compose:2.7.0")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
