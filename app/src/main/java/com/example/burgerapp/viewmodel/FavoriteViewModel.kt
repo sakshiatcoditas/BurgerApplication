@@ -1,4 +1,4 @@
-package com.example.burgerapp
+package com.example.burgerapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.burgerapp.burger.Burger

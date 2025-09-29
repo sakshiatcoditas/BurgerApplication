@@ -1,4 +1,4 @@
-package com.example.burgerapp
+package com.example.burgerapp.ui.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*

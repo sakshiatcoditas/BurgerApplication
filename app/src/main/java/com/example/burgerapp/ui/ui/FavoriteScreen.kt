@@ -9,7 +9,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.burgerapp.FavoriteViewModel
+import com.example.burgerapp.viewmodel.FavoriteViewModel
 import kotlin.collections.emptyList
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.dp

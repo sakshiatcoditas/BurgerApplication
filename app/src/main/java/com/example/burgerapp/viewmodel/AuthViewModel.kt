@@ -1,5 +1,6 @@
 package com.example.burgerapp.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.burgerapp.AuthState
@@ -7,6 +8,7 @@ import com.example.burgerapp.repository.AuthRepository
 import com.example.burgerapp.utils.AuthMessages
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,12 +17,29 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val repository: AuthRepository
+    private val repository: AuthRepository,
+    auth: FirebaseAuth
 
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> get() = _authState
+
+    init {
+
+        auth.addAuthStateListener { firebaseAuth ->
+            val user = firebaseAuth.currentUser
+            if (user != null) {
+                Log.d("BurgerApp", "AuthStateListener fired: user=${user.email}")
+                _authState.value = AuthState.Success("Logged in as ${user.email}")
+            } else {
+                Log.d("BurgerApp", "AuthStateListener fired: user=null (Unauthenticated)")
+                _authState.value = AuthState.Error("No user detected")
+            }
+        }
+    }
+
+    //We will need to clean up the listener as Remove listener when ViewModel is cleared (to avoid leaks)
 
     fun login(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
@@ -32,7 +51,7 @@ class AuthViewModel @Inject constructor(
             _authState.value = AuthState.Loading
             try {
                 repository.login(email, password)
-                _authState.value = AuthState.Success(AuthMessages.LOGIN_SUCCESS)
+
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: AuthMessages.LOGIN_FAILED)
             }
@@ -49,7 +68,7 @@ class AuthViewModel @Inject constructor(
             _authState.value = AuthState.Loading
             try {
                 repository.register(email, password)
-                _authState.value = AuthState.Success(AuthMessages.REGISTER_SUCCESS)
+
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: AuthMessages.REGISTER_FAILED)
             }
@@ -83,7 +102,6 @@ class AuthViewModel @Inject constructor(
             _authState.value = AuthState.Loading
             try {
                 repository.firebaseAuthWithGoogle(account) // suspending, waits until Firebase signs in
-                _authState.value = AuthState.Success(AuthMessages.GOOGLE_SUCCESS) // now emitted immediately after login
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: AuthMessages.GOOGLE_FAILED)
             }

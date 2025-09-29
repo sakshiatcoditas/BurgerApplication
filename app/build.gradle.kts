@@ -57,7 +57,9 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.crashlytics.buildtools)
-    
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
+
+
     // Google Sign-In
     implementation(libs.play.services.auth)
 
