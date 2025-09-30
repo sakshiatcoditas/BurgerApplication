@@ -1,5 +1,6 @@
 package com.example.burgerapp.repository
 
+import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
@@ -34,6 +35,7 @@ class AuthRepository @Inject constructor(
         return suspendCoroutine { continuation ->
             auth.signInWithCredential(credential)
                 .addOnCompleteListener { task ->
+                    Log.d("BurgerApp","Ra1 :: $task")
                     if (task.isSuccessful) {
                         continuation.resume(Unit) // now Success is emitted at the right time
                     } else {

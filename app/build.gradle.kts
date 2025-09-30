@@ -57,10 +57,13 @@ dependencies {
     implementation(libs.firebase.analytics)
     implementation(libs.firebase.database.ktx)
     implementation(libs.firebase.crashlytics.buildtools)
-    
+    implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
+
+
     // Google Sign-In
     implementation(libs.play.services.auth)
-
+    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+// check latest version
     // Navigation
     implementation(libs.androidx.navigation.runtime.android)
     implementation(libs.androidx.navigation.compose)

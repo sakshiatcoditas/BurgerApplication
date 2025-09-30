@@ -7,5 +7,6 @@ data class Burger(
     val imageUrl: String = "",
     val price: Double = 0.0,
     val rating: Double = 0.0,
-    val type: String = "" // "veg" or "nonveg"
+    val type: String = "" ,
+    val isFavorite: Boolean = false// "veg" or "nonveg"
 )

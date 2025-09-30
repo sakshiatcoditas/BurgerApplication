@@ -26,7 +26,6 @@ fun LoginScreen(
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
     authState: AuthState,
-    navController: NavHostController
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -161,3 +160,8 @@ fun LoginScreen(
         }
     }
 }
+
+// create common widgets e.g -> Textfield, buttons.
+// remove hard coded string and add those to string resource.
+// improve favourite burger list logic.
+//

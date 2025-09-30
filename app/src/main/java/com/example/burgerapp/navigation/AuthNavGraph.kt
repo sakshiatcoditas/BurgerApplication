@@ -7,19 +7,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.burgerapp.AuthState
-import com.example.burgerapp.ProfileScreen
+import com.example.burgerapp.ui.ui.ProfileScreen
 import com.example.burgerapp.ui.ui.*
 import com.example.burgerapp.viewmodel.AuthViewModel
 import com.example.burgerapp.viewmodel.HomeViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 
 @Composable
-fun AuthNavGraph(
+fun AuthNavGraph( // AppNavigation
     navController: NavHostController,
     onGoogleLoginClick: () -> Unit,
     onGoogleRegisterClick: () -> Unit,
     googleSignInClient: GoogleSignInClient
 ) {
+
     NavHost(navController = navController, startDestination = Screen.Splash.route) {
 
         // Splash Screen
@@ -57,7 +58,6 @@ fun AuthNavGraph(
                 onNavigateToRegister = { navController.navigate(Screen.Register.route) },
                 onNavigateToForgotPassword = { navController.navigate(Screen.ForgotPassword.route) },
                 authState = authState,
-                navController = navController
             )
         }
 
@@ -100,12 +100,21 @@ fun AuthNavGraph(
             val burgers = homeViewModel.burgers.collectAsState().value
             val categories = listOf("All", "Veg", "Non-Veg", "Combos", "Classic")
 
+            // Get Firebase current user
+            val firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+            val userEmail = firebaseUser?.email ?: "preview@example.com"
+            val userName = firebaseUser?.displayName ?: firebaseUser?.email ?: "U"
+            val userPhotoUrl = firebaseUser?.photoUrl?.toString()
+
             HomeScreen(
                 burgers = burgers,
                 categories = categories,
-                navController = navController
+                navController = navController,
+                userEmail = userName,           // pass email
+                userPhotoUrl =userPhotoUrl // pass photo URL
             )
         }
+
 
         // Profile Screen
         composable("Profile") {
@@ -126,3 +135,10 @@ fun AuthNavGraph(
         }
     }
 }
+
+// auth graph
+   // login screen || register screen || reset passwrd
+// home graph
+   // home screen || profile || fav
+// setting graph
+   /// user detail || about || setting
