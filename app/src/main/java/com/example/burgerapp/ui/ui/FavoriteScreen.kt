@@ -1,36 +1,46 @@
 package com.example.burgerapp.ui.ui
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.burgerapp.viewmodel.FavoriteViewModel
-import kotlin.collections.emptyList
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.lazy.grid.items
+
 @Composable
 fun FavoriteScreen(
-    userEmail: String,
     favoriteViewModel: FavoriteViewModel = hiltViewModel()
 ) {
     val favorites by favoriteViewModel.favorites.collectAsState()
-    val userFavorites = favorites[userEmail] ?: emptyList()
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(userFavorites) { burger ->
-            BurgerCard(burger = burger, userEmail = userEmail)
+    if (favorites.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text("No favorites yet", style = MaterialTheme.typography.bodyLarge)
+        }
+    } else {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp)
+        ) {
+            items(favorites) { burger ->
+                BurgerCard(
+                    burger = burger.copy(isFavorite = true), // always favorite in this screen
+                    onFavoriteClick = { favoriteViewModel.toggleFavorite(burger) }
+                )
+            }
         }
     }
 }
-

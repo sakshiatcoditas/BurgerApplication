@@ -1,8 +1,5 @@
 package com.example.burgerapp.ui.ui
 
-
-import androidx.compose.ui.res.painterResource
-import com.example.burgerapp.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -25,18 +22,17 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
+import com.example.burgerapp.R
 import com.example.burgerapp.burger.Burger
 import com.example.burgerapp.ui.theme.LobsterFont
 import com.example.burgerapp.ui.theme.Typography
-import com.example.burgerapp.viewmodel.AuthViewModel
 import com.example.burgerapp.viewmodel.FavoriteViewModel
+import androidx.compose.runtime.collectAsState
 
 // --- HomeScreen ---
 @Composable
@@ -44,7 +40,7 @@ fun HomeScreen(
     burgers: List<Burger>,
     categories: List<String>,
     navController: NavHostController,
-    userPhotoUrl: String?,       // from AuthViewModel
+    userPhotoUrl: String?,
     userEmail: String,
     favoriteViewModel: FavoriteViewModel = hiltViewModel()
 ) {
@@ -52,7 +48,6 @@ fun HomeScreen(
     var selectedCategory by remember { mutableStateOf(categories.firstOrNull() ?: "All") }
     var selectedBottomItem by remember { mutableStateOf("Home") }
 
-    // Filter states
     var filterOption by remember { mutableStateOf<String?>(null) }
     var showFilterDialog by remember { mutableStateOf(false) }
 
@@ -60,7 +55,7 @@ fun HomeScreen(
         topBar = {
             HomeTopBar(
                 navController = navController,
-                userEmail =  userEmail,
+                userEmail = userEmail,
                 userPhotoUrl = userPhotoUrl
             )
         },
@@ -80,7 +75,7 @@ fun HomeScreen(
                 NavigationBarItem(
                     selected = selectedBottomItem == "Home",
                     onClick = { selectedBottomItem = "Home" },
-                    icon = { Icon(painter = painterResource(R.drawable.home_icon),
+                    icon = { Icon(painter = androidx.compose.ui.res.painterResource(R.drawable.home_icon),
                         contentDescription = "Home",
                         modifier = Modifier.size(22.dp)) },
                     label = { Text("Home", fontSize = 12.sp) },
@@ -90,7 +85,7 @@ fun HomeScreen(
                 NavigationBarItem(
                     selected = selectedBottomItem == "Favorites",
                     onClick = { selectedBottomItem = "Favorites" },
-                    icon = { Icon(painter = painterResource(R.drawable.heart),
+                    icon = { Icon(painter = androidx.compose.ui.res.painterResource(R.drawable.heart),
                         contentDescription = "Favorite",
                         modifier = Modifier.size(22.dp)) },
                     label = { Text("Favorites", fontSize = 12.sp) },
@@ -103,7 +98,7 @@ fun HomeScreen(
                         selectedBottomItem = "Profile"
                         navController.navigate("Profile") { launchSingleTop = true }
                     },
-                    icon = { Icon(painter = painterResource(R.drawable.user_icon),
+                    icon = { Icon(painter = androidx.compose.ui.res.painterResource(R.drawable.user_icon),
                         contentDescription = "Profile",
                         modifier = Modifier.size(22.dp)) },
                     label = { Text("Profile", fontSize = 12.sp) },
@@ -116,7 +111,7 @@ fun HomeScreen(
                         selectedBottomItem = "Chat"
                         navController.navigate("Chat") { launchSingleTop = true }
                     },
-                    icon = { Icon(painter = painterResource(R.drawable.chat_icon),
+                    icon = { Icon(painter = androidx.compose.ui.res.painterResource(R.drawable.chat_icon),
                         contentDescription = "Chat",
                         modifier = Modifier.size(22.dp)) },
                     label = { Text("Chat", fontSize = 12.sp) },
@@ -125,7 +120,6 @@ fun HomeScreen(
             }
         }
     ) { innerPadding ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -161,7 +155,6 @@ fun HomeScreen(
                     )
                 )
 
-                // Filter Icon
                 Box(
                     modifier = Modifier
                         .size(52.dp)
@@ -170,7 +163,7 @@ fun HomeScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = painterResource(id = R.drawable.filter_icon),
+                        painter = androidx.compose.ui.res.painterResource(id = R.drawable.filter_icon),
                         contentDescription = "Filter",
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
@@ -225,6 +218,7 @@ fun HomeScreen(
                 else -> filteredBurgers
             }
 
+            // --- Main content ---
             if (selectedBottomItem == "Home") {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
@@ -236,19 +230,78 @@ fun HomeScreen(
                     contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp)
                 ) {
                     items(filteredBurgers) { burger ->
-                        BurgerCard(burger = burger, userEmail = userEmail)
+                        BurgerCard(
+                            burger = burger.copy(
+                                isFavorite = favoriteViewModel.favorites.collectAsState().value.any { it.burgerId == burger.burgerId }
+                            ),
+                            onFavoriteClick = { favoriteViewModel.toggleFavorite(burger) }
+                        )
                     }
                 }
             } else if (selectedBottomItem == "Favorites") {
-                FavoriteScreen(userEmail = userEmail)
+                FavoriteScreen(favoriteViewModel = favoriteViewModel)
             }
         }
     }
 }
 
+// --- BurgerCard ---
+@Composable
+fun BurgerCard(
+    burger: Burger,
+    onFavoriteClick: () -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(6.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            AsyncImage(
+                model = burger.imageUrl.ifEmpty { "https://via.placeholder.com/150" },
+                contentDescription = burger.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f)
+                    .clip(RoundedCornerShape(16.dp))
+            )
 
+            Spacer(modifier = Modifier.height(8.dp))
 
-// --- Top Bar ---
+            Text(burger.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Black)
+            Text(burger.type, color = Color.Gray)
+            Text("⭐ ${burger.rating}", fontSize = 14.sp, color = Color.Black)
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("$${burger.price}", fontWeight = FontWeight.Bold, color = Color.Black)
+
+                IconButton(
+                    onClick = onFavoriteClick
+                ) {
+                    Icon(
+                        imageVector = if (burger.isFavorite) Icons.Filled.Favorite else Icons.Outlined.Favorite,
+                        contentDescription = "Favorite",
+                        tint = if (burger.isFavorite) Color(0xFFEF2A39) else Color.Gray,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Composable
 fun HomeTopBar(
     navController: NavHostController,
@@ -283,7 +336,7 @@ fun HomeTopBar(
             userEmail = userEmail,
             userPhotoUrl = userPhotoUrl,
 
-        ) {
+            ) {
             navController.navigate("Profile")
         }
     }
@@ -378,76 +431,3 @@ fun CategoryChips(
         }
     }
 }
-
-
-// --- BurgerCard ---
-@Composable
-fun BurgerCard(
-    burger: Burger,
-    userEmail: String,
-    favoriteViewModel: FavoriteViewModel = hiltViewModel()
-) {
-    val favorites by favoriteViewModel.favorites.collectAsState()
-    val isFavorite = favorites[userEmail]?.any { it.burgerId == burger.burgerId } ?: burger.isFavorite
-
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(6.dp)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(8.dp)
-        ) {
-            // Image
-            AsyncImage(
-                model = burger.imageUrl.ifEmpty { "https://via.placeholder.com/150" },
-                contentDescription = burger.name,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)
-                    .clip(RoundedCornerShape(16.dp))
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // Name, Type, Rating
-            Text(burger.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Black)
-            Text(burger.type, color = Color.Gray)
-            Text("⭐ ${burger.rating}", fontSize = 14.sp, color=Color.Black)
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // Price + Favorite Icon Row
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("$${burger.price}", fontWeight = FontWeight.Bold, color = Color.Black)
-
-                IconToggleButton(
-                    checked = isFavorite,
-                    onCheckedChange = {
-                        favoriteViewModel.toggleFavorite(userEmail, burger)
-                    }
-                ) {
-                    Icon(
-                        imageVector = if (isFavorite) Icons.Filled.Favorite else Icons.Outlined.Favorite,
-                        contentDescription = "Favorite",
-                        tint = if (isFavorite) Color(0xFFEF2A39) else Color.Gray,
-                        modifier = Modifier.size(28.dp)
-                    )
-                }
-            }
-        }
-    }
-}
-
-
-// --- FavoriteScreen ---
-
-// --- Preview ---
