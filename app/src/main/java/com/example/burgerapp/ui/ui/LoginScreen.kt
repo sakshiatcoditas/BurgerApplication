@@ -12,6 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.burgerapp.AuthState
 import com.example.burgerapp.R
 
@@ -24,7 +25,7 @@ fun LoginScreen(
     onGoogleLoginClick: () -> Unit,
     onNavigateToRegister: () -> Unit,
     onNavigateToForgotPassword: () -> Unit,
-    authState: AuthState
+    authState: AuthState,
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -159,3 +160,8 @@ fun LoginScreen(
         }
     }
 }
+
+// create common widgets e.g -> Textfield, buttons.
+// remove hard coded string and add those to string resource.
+// improve favourite burger list logic.
+//

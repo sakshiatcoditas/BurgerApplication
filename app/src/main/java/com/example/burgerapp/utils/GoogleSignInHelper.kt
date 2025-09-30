@@ -21,12 +21,17 @@ class GoogleSignInManager(
     fun handleSignInResult(data: Intent?) {
         val task = GoogleSignIn.getSignedInAccountFromIntent(data)
         try {
-            val account = task.getResult(Exception::class.java)
-            account?.let { authViewModel.firebaseAuthWithGoogle(it) }
+            val account = task.getResult(com.google.android.gms.common.api.ApiException::class.java)
+            if (account != null) {
+                authViewModel.firebaseAuthWithGoogle(account)
+            } else {
+                authViewModel.setAuthStateError("Google sign-in failed: null account")
+            }
+        } catch (e: com.google.android.gms.common.api.ApiException) {
+            authViewModel.setAuthStateError("Google sign-in failed: ${e.statusCode}")
         } catch (e: Exception) {
-            authViewModel.setAuthStateError(
-                e.message ?: "Google login failed"
-            )
+            authViewModel.setAuthStateError(e.message ?: "Google login failed")
         }
     }
+
 }
