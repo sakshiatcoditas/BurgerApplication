@@ -100,13 +100,21 @@ fun AuthNavGraph( // AppNavigation
             val burgers = homeViewModel.burgers.collectAsState().value
             val categories = listOf("All", "Veg", "Non-Veg", "Combos", "Classic")
 
+            // Get Firebase current user
+            val firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+            val userEmail = firebaseUser?.email ?: "preview@example.com"
+            val userName = firebaseUser?.displayName ?: firebaseUser?.email ?: "U"
+            val userPhotoUrl = firebaseUser?.photoUrl?.toString()
+
             HomeScreen(
                 burgers = burgers,
                 categories = categories,
                 navController = navController,
-                userEmail = "preview@example.com"
+                userEmail = userName,           // pass email
+                userPhotoUrl =userPhotoUrl // pass photo URL
             )
         }
+
 
         // Profile Screen
         composable("Profile") {

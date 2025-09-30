@@ -62,7 +62,8 @@ dependencies {
 
     // Google Sign-In
     implementation(libs.play.services.auth)
-
+    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+// check latest version
     // Navigation
     implementation(libs.androidx.navigation.runtime.android)
     implementation(libs.androidx.navigation.compose)

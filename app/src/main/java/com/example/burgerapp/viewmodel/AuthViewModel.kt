@@ -9,6 +9,7 @@ import com.example.burgerapp.utils.AuthMessages
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,17 +26,24 @@ class AuthViewModel @Inject constructor(
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> get() = _authState
 
+
+    // --- NEW: Current user flow ---
+    private val _currentUser = MutableStateFlow(auth.currentUser)
+    val currentUser: StateFlow<FirebaseUser?> get() = _currentUser
+
     init {
 
         auth.addAuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
+            _currentUser.value = user
+
             if (user != null) {
-                Log.d("BurgerApp", "AuthStateListener fired: user=${user.email}")
                 _authState.value = AuthState.Success("Logged in as ${user.email}")
             } else {
-                Log.d("BurgerApp", "AuthStateListener fired: user=null (Unauthenticated)")
                 _authState.value = AuthState.Error("No user detected")
             }
+
+
         }
     }
 
