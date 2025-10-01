@@ -246,6 +246,7 @@ fun HomeScreen(
 }
 
 // --- BurgerCard ---
+// --- BurgerCard ---
 @Composable
 fun BurgerCard(
     burger: Burger,
@@ -253,7 +254,8 @@ fun BurgerCard(
 ) {
     Card(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .height(280.dp), // ✅ Fixed uniform height for all cards
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(6.dp)
@@ -269,14 +271,20 @@ fun BurgerCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f)
+                    .height(140.dp) // ✅ Fixed image height (all cards uniform)
                     .clip(RoundedCornerShape(16.dp))
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(burger.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Black)
-            Text(burger.type, color = Color.Gray)
+            Text(
+                burger.name,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = Color.Black,
+                maxLines = 1 // ✅ prevents overflow messing with height
+            )
+            Text(burger.type, color = Color.Gray, maxLines = 1)
             Text("⭐ ${burger.rating}", fontSize = 14.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -301,6 +309,7 @@ fun BurgerCard(
         }
     }
 }
+
 
 @Composable
 fun HomeTopBar(
