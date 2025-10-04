@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.burgerapp.R
 
-// Topping data class
+// Topping/Side data class
 data class Topping(
     val name: String,
     val imageRes: Int
@@ -40,7 +40,7 @@ fun CustomScreen(
     var spiceLevel by remember { mutableFloatStateOf(initialSpiceLevel) }
     var portion by remember { mutableIntStateOf(initialPortion) }
 
-    // Toppings list with vector drawable IDs
+    // ----------------- TOPPINGS LIST -----------------
     val toppingsList = listOf(
         Topping("Bacon", R.drawable.bacon),
         Topping("Tomato", R.drawable.tomato),
@@ -48,8 +48,16 @@ fun CustomScreen(
         Topping("Onion", R.drawable.onion)
     )
 
-    // Track selected toppings
     val selectedToppings = remember { mutableStateListOf<String>() }
+
+    // ----------------- SIDES LIST -----------------
+    val sidesList = listOf(
+        Topping("Fries", R.drawable.fries),
+        Topping("Coleslaw", R.drawable.caloslew),
+        Topping("Salad", R.drawable.salad),
+        Topping("Onion Rings", R.drawable.onionrings)
+    )
+    val selectedSides = remember { mutableStateListOf<String>() }
 
     Column(
         modifier = Modifier
@@ -180,7 +188,7 @@ fun CustomScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ----------------- TOPPINGS TEXT -----------------
+        // ----------------- TOPPINGS SECTION -----------------
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -197,7 +205,6 @@ fun CustomScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // ----------------- SCROLLABLE TOPPINGS CARDS -----------------
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -246,7 +253,7 @@ fun CustomScreen(
                             )
                         }
 
-                        // Topping name with plus vectors beside it
+                        // Topping name + plus
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
@@ -257,9 +264,7 @@ fun CustomScreen(
                                 fontSize = 12.sp,
                                 color = Color.White
                             )
-
                             Spacer(modifier = Modifier.width(8.dp))
-
                             Box(
                                 modifier = Modifier
                                     .size(16.dp)
@@ -291,8 +296,113 @@ fun CustomScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // ----------------- SIDES SECTION -----------------
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Sides",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+        }
 
+        Spacer(modifier = Modifier.height(8.dp))
 
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(sidesList.size) { index ->
+                val side = sidesList[index]
+                val isSelected = side.name in selectedSides
+
+                Surface(
+                    modifier = Modifier
+                        .width(84.dp)
+                        .height(99.dp)
+                        .clickable {
+                            if (isSelected) selectedSides.remove(side.name)
+                            else selectedSides.add(side.name)
+                        },
+                    shape = RoundedCornerShape(16.dp),
+                    color = if (isSelected) Color(0xFFD2042D) else Color.Black,
+                    shadowElevation = 4.dp
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        // WHITE BOX with side image
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(61.dp)
+                                .background(
+                                    color = Color.White,
+                                    shape = RoundedCornerShape(
+                                        topStart = 15.dp,
+                                        topEnd = 15.dp,
+                                        bottomStart = 8.dp,
+                                        bottomEnd = 8.dp
+                                    )
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(side.imageRes),
+                                contentDescription = side.name,
+                                modifier = Modifier.size(40.dp)
+                            )
+                        }
+
+                        // Side name + plus
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = side.name,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 12.sp,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Box(
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .clickable {
+                                        if (isSelected) selectedSides.remove(side.name)
+                                        else selectedSides.add(side.name)
+                                    }
+                            ) {
+                                Image(
+                                    painter = painterResource(R.drawable.redplus),
+                                    contentDescription = "Outer Vector",
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                                Image(
+                                    painter = painterResource(R.drawable.whiteplus),
+                                    contentDescription = "Inner Vector",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(3.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
+                    }
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
