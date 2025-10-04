@@ -22,7 +22,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -30,32 +31,30 @@ import com.example.burgerapp.R
 import com.example.burgerapp.burger.Burger
 import com.example.burgerapp.ui.theme.LobsterFont
 import com.example.burgerapp.ui.theme.Typography
-import com.example.burgerapp.viewmodel.FavoriteViewModel
+import com.example.burgerapp.viewmodel.HomeViewModel
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import com.example.burgerapp.viewmodel.FavoriteViewModel
 
-// --- HomeScreen ---
 @Composable
 fun HomeScreen(
-    burgers: List<Burger>,
-    categories: List<String>,
     navController: NavHostController,
-    userPhotoUrl: String?,
-    userEmail: String,
+    homeViewModel: HomeViewModel = hiltViewModel(),
     favoriteViewModel: FavoriteViewModel = hiltViewModel()
-) {
-    var searchText by remember { mutableStateOf("") }
-    var selectedCategory by remember { mutableStateOf(categories.firstOrNull() ?: "All") }
-    var selectedBottomItem by remember { mutableStateOf("Home") }
 
-    var filterOption by remember { mutableStateOf<String?>(null) }
+) {
+    val uiState by homeViewModel.uiState.collectAsState()
+    val filteredBurgers by homeViewModel.filteredBurgers.collectAsState()
+    var selectedBottomItem by remember { mutableStateOf("Home") }
     var showFilterDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             HomeTopBar(
                 navController = navController,
-                userEmail = userEmail,
-                userPhotoUrl = userPhotoUrl
+                userEmail = uiState.userEmail ?: "",
+                userPhotoUrl = uiState.userPhotoUrl
             )
         },
         bottomBar = {
@@ -74,20 +73,16 @@ fun HomeScreen(
                 NavigationBarItem(
                     selected = selectedBottomItem == "Home",
                     onClick = { selectedBottomItem = "Home" },
-                    icon = { Icon(painter = androidx.compose.ui.res.painterResource(R.drawable.home_icon),
-                        contentDescription = "Home",
-                        modifier = Modifier.size(22.dp)) },
-                    label = { Text("Home", fontSize = 12.sp) },
+                    icon = { Icon(painter = painterResource(R.drawable.home_icon), contentDescription = stringResource(R.string.home), modifier = Modifier.size(22.dp)) },
+                    label = { Text(stringResource(R.string.home), fontSize = 12.sp) },
                     colors = navBarItemColors
                 )
 
                 NavigationBarItem(
                     selected = selectedBottomItem == "Favorites",
                     onClick = { selectedBottomItem = "Favorites" },
-                    icon = { Icon(painter = androidx.compose.ui.res.painterResource(R.drawable.heart),
-                        contentDescription = "Favorite",
-                        modifier = Modifier.size(22.dp)) },
-                    label = { Text("Favorites", fontSize = 12.sp) },
+                    icon = { Icon(painter = painterResource(R.drawable.heart), contentDescription = stringResource(R.string.favorites), modifier = Modifier.size(22.dp)) },
+                    label = {Text(stringResource(R.string.favorites), fontSize = 12.sp) },
                     colors = navBarItemColors
                 )
 
@@ -97,10 +92,8 @@ fun HomeScreen(
                         selectedBottomItem = "Profile"
                         navController.navigate("Profile") { launchSingleTop = true }
                     },
-                    icon = { Icon(painter = androidx.compose.ui.res.painterResource(R.drawable.user_icon),
-                        contentDescription = "Profile",
-                        modifier = Modifier.size(22.dp)) },
-                    label = { Text("Profile", fontSize = 12.sp) },
+                    icon = { Icon(painter = painterResource(R.drawable.user_icon), contentDescription = stringResource(R.string.profile), modifier = Modifier.size(22.dp)) },
+                    label = { Text(stringResource(R.string.profile), fontSize = 12.sp) },
                     colors = navBarItemColors
                 )
 
@@ -110,10 +103,8 @@ fun HomeScreen(
                         selectedBottomItem = "Chat"
                         navController.navigate("Chat") { launchSingleTop = true }
                     },
-                    icon = { Icon(painter = androidx.compose.ui.res.painterResource(R.drawable.chat_icon),
-                        contentDescription = "Chat",
-                        modifier = Modifier.size(22.dp)) },
-                    label = { Text("Chat", fontSize = 12.sp) },
+                    icon = { Icon(painter = painterResource(R.drawable.chat_icon), contentDescription = stringResource(R.string.chat), modifier = Modifier.size(22.dp)) },
+                    label = {Text(stringResource(R.string.chat), fontSize = 12.sp) },
                     colors = navBarItemColors
                 )
             }
@@ -124,9 +115,10 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
+
             Spacer(modifier = Modifier.height(8.dp))
 
-            // --- Search Bar + Filter Icon ---
+            // Search Bar + Filter
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -135,10 +127,10 @@ fun HomeScreen(
                     .fillMaxWidth()
             ) {
                 TextField(
-                    value = searchText,
-                    onValueChange = { searchText = it },
-                    placeholder = { Text("Search food") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = "Search") },
+                    value = uiState.searchText,
+                    onValueChange = { homeViewModel.onSearchTextChange(it) },
+                    placeholder = { Text(stringResource(id = R.string.search_food))  },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = stringResource(id = R.string.search_food))  },
                     singleLine = true,
                     modifier = Modifier
                         .weight(1f)
@@ -162,8 +154,8 @@ fun HomeScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        painter = androidx.compose.ui.res.painterResource(id = R.drawable.filter_icon),
-                        contentDescription = "Filter",
+                        painter = painterResource(id = R.drawable.filter_icon),
+                        contentDescription = stringResource(id = R.string.filter),
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
                     )
@@ -172,16 +164,19 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // --- Category Chips ---
-            CategoryChips(categories = categories, selectedCategory = selectedCategory) { selectedCategory = it }
+            // Category Chips
+            CategoryChips(
+                categories = uiState.categories,
+                selectedCategory = uiState.selectedCategory
+            ) { homeViewModel.onCategorySelected(it) }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // --- Filter Dialog ---
+            // Filter Dialog
             if (showFilterDialog) {
                 AlertDialog(
                     onDismissRequest = { showFilterDialog = false },
-                    title = { Text("Filter by") },
+                    title = { Text(stringResource(id = R.string.filter_by)) },
                     text = {
                         Column {
                             listOf("Price", "Rating").forEach { option ->
@@ -190,7 +185,7 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .clickable {
-                                            filterOption = option
+                                            homeViewModel.onFilterSelected(option)
                                             showFilterDialog = false
                                         }
                                         .padding(8.dp),
@@ -203,21 +198,7 @@ fun HomeScreen(
                 )
             }
 
-            // --- Filtered Burgers ---
-            var filteredBurgers = burgers.filter { burger ->
-                val typeNormalized = burger.type.lowercase()
-                val categoryNormalized = selectedCategory.replace("-", "").lowercase()
-                (selectedCategory == "All" || typeNormalized == categoryNormalized) &&
-                        (searchText.isBlank() || burger.name.contains(searchText, ignoreCase = true))
-            }
-
-            filteredBurgers = when (filterOption) {
-                "Price" -> filteredBurgers.sortedBy { it.price }
-                "Rating" -> filteredBurgers.sortedByDescending { it.rating }
-                else -> filteredBurgers
-            }
-
-            // --- Main content ---
+            // Main content
             if (selectedBottomItem == "Home") {
                 LazyVerticalGrid(
                     columns = GridCells.Fixed(2),
@@ -230,31 +211,32 @@ fun HomeScreen(
                 ) {
                     items(filteredBurgers) { burger ->
                         BurgerCard(
-                            burger = burger.copy(
-                                isFavorite = favoriteViewModel.favorites.collectAsState().value.any { it.burgerId == burger.burgerId }
-                            ),
-                            onFavoriteClick = { favoriteViewModel.toggleFavorite(burger) }
+                            burger = burger,
+                            onFavoriteClick = { homeViewModel.toggleFavorite(burger) },
+                            onClick = {
+                                navController.navigate("burgerDetail/${burger.burgerId}")
+                            }
                         )
                     }
                 }
             } else if (selectedBottomItem == "Favorites") {
                 FavoriteScreen(favoriteViewModel = favoriteViewModel)
+                //chaneg here
+
             }
         }
     }
 }
-
-// --- BurgerCard ---
-// --- BurgerCard ---
 @Composable
 fun BurgerCard(
     burger: Burger,
-    onFavoriteClick: () -> Unit
+    onFavoriteClick: () -> Unit,
+    onClick: () -> Unit= {}
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(280.dp), // ✅ Fixed uniform height for all cards
+            .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(6.dp)
@@ -270,20 +252,14 @@ fun BurgerCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(140.dp) // ✅ Fixed image height (all cards uniform)
+                    .aspectRatio(1f)
                     .clip(RoundedCornerShape(16.dp))
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                burger.name,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                color = Color.Black,
-                maxLines = 1 // ✅ prevents overflow messing with height
-            )
-            Text(burger.type, color = Color.Gray, maxLines = 1)
+            Text(burger.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Black)
+            Text(burger.type, color = Color.Gray)
             Text("⭐ ${burger.rating}", fontSize = 14.sp, color = Color.Black)
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -309,7 +285,6 @@ fun BurgerCard(
     }
 }
 
-
 @Composable
 fun HomeTopBar(
     navController: NavHostController,
@@ -325,14 +300,14 @@ fun HomeTopBar(
     ) {
         Column {
             Text(
-                text = "Foodgo",
+                text = stringResource(id = R.string.app_name),
                 fontFamily = LobsterFont,
                 fontWeight = FontWeight.W400,
                 fontSize = 45.sp,
                 lineHeight = 61.sp
             )
             Text(
-                text = "Order your favourite food!",
+                text = stringResource(id = R.string.order_your_favourite_food),
                 style = Typography.bodyLarge,
                 fontWeight = FontWeight.W500,
                 fontSize = 18.sp,

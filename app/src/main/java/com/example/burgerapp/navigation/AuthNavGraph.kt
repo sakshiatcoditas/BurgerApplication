@@ -1,29 +1,32 @@
 package com.example.burgerapp.navigation
+
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.burgerapp.AuthState
-import com.example.burgerapp.ui.ui.ProfileScreen
 import com.example.burgerapp.ui.ui.*
 import com.example.burgerapp.viewmodel.AuthViewModel
+import com.example.burgerapp.viewmodel.DetailViewModel
 import com.example.burgerapp.viewmodel.HomeViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun AuthNavGraph( // AppNavigation
+fun AuthNavGraph(
     navController: NavHostController,
     onGoogleLoginClick: () -> Unit,
     onGoogleRegisterClick: () -> Unit,
     googleSignInClient: GoogleSignInClient
 ) {
-
     NavHost(navController = navController, startDestination = Screen.Splash.route) {
 
-        // Splash Screen
+        // --- Splash Screen ---
         composable(Screen.Splash.route) {
             SplashScreen(
                 onNavigateToLogin = {
@@ -39,7 +42,7 @@ fun AuthNavGraph( // AppNavigation
             )
         }
 
-        // Login Screen
+        // --- Login Screen ---
         composable(Screen.Login.route) {
             val authViewModel: AuthViewModel = hiltViewModel()
             val authState = authViewModel.authState.collectAsState().value
@@ -57,11 +60,11 @@ fun AuthNavGraph( // AppNavigation
                 onGoogleLoginClick = onGoogleLoginClick,
                 onNavigateToRegister = { navController.navigate(Screen.Register.route) },
                 onNavigateToForgotPassword = { navController.navigate(Screen.ForgotPassword.route) },
-                authState = authState,
+                authState = authState
             )
         }
 
-        // Register Screen
+        // --- Register Screen ---
         composable(Screen.Register.route) {
             val authViewModel: AuthViewModel = hiltViewModel()
             val authState = authViewModel.authState.collectAsState().value
@@ -82,7 +85,7 @@ fun AuthNavGraph( // AppNavigation
             )
         }
 
-        // Forgot Password Screen
+        // --- Forgot Password Screen ---
         composable(Screen.ForgotPassword.route) {
             val authViewModel: AuthViewModel = hiltViewModel()
             val authState = authViewModel.authState.collectAsState().value
@@ -94,37 +97,25 @@ fun AuthNavGraph( // AppNavigation
             )
         }
 
-        // Home Screen
+        // --- Home Screen ---
         composable(Screen.Home.route) {
             val homeViewModel: HomeViewModel = hiltViewModel()
-            val burgers = homeViewModel.burgers.collectAsState().value
-            val categories = listOf("All", "Veg", "Non-Veg", "Combos", "Classic")
+            val firebaseUser = FirebaseAuth.getInstance().currentUser
 
-            // Get Firebase current user
-            val firebaseUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
-            val userEmail = firebaseUser?.email ?: "preview@example.com"
-            val userName = firebaseUser?.displayName ?: firebaseUser?.email ?: "U"
-            val userPhotoUrl = firebaseUser?.photoUrl?.toString()
 
             HomeScreen(
-                burgers = burgers,
-                categories = categories,
                 navController = navController,
-                userEmail = userName,           // pass email
-                userPhotoUrl =userPhotoUrl // pass photo URL
+                homeViewModel = homeViewModel
             )
         }
 
-
-        // Profile Screen
+        // --- Profile Screen ---
         composable("Profile") {
             val authViewModel: AuthViewModel = hiltViewModel()
-
             ProfileScreen(
-                googleSignInClient = googleSignInClient, // pass the client
+                googleSignInClient = googleSignInClient,
                 onLogoutClick = {
                     authViewModel.resetAuthState()
-                    // Sign out from Google as well
                     googleSignInClient.signOut().addOnCompleteListener {
                         navController.navigate(Screen.Login.route) {
                             popUpTo(Screen.Home.route) { inclusive = true }
@@ -133,12 +124,27 @@ fun AuthNavGraph( // AppNavigation
                 }
             )
         }
+
+        // In your AuthNavGraph or a separate AppNavGraph
+        composable(
+            route = "burgerDetail/{burgerId}",
+            arguments = listOf(navArgument("burgerId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val detailViewModel: DetailViewModel = hiltViewModel()
+            val burgerId = backStackEntry.arguments?.getString("burgerId") ?: ""
+
+            val burgerState = detailViewModel.getBurger(burgerId).collectAsState(initial = null)
+
+            burgerState.value?.let { burger ->
+                BurgerDetailScreen(
+                    burger = burger,
+                    onBackClick = { navController.popBackStack() },
+                    onOrderClick = { portion ->
+                        // Handle order logic
+                    }
+                )
+            }
+        }
+
     }
 }
-
-// auth graph
-   // login screen || register screen || reset passwrd
-// home graph
-   // home screen || profile || fav
-// setting graph
-   /// user detail || about || setting

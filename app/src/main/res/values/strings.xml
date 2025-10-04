@@ -27,5 +27,17 @@
     <string name="register_with_google">Register with Google</string>
     <string name="already_have_account">Already have an account? Login</string>
 
+    <string name="order_your_favourite_food">Order your favourite food!</string>
+    <string name="search_food">Search food</string>
+    <string name="filter">Filter</string>
+    <string name="filter_by">Filter by</string>
+    <string name="price">Price</string>
+    <string name="rating">Rating</string>
+    <string name="home">Home</string>
+    <string name="favorites">Favorites</string>
+    <string name="profile">Profile</string>
+    <string name="chat">Chat</string>
+    <string name="default_user_initial">U</string>
+
 
 </resources>

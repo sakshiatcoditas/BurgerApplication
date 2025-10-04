@@ -34,20 +34,19 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import kotlin.math.roundToInt
 
-// 🔹 Custom Draggable Slider
-// 🔹 Custom Draggable Slider
+
 @Composable
 fun DraggableSpicySlider(
     spiceLevel: Float,
     onSpiceChange: (Float) -> Unit
 ) {
     val sliderWidth = 150.dp
-    val sliderHeight = 8.dp      // Track height
-    val thumbSize = 25.dp        // Thumb height/width
+    val sliderHeight = 8.dp
+    val thumbSize = 25.dp
 
     val animatedOffset by animateFloatAsState(
         targetValue = spiceLevel,
-        label = "thumbAnim"
+        label = "thumbAnimation"
     )
 
     val density = LocalDensity.current
@@ -91,7 +90,7 @@ fun DraggableSpicySlider(
             )
         }
 
-        // Thumb
+
         // Thumb
         Box(
             modifier = Modifier
@@ -114,13 +113,13 @@ fun DraggableSpicySlider(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text("🌶 Spicy", fontSize = 12.sp, color = Color.Red)
-        Text("😋 Medium", fontSize = 12.sp, color = Color(0xFFFFC107))
-        Text("🙂 Mild", fontSize = 12.sp, color = Color(0xFF4CAF50))
+        Text(" Spicy", fontSize = 12.sp, color = Color.Red)
+        Text(" Medium", fontSize = 12.sp, color = Color(0xFFFFC107))
+        Text(" Mild", fontSize = 12.sp, color = Color(0xFF4CAF50))
     }
 }
 
-// 🔹 Burger Detail Screen
+//  Burger Detail Screen
 @Composable
 fun BurgerDetailScreen(
     burger: Burger,
@@ -184,7 +183,7 @@ fun BurgerDetailScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // ✅ Draggable spicy slider
+                //  Draggable spicy slider
                 Column(
                     modifier = Modifier.width(168.dp),
                     verticalArrangement = Arrangement.Center
@@ -293,7 +292,7 @@ fun BurgerDetailScreen(
     }
 }
 
-// 🔹 Preview
+//  Preview
 @Preview(showBackground = true)
 @Composable
 fun PreviewBurgerDetailScreen() {
@@ -305,7 +304,13 @@ fun PreviewBurgerDetailScreen() {
             price = 8.99,
             rating = 4.5
         ),
-        onBackClick = {},
-        onOrderClick = {}
+
+        onBackClick = {
+
+        },
+
+        onOrderClick = {
+
+        }
     )
 }
