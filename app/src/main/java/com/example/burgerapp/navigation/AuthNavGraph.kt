@@ -3,6 +3,7 @@ package com.example.burgerapp.navigation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -133,9 +134,16 @@ fun AuthNavGraph(
             val detailViewModel: DetailViewModel = hiltViewModel()
             val burgerId = backStackEntry.arguments?.getString("burgerId") ?: ""
 
-            val burgerState = detailViewModel.getBurger(burgerId).collectAsState(initial = null)
+            // Load burger when this screen appears
+            LaunchedEffect(burgerId) {
+                detailViewModel.loadBurger(burgerId)
+            }
 
-            burgerState.value?.let { burger ->
+            // Collect the burger StateFlow
+            val burgerState by detailViewModel.burger.collectAsState()
+
+            // Show the screen only if burger is not null
+            burgerState?.let { burger ->
                 BurgerDetailScreen(
                     burger = burger,
                     onBackClick = { navController.popBackStack() },
@@ -145,6 +153,7 @@ fun AuthNavGraph(
                 )
             }
         }
+
 
     }
 }

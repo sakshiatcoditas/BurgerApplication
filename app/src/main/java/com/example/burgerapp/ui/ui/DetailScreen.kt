@@ -32,6 +32,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.burgerapp.viewmodel.DetailViewModel
 import kotlin.math.roundToInt
 
 
@@ -122,10 +124,11 @@ fun DraggableSpicySlider(
 //  Burger Detail Screen
 @Composable
 fun BurgerDetailScreen(
-    burger: Burger,
+    burger: Burger, // keep as non-null
     onBackClick: () -> Unit,
     onOrderClick: (Int) -> Unit
 ) {
+    // Local state
     var portion by remember { mutableIntStateOf(1) }
     var spiceLevel by remember { mutableFloatStateOf(0.7f) }
 
@@ -183,7 +186,7 @@ fun BurgerDetailScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                //  Draggable spicy slider
+                // Draggable spicy slider
                 Column(
                     modifier = Modifier.width(168.dp),
                     verticalArrangement = Arrangement.Center
@@ -292,25 +295,5 @@ fun BurgerDetailScreen(
     }
 }
 
+
 //  Preview
-@Preview(showBackground = true)
-@Composable
-fun PreviewBurgerDetailScreen() {
-    BurgerDetailScreen(
-        burger = Burger(
-            name = "Cheese Burger",
-            description = "Juicy grilled beef patty with cheese, lettuce, and tomato.",
-            imageUrl = "",
-            price = 8.99,
-            rating = 4.5
-        ),
-
-        onBackClick = {
-
-        },
-
-        onOrderClick = {
-
-        }
-    )
-}
