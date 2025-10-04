@@ -1,5 +1,6 @@
 package com.example.burgerapp.ui.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -19,7 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.tooling.preview.Preview
+
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -122,6 +123,7 @@ fun DraggableSpicySlider(
 }
 
 //  Burger Detail Screen
+@SuppressLint("DefaultLocale")
 @Composable
 fun BurgerDetailScreen(
     burger: Burger, // keep as non-null
@@ -153,7 +155,7 @@ fun BurgerDetailScreen(
                 contentDescription = burger.name,
                 modifier = Modifier
                     .width(350.dp)
-                    .height(300.dp)
+                    .height(280.dp)
                     .align(Alignment.CenterHorizontally),
                 contentScale = ContentScale.Crop
             )
@@ -164,17 +166,20 @@ fun BurgerDetailScreen(
                 text = burger.name,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.SemiBold,
+                color = Color.Black,
                 modifier = Modifier.fillMaxWidth()
             )
             Text(
                 text = "⭐ ${burger.rating}",
                 style = MaterialTheme.typography.bodyMedium,
+                color = Color.Black,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
             Text(
                 text = burger.description.ifBlank { "No description available." },
                 fontSize = 16.sp,
                 lineHeight = 28.sp,
+                color = Color.Gray,
                 modifier = Modifier.padding(top = 6.dp, bottom = 12.dp)
             )
 
@@ -185,6 +190,7 @@ fun BurgerDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
+
             ) {
                 // Draggable spicy slider
                 Column(
@@ -193,7 +199,8 @@ fun BurgerDetailScreen(
                 ) {
                     Text(
                         text = "Spiciness",
-                        fontWeight = FontWeight.Medium
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Black
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     DraggableSpicySlider(
@@ -213,7 +220,8 @@ fun BurgerDetailScreen(
                         "Portion",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
-                        fontFamily = FontFamily.SansSerif
+                        fontFamily = FontFamily.SansSerif,
+                        color = Color.Black
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(
@@ -296,4 +304,3 @@ fun BurgerDetailScreen(
 }
 
 
-//  Preview
