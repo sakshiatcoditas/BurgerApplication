@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
 
             val systemUiController = rememberSystemUiController()
 
-            // 🔴 Hide system nav bar
+            //  Hide system nav bar
             SideEffect {
                 systemUiController.isNavigationBarVisible = false
             }

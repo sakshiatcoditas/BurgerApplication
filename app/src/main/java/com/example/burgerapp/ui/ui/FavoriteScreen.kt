@@ -37,7 +37,7 @@ fun FavoriteScreen(
         ) {
             items(favorites) { burger ->
                 BurgerCard(
-                    burger = burger.copy(isFavorite = true), // always favorite in this screen
+                    burger = burger.copy(isFavorite = true),
                     onFavoriteClick = { favoriteViewModel.toggleFavorite(burger) }
                 )
             }

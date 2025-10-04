@@ -1,0 +1,15 @@
+package com.example.burgerapp
+
+import com.example.burgerapp.burger.Burger
+
+data class HomeUiState(
+
+    val burgers: List<Burger> = emptyList(),
+    val categories: List<String> =listOf("All", "Veg", "NonVeg", "Classic","Combos") ,
+    val searchText: String = "",
+    val selectedCategory: String = "All",
+    val filterOption: String? = null,
+    val favorites: List<Burger> = emptyList(),
+    val userEmail: String? = null,
+    val userPhotoUrl: String? = null
+)
