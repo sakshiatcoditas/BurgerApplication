@@ -2,6 +2,7 @@ package com.example.burgerapp.ui.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -30,7 +31,6 @@ data class Topping(
     val imageRes: Int
 )
 
-
 @Composable
 fun CustomScreen(
     initialSpiceLevel: Float,
@@ -47,6 +47,9 @@ fun CustomScreen(
         Topping("Pickles", R.drawable.pickles),
         Topping("Onion", R.drawable.onion)
     )
+
+    // Track selected toppings
+    val selectedToppings = remember { mutableStateListOf<String>() }
 
     Column(
         modifier = Modifier
@@ -178,16 +181,22 @@ fun CustomScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         // ----------------- TOPPINGS TEXT -----------------
-        Text(
-            text = "Toppings",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-        )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Toppings",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // ----------------- SCROLLABLE TOPPINGS CARDS -----------------
         // ----------------- SCROLLABLE TOPPINGS CARDS -----------------
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
@@ -195,20 +204,26 @@ fun CustomScreen(
         ) {
             items(toppingsList.size) { index ->
                 val topping = toppingsList[index]
+                val isSelected = topping.name in selectedToppings
 
                 Surface(
                     modifier = Modifier
                         .width(84.dp)
-                        .height(99.dp),
+                        .height(99.dp)
+                        .clickable {
+                            if (isSelected) selectedToppings.remove(topping.name)
+                            else selectedToppings.add(topping.name)
+                        },
                     shape = RoundedCornerShape(16.dp),
-                    color = Color.Black,
+                    color = if (isSelected) Color(0xFFD2042D) else Color.Black,
                     shadowElevation = 4.dp
                 ) {
                     Column(
                         modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // WHITE BOX with curved top and slightly curved bottom
+                        // WHITE BOX with topping image
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -218,13 +233,12 @@ fun CustomScreen(
                                     shape = RoundedCornerShape(
                                         topStart = 15.dp,
                                         topEnd = 15.dp,
-                                        bottomStart = 8.dp,  // slightly curved bottom
+                                        bottomStart = 8.dp,
                                         bottomEnd = 8.dp
                                     )
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
-                            // Vector image for topping
                             Image(
                                 painter = painterResource(topping.imageRes),
                                 contentDescription = topping.name,
@@ -232,26 +246,55 @@ fun CustomScreen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                        // Topping name with plus vectors beside it
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = topping.name,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 12.sp,
+                                color = Color.White
+                            )
 
-                        // Topping name below white box
-                        Text(
-                            text = topping.name,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 12.sp,
-                            color = Color.White
-                        )
+                            Spacer(modifier = Modifier.width(8.dp))
+
+                            Box(
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .clickable {
+                                        if (isSelected) selectedToppings.remove(topping.name)
+                                        else selectedToppings.add(topping.name)
+                                    }
+                            ) {
+                                Image(
+                                    painter = painterResource(R.drawable.redplus),
+                                    contentDescription = "Outer Vector",
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                                Image(
+                                    painter = painterResource(R.drawable.whiteplus),
+                                    contentDescription = "Inner Vector",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(3.dp)
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
         }
 
-
-    }
-
         Spacer(modifier = Modifier.height(16.dp))
-    }
 
+
+
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
