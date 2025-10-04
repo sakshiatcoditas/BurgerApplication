@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.burgerapp.R
+import com.example.burgerapp.ui.theme.CherryRed
 
 // Topping/Side data class
 data class Topping(
@@ -55,7 +56,7 @@ fun CustomScreen(
         Topping("Fries", R.drawable.fries),
         Topping("Coleslaw", R.drawable.caloslew),
         Topping("Salad", R.drawable.salad),
-        Topping("Onion Rings", R.drawable.onionrings)
+        Topping("OnionRing", R.drawable.onionrings)
     )
     val selectedSides = remember { mutableStateListOf<String>() }
 
@@ -79,7 +80,7 @@ fun CustomScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 100.dp),
+                    .padding(top = 60.dp),
                 verticalAlignment = Alignment.Top
             ) {
                 Image(
@@ -156,12 +157,20 @@ fun CustomScreen(
                         ) {
                             Button(
                                 onClick = { if (portion > 1) portion-- },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2042D)),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(
+                                        0xFFD2042D
+                                    )
+                                ),
                                 shape = RoundedCornerShape(8.dp),
                                 contentPadding = PaddingValues(0.dp),
                                 modifier = Modifier.size(40.dp)
                             ) {
-                                Icon(Icons.Default.Remove, contentDescription = "Decrease", tint = Color.White)
+                                Icon(
+                                    Icons.Default.Remove,
+                                    contentDescription = "Decrease",
+                                    tint = Color.White
+                                )
                             }
 
                             Text(
@@ -173,12 +182,20 @@ fun CustomScreen(
 
                             Button(
                                 onClick = { portion++ },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2042D)),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color(
+                                        0xFFD2042D
+                                    )
+                                ),
                                 shape = RoundedCornerShape(8.dp),
                                 contentPadding = PaddingValues(0.dp),
                                 modifier = Modifier.size(40.dp)
                             ) {
-                                Icon(Icons.Default.Add, contentDescription = "Increase", tint = Color.White)
+                                Icon(
+                                    Icons.Default.Add,
+                                    contentDescription = "Increase",
+                                    tint = Color.White
+                                )
                             }
                         }
                     }
@@ -403,6 +420,45 @@ fun CustomScreen(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
+
+// ----------------- TOTAL + ORDER BUTTON -----------------
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            // Total amount text
+            Text(
+                text = "Total: ₹200",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Black
+            )
+
+            // Order Now button
+            Button(
+                onClick = {
+                    // TODO: Navigate to Payment screen
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = CherryRed),
+                modifier = Modifier
+                    .height(60.dp)
+                    .width(230.dp),
+                shape = RoundedCornerShape(20.dp)
+            ) {
+                Text(
+                    text = "Order Now",
+                    color = Color.White,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
     }
 }
 
