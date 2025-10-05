@@ -58,7 +58,7 @@ fun CustomScreen(
         Topping("fries", R.drawable.fries),
         Topping("coleslaw", R.drawable.caloslew),
         Topping("salad", R.drawable.salad),
-        Topping("onionRing", R.drawable.onionrings)
+        Topping("onionRings", R.drawable.onionrings)
     )
 
     val selectedToppings = viewModel.selectedToppings
@@ -353,7 +353,7 @@ fun CustomScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Total: ₹${String.format("%.2f", totalPrice)}",
+                text = "Total: $${String.format("%.2f", totalPrice)}",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
