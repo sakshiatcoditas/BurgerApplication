@@ -87,6 +87,18 @@ fun HomeScreen(
                 )
 
                 NavigationBarItem(
+                    selected = selectedBottomItem == "Chat",
+                    onClick = {
+                        selectedBottomItem = "Chat"
+                        navController.navigate("Chat") { launchSingleTop = true }
+                    },
+                    icon = { Icon(painter = painterResource(R.drawable.chat_icon), contentDescription = stringResource(R.string.chat), modifier = Modifier.size(22.dp)) },
+                    label = {Text(stringResource(R.string.chat), fontSize = 12.sp) },
+                    colors = navBarItemColors
+                )
+
+
+                NavigationBarItem(
                     selected = selectedBottomItem == "Profile",
                     onClick = {
                         selectedBottomItem = "Profile"
@@ -97,16 +109,7 @@ fun HomeScreen(
                     colors = navBarItemColors
                 )
 
-                NavigationBarItem(
-                    selected = selectedBottomItem == "Chat",
-                    onClick = {
-                        selectedBottomItem = "Chat"
-                        navController.navigate("Chat") { launchSingleTop = true }
-                    },
-                    icon = { Icon(painter = painterResource(R.drawable.chat_icon), contentDescription = stringResource(R.string.chat), modifier = Modifier.size(22.dp)) },
-                    label = {Text(stringResource(R.string.chat), fontSize = 12.sp) },
-                    colors = navBarItemColors
-                )
+
             }
         }
     ) { innerPadding ->
