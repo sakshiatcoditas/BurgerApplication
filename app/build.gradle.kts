@@ -59,7 +59,7 @@ dependencies {
     implementation(libs.firebase.crashlytics.buildtools)
     implementation("com.google.accompanist:accompanist-systemuicontroller:0.32.0")
 
-
+    implementation("com.google.accompanist:accompanist-placeholder-material:0.36.0")
     // Google Sign-In
     implementation(libs.play.services.auth)
     implementation("androidx.compose.material:material-icons-extended:1.6.0")

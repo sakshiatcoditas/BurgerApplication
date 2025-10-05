@@ -132,8 +132,17 @@ fun HomeScreen(
                 TextField(
                     value = uiState.searchText,
                     onValueChange = { homeViewModel.onSearchTextChange(it) },
-                    placeholder = { Text(stringResource(id = R.string.search_food))  },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = stringResource(id = R.string.search_food))  },
+                    placeholder = {
+                        Text(
+                            text = if (filteredBurgers.isEmpty() && uiState.searchText.isNotEmpty()) {
+                                "Search not found"
+                            } else {
+                                stringResource(id = R.string.search_food)
+                            },
+                            color = if (filteredBurgers.isEmpty() && uiState.searchText.isNotEmpty()) Color.Red else Color.Gray
+                        )
+                    },
+                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = stringResource(id = R.string.search_food)) },
                     singleLine = true,
                     modifier = Modifier
                         .weight(1f)
@@ -148,7 +157,15 @@ fun HomeScreen(
                         disabledIndicatorColor = Color.Transparent
                     )
                 )
-
+                if (uiState.searchText.isNotEmpty() && filteredBurgers.isEmpty()) {
+                    Text(
+                        text = "Search not found",
+                        color = Color.Red,
+                        fontSize = 14.sp,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
                 Box(
                     modifier = Modifier
                         .size(52.dp)
@@ -239,6 +256,7 @@ fun BurgerCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
+            .height(300.dp) // fixed card height
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -255,7 +273,7 @@ fun BurgerCard(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f)
+                    .weight(1f) // take remaining vertical space
                     .clip(RoundedCornerShape(16.dp))
             )
 
@@ -264,6 +282,7 @@ fun BurgerCard(
             Text(burger.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Black)
             Text(burger.type, color = Color.Gray)
             Text("⭐ ${burger.rating}", fontSize = 14.sp, color = Color.Black)
+
             Spacer(modifier = Modifier.height(4.dp))
 
             Row(
@@ -286,6 +305,7 @@ fun BurgerCard(
             }
         }
     }
+
 }
 
 @Composable
@@ -397,7 +417,7 @@ fun CategoryChips(
             Surface(
                 modifier = Modifier.height(45.dp), // standard chip height
                 color = if (category == selectedCategory) Color(0xFFEF2A39) else Color(0xFFF3F4F6),
-                shape = RoundedCornerShape(18.dp), // pill shape
+                shape = RoundedCornerShape(18.dp), //
                 shadowElevation = 2.dp // subtle elevation for depth
             ) {
                 Box(

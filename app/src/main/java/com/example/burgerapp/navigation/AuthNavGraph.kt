@@ -13,6 +13,7 @@ import androidx.navigation.navArgument
 import com.example.burgerapp.AuthState
 import com.example.burgerapp.ui.ui.*
 import com.example.burgerapp.viewmodel.AuthViewModel
+import com.example.burgerapp.viewmodel.ChatViewModel
 import com.example.burgerapp.viewmodel.DetailViewModel
 import com.example.burgerapp.viewmodel.HomeViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -101,14 +102,20 @@ fun AuthNavGraph(
         // --- Home Screen ---
         composable(Screen.Home.route) {
             val homeViewModel: HomeViewModel = hiltViewModel()
-            val firebaseUser = FirebaseAuth.getInstance().currentUser
-
 
             HomeScreen(
                 navController = navController,
                 homeViewModel = homeViewModel
             )
         }
+
+        composable("Chat") { backStackEntry ->
+
+            val chatViewModel: ChatViewModel = hiltViewModel() // scoped to activity, not composable
+
+            ChatScreen(navController = navController, viewModel = chatViewModel)
+        }
+
 
         // --- Profile Screen ---
         composable("Profile") {
