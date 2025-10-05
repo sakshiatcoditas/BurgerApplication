@@ -1,5 +1,8 @@
 package com.example.burgerapp.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.burgerapp.burger.Burger
@@ -16,6 +19,10 @@ class DetailViewModel @Inject constructor(
 
     private val _burger = MutableStateFlow<Burger?>(null)
     val burger: StateFlow<Burger?> = _burger.asStateFlow()
+
+    // Persist portion & spiceLevel
+    var portion by mutableStateOf(1)
+    var spiceLevel by mutableStateOf(0.7f)
 
     fun loadBurger(burgerId: String) {
         viewModelScope.launch {

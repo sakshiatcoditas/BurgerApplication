@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.example.burgerapp.viewmodel.DetailViewModel
 import kotlin.math.roundToInt
 
@@ -128,11 +129,12 @@ fun DraggableSpicySlider(
 fun BurgerDetailScreen(
     burger: Burger, // keep as non-null
     onBackClick: () -> Unit,
-    onOrderClick: (Int) -> Unit
+    navController: NavHostController,
+    detailViewModel: DetailViewModel = hiltViewModel()
 ) {
-    // Local state
-    var portion by remember { mutableIntStateOf(1) }
-    var spiceLevel by remember { mutableFloatStateOf(0.7f) }
+    // Read state directly from ViewModel
+    val portion by remember { derivedStateOf { detailViewModel.portion } }
+    val spiceLevel by remember { derivedStateOf { detailViewModel.spiceLevel } }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -144,12 +146,14 @@ fun BurgerDetailScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Back button
             IconButton(onClick = onBackClick) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Burger Image
             Image(
                 painter = rememberAsyncImagePainter(burger.imageUrl),
                 contentDescription = burger.name,
@@ -162,6 +166,7 @@ fun BurgerDetailScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Burger info
             Text(
                 text = burger.name,
                 fontSize = 25.sp,
@@ -190,7 +195,6 @@ fun BurgerDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-
             ) {
                 // Draggable spicy slider
                 Column(
@@ -206,7 +210,7 @@ fun BurgerDetailScreen(
                     DraggableSpicySlider(
                         spiceLevel = spiceLevel,
                         onSpiceChange = { newLevel ->
-                            spiceLevel = newLevel
+                            detailViewModel.spiceLevel = newLevel
                         }
                     )
                 }
@@ -229,7 +233,7 @@ fun BurgerDetailScreen(
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Button(
-                            onClick = { if (portion > 1) portion-- },
+                            onClick = { if (detailViewModel.portion > 1) detailViewModel.portion-- },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2042D)),
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(0.dp),
@@ -239,14 +243,14 @@ fun BurgerDetailScreen(
                         }
 
                         Text(
-                            "$portion",
+                            "${detailViewModel.portion}",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             fontFamily = FontFamily.SansSerif
                         )
 
                         Button(
-                            onClick = { portion++ },
+                            onClick = { detailViewModel.portion++ },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2042D)),
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(0.dp),
@@ -257,9 +261,11 @@ fun BurgerDetailScreen(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
         }
 
-        // Fixed Bottom Buttons
+        // Bottom Buttons
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -268,6 +274,7 @@ fun BurgerDetailScreen(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Price Button (optional, just shows total price)
             Button(
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2042D)),
@@ -284,8 +291,13 @@ fun BurgerDetailScreen(
                 )
             }
 
+            // Order Now Button
             Button(
-                onClick = { onOrderClick(portion) },
+                onClick = {
+                    navController.navigate(
+                        "customScreen/${burger.burgerId}/$portion/$spiceLevel"
+                    )
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF000000)),
                 modifier = Modifier
                     .width(230.dp)
@@ -302,5 +314,4 @@ fun BurgerDetailScreen(
         }
     }
 }
-
 

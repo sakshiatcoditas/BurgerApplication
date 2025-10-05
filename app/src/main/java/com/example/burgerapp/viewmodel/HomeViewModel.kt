@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.burgerapp.HomeUiState
 import com.example.burgerapp.burger.Burger
 import com.example.burgerapp.repository.BurgerRepository
+import com.example.burgerapp.repository.FavoriteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -12,13 +13,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: BurgerRepository
+    private val burgerRepository: BurgerRepository,
+    private val favoriteRepository: FavoriteRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
-    // Filtered burgers exposed for UI
+    // Filtered burgers for UI
     val filteredBurgers: StateFlow<List<Burger>> = uiState.map { state ->
         var list = state.burgers
 
@@ -42,14 +44,24 @@ class HomeViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            repository.getBurgers().collectLatest { burgerList ->
+            burgerRepository.getBurgers().collectLatest { burgerList ->
                 _uiState.update { it.copy(burgers = burgerList) }
             }
         }
+
+        viewModelScope.launch {
+            favoriteRepository.getFavorites().collect { favList ->
+                _uiState.update { it.copy(favorites = favList) }
+            }
+        }
+
         loadCurrentUser()
     }
 
-    // --- UI Events ---
+    fun toggleFavorite(burger: Burger) {
+        favoriteRepository.toggleFavorite(burger) // Firebase updated
+    }
+
     fun onSearchTextChange(text: String) {
         _uiState.update { it.copy(searchText = text) }
     }
@@ -60,23 +72,6 @@ class HomeViewModel @Inject constructor(
 
     fun onFilterSelected(filter: String) {
         _uiState.update { it.copy(filterOption = filter) }
-    }
-
-    fun toggleFavorite(burger: Burger) {
-        // Optional: implement actual favorite logic here (Firebase or local)
-        val isCurrentlyFavorite = _uiState.value.favorites.any { it.burgerId == burger.burgerId }
-        val updatedFavorites = if (isCurrentlyFavorite) {
-            _uiState.value.favorites.filter { it.burgerId != burger.burgerId }
-        } else {
-            _uiState.value.favorites + burger
-        }
-
-        _uiState.update { it.copy(favorites = updatedFavorites) }
-    }
-
-    // Optional: set user info from repository
-    fun setUserInfo(email: String?, photoUrl: String?) {
-        _uiState.update { it.copy(userEmail = email, userPhotoUrl = photoUrl) }
     }
 
     private fun loadCurrentUser() {

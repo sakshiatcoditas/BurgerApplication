@@ -146,13 +146,43 @@ fun AuthNavGraph(
             burgerState?.let { burger ->
                 BurgerDetailScreen(
                     burger = burger,
-                    onBackClick = { navController.popBackStack() },
-                    onOrderClick = { portion ->
-                        // Handle order logic
-                    }
+                    navController = navController, // pass NavController
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+        }
+
+
+// --- Custom Screen ---
+        composable(
+            route = "customScreen/{burgerId}/{portion}/{spiceLevel}",
+            arguments = listOf(
+                navArgument("burgerId") { type = NavType.StringType },
+                navArgument("portion") { type = NavType.IntType },
+                navArgument("spiceLevel") { type = NavType.FloatType }
+            )
+        ) { backStackEntry ->
+            val detailViewModel: DetailViewModel = hiltViewModel()
+            val burgerId = backStackEntry.arguments?.getString("burgerId") ?: ""
+            val portion = backStackEntry.arguments?.getInt("portion") ?: 1
+            val spiceLevel = backStackEntry.arguments?.getFloat("spiceLevel") ?: 0.7f
+
+            LaunchedEffect(burgerId) {
+                detailViewModel.loadBurger(burgerId)
+            }
+
+            val burgerState by detailViewModel.burger.collectAsState()
+            burgerState?.let { burger ->
+                CustomScreen(
+                    burger = burger,
+                    initialPortion = portion,
+                    initialSpiceLevel = spiceLevel,
+                    onBackClick = { navController.popBackStack() }
                 )
             }
         }
+
 
 
     }

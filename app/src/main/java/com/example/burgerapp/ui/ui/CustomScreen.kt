@@ -20,45 +20,49 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.burgerapp.R
+import com.example.burgerapp.burger.Burger
 import com.example.burgerapp.ui.theme.CherryRed
+import com.example.burgerapp.viewmodel.CustomViewModel
 
-// Topping/Side data class
+// Topping/Side data class for UI rendering
 data class Topping(
-    val name: String,
+    val name: String, // Must match Firebase key
     val imageRes: Int
 )
 
 @Composable
 fun CustomScreen(
+    burger: Burger,
     initialSpiceLevel: Float,
     initialPortion: Int,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: CustomViewModel = hiltViewModel()
 ) {
-    var spiceLevel by remember { mutableFloatStateOf(initialSpiceLevel) }
-    var portion by remember { mutableIntStateOf(initialPortion) }
+    var spiceLevel by remember { mutableStateOf(initialSpiceLevel) }
+    var portion by remember { mutableStateOf(initialPortion) }
 
-    // ----------------- TOPPINGS LIST -----------------
+    val options by viewModel.options.collectAsState()
+
+    // Names **must exactly match Firebase keys**
     val toppingsList = listOf(
-        Topping("Bacon", R.drawable.bacon),
-        Topping("Tomato", R.drawable.tomato),
-        Topping("Pickles", R.drawable.pickles),
-        Topping("Onion", R.drawable.onion)
+        Topping("bacon", R.drawable.bacon),
+        Topping("tomato", R.drawable.tomato),
+        Topping("pickles", R.drawable.pickles),
+        Topping("onions", R.drawable.onion)
     )
-
-    val selectedToppings = remember { mutableStateListOf<String>() }
-
-    // ----------------- SIDES LIST -----------------
     val sidesList = listOf(
-        Topping("Fries", R.drawable.fries),
-        Topping("Coleslaw", R.drawable.caloslew),
-        Topping("Salad", R.drawable.salad),
-        Topping("OnionRing", R.drawable.onionrings)
+        Topping("fries", R.drawable.fries),
+        Topping("coleslaw", R.drawable.caloslew),
+        Topping("salad", R.drawable.salad),
+        Topping("onionRing", R.drawable.onionrings)
     )
-    val selectedSides = remember { mutableStateListOf<String>() }
+
+    val selectedToppings = viewModel.selectedToppings
+    val selectedSides = viewModel.selectedSides
 
     Column(
         modifier = Modifier
@@ -91,9 +95,7 @@ fun CustomScreen(
                         .height(297.dp)
                         .offset(x = (-20).dp)
                 )
-
                 Spacer(modifier = Modifier.width(12.dp))
-
                 Column(
                     modifier = Modifier
                         .width(162.dp)
@@ -116,7 +118,6 @@ fun CustomScreen(
                         fontSize = 14.sp,
                         lineHeight = 14.sp * 1.8f
                     )
-
                     Spacer(modifier = Modifier.height(35.dp))
 
                     // ----------------- SPICINESS SLIDER -----------------
@@ -158,9 +159,7 @@ fun CustomScreen(
                             Button(
                                 onClick = { if (portion > 1) portion-- },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(
-                                        0xFFD2042D
-                                    )
+                                    containerColor = Color(0xFFD2042D)
                                 ),
                                 shape = RoundedCornerShape(8.dp),
                                 contentPadding = PaddingValues(0.dp),
@@ -172,20 +171,16 @@ fun CustomScreen(
                                     tint = Color.White
                                 )
                             }
-
                             Text(
                                 "$portion",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Medium,
                                 fontFamily = FontFamily.SansSerif
                             )
-
                             Button(
                                 onClick = { portion++ },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(
-                                        0xFFD2042D
-                                    )
+                                    containerColor = Color(0xFFD2042D)
                                 ),
                                 shape = RoundedCornerShape(8.dp),
                                 contentPadding = PaddingValues(0.dp),
@@ -205,23 +200,14 @@ fun CustomScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ----------------- TOPPINGS SECTION -----------------
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Toppings",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
+        // ----------------- TOPPINGS -----------------
+        Text(
+            text = "Toppings",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 16.dp)
+        )
         Spacer(modifier = Modifier.height(8.dp))
-
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -229,15 +215,11 @@ fun CustomScreen(
             items(toppingsList.size) { index ->
                 val topping = toppingsList[index]
                 val isSelected = topping.name in selectedToppings
-
                 Surface(
                     modifier = Modifier
                         .width(84.dp)
                         .height(99.dp)
-                        .clickable {
-                            if (isSelected) selectedToppings.remove(topping.name)
-                            else selectedToppings.add(topping.name)
-                        },
+                        .clickable { viewModel.toggleTopping(topping.name) },
                     shape = RoundedCornerShape(16.dp),
                     color = if (isSelected) Color(0xFFD2042D) else Color.Black,
                     shadowElevation = 4.dp
@@ -247,7 +229,6 @@ fun CustomScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // WHITE BOX with topping image
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -269,42 +250,17 @@ fun CustomScreen(
                                 modifier = Modifier.size(40.dp)
                             )
                         }
-
-                        // Topping name + plus
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = topping.name,
+                                text = topping.name.capitalize(),
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 12.sp,
                                 color = Color.White
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Box(
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .clickable {
-                                        if (isSelected) selectedToppings.remove(topping.name)
-                                        else selectedToppings.add(topping.name)
-                                    }
-                            ) {
-                                Image(
-                                    painter = painterResource(R.drawable.redplus),
-                                    contentDescription = "Outer Vector",
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                                Image(
-                                    painter = painterResource(R.drawable.whiteplus),
-                                    contentDescription = "Inner Vector",
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(3.dp)
-                                )
-                            }
                         }
-
                         Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
@@ -313,23 +269,14 @@ fun CustomScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ----------------- SIDES SECTION -----------------
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Sides",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.weight(1f)
-            )
-        }
-
+        // ----------------- SIDES -----------------
+        Text(
+            text = "Sides",
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 16.dp)
+        )
         Spacer(modifier = Modifier.height(8.dp))
-
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -337,15 +284,11 @@ fun CustomScreen(
             items(sidesList.size) { index ->
                 val side = sidesList[index]
                 val isSelected = side.name in selectedSides
-
                 Surface(
                     modifier = Modifier
                         .width(84.dp)
                         .height(99.dp)
-                        .clickable {
-                            if (isSelected) selectedSides.remove(side.name)
-                            else selectedSides.add(side.name)
-                        },
+                        .clickable { viewModel.toggleSide(side.name) },
                     shape = RoundedCornerShape(16.dp),
                     color = if (isSelected) Color(0xFFD2042D) else Color.Black,
                     shadowElevation = 4.dp
@@ -355,7 +298,6 @@ fun CustomScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        // WHITE BOX with side image
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -377,42 +319,17 @@ fun CustomScreen(
                                 modifier = Modifier.size(40.dp)
                             )
                         }
-
-                        // Side name + plus
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = side.name,
+                                text = side.name.capitalize(),
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 12.sp,
                                 color = Color.White
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Box(
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .clickable {
-                                        if (isSelected) selectedSides.remove(side.name)
-                                        else selectedSides.add(side.name)
-                                    }
-                            ) {
-                                Image(
-                                    painter = painterResource(R.drawable.redplus),
-                                    contentDescription = "Outer Vector",
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                                Image(
-                                    painter = painterResource(R.drawable.whiteplus),
-                                    contentDescription = "Inner Vector",
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(3.dp)
-                                )
-                            }
                         }
-
                         Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
@@ -421,7 +338,13 @@ fun CustomScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-// ----------------- TOTAL + ORDER BUTTON -----------------
+        // ----------------- TOTAL + ORDER -----------------
+        val totalPrice by remember(selectedToppings, selectedSides, portion, options) {
+            derivedStateOf {
+                viewModel.getFinalPrice(burger.price, portion)
+            }
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -429,18 +352,16 @@ fun CustomScreen(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Total amount text
             Text(
-                text = "Total: ₹200",
+                text = "Total: ₹${String.format("%.2f", totalPrice)}",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
 
-            // Order Now button
             Button(
                 onClick = {
-                    // TODO: Navigate to Payment screen
+                    // Pass burger.id, spiceLevel, portion, selectedToppings, selectedSides
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = CherryRed),
                 modifier = Modifier
@@ -456,18 +377,5 @@ fun CustomScreen(
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CustomScreenPreview() {
-    CustomScreen(
-        initialSpiceLevel = 0.7f,
-        initialPortion = 1,
-        onBackClick = {}
-    )
 }
