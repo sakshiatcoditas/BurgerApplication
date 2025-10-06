@@ -1,5 +1,11 @@
 package com.example.burgerapp.viewmodel
 
+import android.app.Application
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.burgerapp.HomeUiState
@@ -14,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val burgerRepository: BurgerRepository,
-    private val favoriteRepository: FavoriteRepository
+    private val favoriteRepository: FavoriteRepository,
+    private val app: Application // added to monitor network
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -42,6 +49,10 @@ class HomeViewModel @Inject constructor(
         list.map { it.copy(isFavorite = state.favorites.any { fav -> fav.burgerId == it.burgerId }) }
     }.stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
+    // --- Network connectivity state ---
+    private val _isOnline = MutableStateFlow(true)
+    val isOnline: StateFlow<Boolean> = _isOnline
+
     init {
         viewModelScope.launch {
             burgerRepository.getBurgers().collectLatest { burgerList ->
@@ -56,12 +67,17 @@ class HomeViewModel @Inject constructor(
         }
 
         loadCurrentUser()
+        monitorNetwork() // <-- removed the `app` argument
     }
 
+
+
+    // --- Toggle favorite ---
     fun toggleFavorite(burger: Burger) {
         favoriteRepository.toggleFavorite(burger) // Firebase updated
     }
 
+    // --- Search, filter, category ---
     fun onSearchTextChange(text: String) {
         _uiState.update { it.copy(searchText = text) }
     }
@@ -74,6 +90,7 @@ class HomeViewModel @Inject constructor(
         _uiState.update { it.copy(filterOption = filter) }
     }
 
+    // --- Load current user ---
     private fun loadCurrentUser() {
         val user = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
         _uiState.update {
@@ -83,4 +100,29 @@ class HomeViewModel @Inject constructor(
             )
         }
     }
+
+    // --- Network monitoring ---
+    private fun monitorNetwork() {
+        val connectivityManager =
+            app.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            // Register network callback for modern Android versions
+            connectivityManager.registerDefaultNetworkCallback(object : ConnectivityManager.NetworkCallback() {
+                override fun onAvailable(network: Network) {
+                    _isOnline.value = true
+                }
+
+                override fun onLost(network: Network) {
+                    _isOnline.value = false
+                }
+            })
+        } else {
+            // For older versions, check connectivity using NetworkCapabilities
+            val network = connectivityManager.activeNetwork
+            val capabilities = connectivityManager.getNetworkCapabilities(network)
+            _isOnline.value = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
+        }
+    }
+
 }

@@ -48,6 +48,7 @@ fun HomeScreen(
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val filteredBurgers by homeViewModel.filteredBurgers.collectAsState()
+    val isOnline by homeViewModel.isOnline.collectAsState()
     var selectedBottomItem by remember { mutableStateOf("Home") }
     var showFilterDialog by remember { mutableStateOf(false) }
 
@@ -159,15 +160,7 @@ fun HomeScreen(
                         disabledIndicatorColor = Color.Transparent
                     )
                 )
-                if (uiState.searchText.isNotEmpty() && filteredBurgers.isEmpty()) {
-                    Text(
-                        text = "Search not found",
-                        color = Color.Red,
-                        fontSize = 14.sp,
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                }
+
                 Box(
                     modifier = Modifier
                         .size(52.dp)
@@ -220,35 +213,117 @@ fun HomeScreen(
                 )
             }
 
+
             // Main content
             if (selectedBottomItem == "Home") {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp)
-                ) {
-                    items(filteredBurgers) { burger ->
-                        BurgerCard(
-                            burger = burger,
-                            onFavoriteClick = { homeViewModel.toggleFavorite(burger) },
-                            onClick = {
-                                navController.navigate("burgerDetail/${burger.burgerId}")
-                            }
+                if (!isOnline) {
+                    // No internet placeholder
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "No Internet Connection",
+                            color = Color.Red,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
+                } else if (filteredBurgers.isEmpty() && uiState.searchText.isNotEmpty()) {
+                    // Search not found placeholder
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Search not found",
+                            color = Color.Red,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                } else if (filteredBurgers.isEmpty()) {
+                    // Shimmer/loader placeholder
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp)
+                    ) {
+                        items(6) { ShimmerBurgerCard() }
+                    }
+                } else {
+                    // Show actual burgers
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(2),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(top = 10.dp, bottom = 10.dp)
+                    ) {
+                        items(filteredBurgers) { burger ->
+                            BurgerCard(
+                                burger = burger,
+                                onFavoriteClick = { homeViewModel.toggleFavorite(burger) },
+                                onClick = { navController.navigate("burgerDetail/${burger.burgerId}") }
+                            )
+                        }
+
+
+        }
                 }
             } else if (selectedBottomItem == "Favorites") {
                 FavoriteScreen(favoriteViewModel = favoriteViewModel)
-                //chaneg here
-
             }
         }
     }
 }
+
+
+@Composable
+fun ShimmerBurgerCard() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(300.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.3f))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(Color.Gray.copy(alpha = 0.3f))
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .height(20.dp)
+                    .fillMaxWidth(0.7f)
+                    .background(Color.Gray.copy(alpha = 0.3f))
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Box(
+                modifier = Modifier
+                    .height(20.dp)
+                    .fillMaxWidth(0.5f)
+                    .background(Color.Gray.copy(alpha = 0.3f))
+            )
+        }
+    }
+}
+
 
 
 @Composable
