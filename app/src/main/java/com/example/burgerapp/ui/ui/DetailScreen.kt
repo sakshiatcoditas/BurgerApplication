@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
@@ -100,18 +101,20 @@ fun DraggableSpicySlider(
 
 
         // Thumb
+        // Thumb
         Box(
             modifier = Modifier
                 .offset {
-                    val maxOffsetPx = with(density) { (sliderWidth - 15.dp).toPx() } // width
+                    val maxOffsetPx = with(density) { (sliderWidth - 15.dp).toPx() }
                     val xPx = (animatedOffset * maxOffsetPx).coerceIn(0f, maxOffsetPx)
                     IntOffset(xPx.roundToInt(), 0)
                 }
-                .width(15.dp)  // narrower width
-                .height(25.dp) // keep same height
-                .background(Color(0xFFD2042D), RoundedCornerShape(4.dp))
+                .width(15.dp)
+                .height(25.dp)
+                .clip(RoundedCornerShape(4.dp))  // <-- ensures color stays inside the rounded shape
+                .background(Color(0xFFD2042D))
                 .align(Alignment.CenterStart)
-                .shadow(2.dp, RoundedCornerShape(4.dp))
+
         )
 
     }
@@ -121,9 +124,11 @@ fun DraggableSpicySlider(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(" Spicy", fontSize = 12.sp, color = Color.Red)
-        Text(" Medium", fontSize = 12.sp, color = Color(0xFFFFC107))
         Text(" Mild", fontSize = 12.sp, color = Color(0xFF4CAF50))
+        Text(" Medium", fontSize = 12.sp, color = Color(0xFFFFC107))
+        Text(" Spicy", fontSize = 12.sp, color = Color.Red)
+
+
     }
 }
 
@@ -146,7 +151,7 @@ fun BurgerDetailScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 8.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 

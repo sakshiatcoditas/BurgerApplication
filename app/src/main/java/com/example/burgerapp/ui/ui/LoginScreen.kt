@@ -161,7 +161,4 @@ fun LoginScreen(
     }
 }
 
-// create common widgets e.g -> Textfield, buttons.
-// remove hard coded string and add those to string resource.
-// improve favourite burger list logic.
-//
+

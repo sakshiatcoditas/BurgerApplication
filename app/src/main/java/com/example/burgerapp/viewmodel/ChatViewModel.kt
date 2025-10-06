@@ -4,7 +4,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
-import com.example.burgerapp.ui.ui.ChatMessage
+
+import com.example.burgerapp.data.ChatMessage
+
 
 @HiltViewModel
 class ChatViewModel @Inject constructor() : ViewModel() {

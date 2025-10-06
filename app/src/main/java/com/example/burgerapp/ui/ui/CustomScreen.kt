@@ -3,6 +3,7 @@ package com.example.burgerapp.ui.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
@@ -16,6 +17,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -71,7 +74,8 @@ fun CustomScreen(
         Box(modifier = Modifier.fillMaxWidth()) {
             IconButton(
                 onClick = onBackClick,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+                modifier = Modifier.padding(start = 8.dp, top = 16.dp)
+
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -206,60 +210,60 @@ fun CustomScreen(
             modifier = Modifier.padding(start = 16.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
+
         LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(toppingsList.size) { index ->
                 val topping = toppingsList[index]
                 val isSelected = topping.name in selectedToppings
-                Surface(
-                    modifier = Modifier
-                        .width(84.dp)
-                        .height(99.dp)
-                        .clickable { viewModel.toggleTopping(topping.name) },
-                    shape = RoundedCornerShape(16.dp),
-                    color = if (isSelected) Color(0xFFD2042D) else Color.Black,
-                    shadowElevation = 4.dp
+
+                Box(
+                    modifier = Modifier.shadow(8.dp, RoundedCornerShape(16.dp)) // Extra shadow outside
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceBetween
+                    Surface(
+                        modifier = Modifier
+                            .width(84.dp)
+                            .height(99.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable(
+                                onClick = { viewModel.toggleTopping(topping.name) },
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ),
+                        shape = RoundedCornerShape(16.dp),
+                        color = if (isSelected) Color(0xFFD2042D) else Color.Black,
+                        shadowElevation = 8.dp // increased
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(61.dp)
-                                .background(
-                                    color = Color.White,
-                                    shape = RoundedCornerShape(
-                                        topStart = 15.dp,
-                                        topEnd = 15.dp,
-                                        bottomStart = 8.dp,
-                                        bottomEnd = 8.dp
-                                    )
-                                ),
-                            contentAlignment = Alignment.Center
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Image(
-                                painter = painterResource(topping.imageRes),
-                                contentDescription = topping.name,
-                                modifier = Modifier.size(40.dp)
-                            )
-                        }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(52.dp)
+                                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                                    .background(Color.White),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(topping.imageRes),
+                                    contentDescription = topping.name,
+                                    modifier = Modifier.size(40.dp)
+                                )
+                            }
                             Text(
                                 text = topping.name,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 12.sp,
-                                color = Color.White
+                                color = Color.White,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
+                            Spacer(modifier = Modifier.height(4.dp))
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
@@ -267,7 +271,7 @@ fun CustomScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ----------------- SIDES -----------------
+// ----------------- SIDES -----------------
         Text(
             text = "Sides",
             fontSize = 16.sp,
@@ -275,64 +279,65 @@ fun CustomScreen(
             modifier = Modifier.padding(start = 16.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
+
         LazyRow(
-            contentPadding = PaddingValues(horizontal = 16.dp),
+            contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(sidesList.size) { index ->
                 val side = sidesList[index]
                 val isSelected = side.name in selectedSides
-                Surface(
-                    modifier = Modifier
-                        .width(84.dp)
-                        .height(99.dp)
-                        .clickable { viewModel.toggleSide(side.name) },
-                    shape = RoundedCornerShape(16.dp),
-                    color = if (isSelected) Color(0xFFD2042D) else Color.Black,
-                    shadowElevation = 4.dp
+
+                Box(
+                    modifier = Modifier.shadow(8.dp, RoundedCornerShape(16.dp))
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.SpaceBetween
+                    Surface(
+                        modifier = Modifier
+                            .width(84.dp)
+                            .height(99.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .clickable(
+                                onClick = { viewModel.toggleSide(side.name) },
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            ),
+                        shape = RoundedCornerShape(16.dp),
+                        color = if (isSelected) Color(0xFFD2042D) else Color.Black,
+                        shadowElevation = 8.dp // increased
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(61.dp)
-                                .background(
-                                    color = Color.White,
-                                    shape = RoundedCornerShape(
-                                        topStart = 15.dp,
-                                        topEnd = 15.dp,
-                                        bottomStart = 8.dp,
-                                        bottomEnd = 8.dp
-                                    )
-                                ),
-                            contentAlignment = Alignment.Center
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Image(
-                                painter = painterResource(side.imageRes),
-                                contentDescription = side.name,
-                                modifier = Modifier.size(40.dp)
-                            )
-                        }
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(52.dp)
+                                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                                    .background(Color.White),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Image(
+                                    painter = painterResource(side.imageRes),
+                                    contentDescription = side.name,
+                                    modifier = Modifier.size(40.dp)
+                                )
+                            }
                             Text(
                                 text = side.name,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 12.sp,
-                                color = Color.White
+                                color = Color.White,
+                                modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
+                            Spacer(modifier = Modifier.height(4.dp))
                         }
-                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
         }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 

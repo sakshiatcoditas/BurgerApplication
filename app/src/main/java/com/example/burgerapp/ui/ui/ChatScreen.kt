@@ -1,6 +1,7 @@
 package com.example.burgerapp.ui.ui
 
 import android.graphics.drawable.Icon
+import kotlin.collections.isNotEmpty
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,8 +32,6 @@ import androidx.navigation.NavHostController
 import com.example.burgerapp.ui.theme.*
 import com.example.burgerapp.viewmodel.ChatViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
-data class ChatMessage(val text: String, val isUser: Boolean)
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)
