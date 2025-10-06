@@ -3,7 +3,7 @@ package com.example.burgerapp.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.burgerapp.HomeUiState
-import com.example.burgerapp.burger.Burger
+import com.example.burgerapp.data.Burger
 import com.example.burgerapp.repository.BurgerRepository
 import com.example.burgerapp.repository.FavoriteRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

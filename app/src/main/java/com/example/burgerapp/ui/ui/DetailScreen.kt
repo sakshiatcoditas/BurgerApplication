@@ -24,17 +24,21 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
-import com.example.burgerapp.burger.Burger
+import com.example.burgerapp.data.Burger
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import com.example.burgerapp.viewmodel.DetailViewModel
 import kotlin.math.roundToInt
 
@@ -154,15 +158,46 @@ fun BurgerDetailScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Burger Image
-            Image(
-                painter = rememberAsyncImagePainter(burger.imageUrl),
+            SubcomposeAsyncImage(
+                model = burger.imageUrl,
                 contentDescription = burger.name,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .width(350.dp)
                     .height(280.dp)
-                    .align(Alignment.CenterHorizontally),
-                contentScale = ContentScale.Crop
-            )
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                when (painter.state) {
+                    is AsyncImagePainter.State.Loading -> {
+                        // Show loader while image loads
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.LightGray.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = Color(0xFFD2042D),
+                                strokeWidth = 3.dp,
+                                modifier = Modifier.size(36.dp)
+                            )
+                        }
+                    }
+                    is AsyncImagePainter.State.Error -> {
+                        // Show fallback if image fails
+                        Icon(
+                            imageVector = Icons.Default.BrokenImage,
+                            contentDescription = "Image error",
+                            tint = Color.Gray,
+                            modifier = Modifier.size(64.dp)
+                        )
+                    }
+                    else -> {
+                        // Show the actual image when loaded
+                        SubcomposeAsyncImageContent()
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -274,7 +309,7 @@ fun BurgerDetailScreen(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Price Button (optional, just shows total price)
+            // Price Button
             Button(
                 onClick = {},
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2042D)),
@@ -285,6 +320,8 @@ fun BurgerDetailScreen(
             ) {
                 Text(
                     text = "$${String.format("%.2f", burger.price * portion)}",
+                    //.format(transform value to a specific pattern)
+                    //.2f means 2 decimal places to be the value converted
                     color = Color.White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold

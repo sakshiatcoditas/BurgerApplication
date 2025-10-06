@@ -1,4 +1,4 @@
-package com.example.burgerapp.burger
+package com.example.burgerapp.data
 
 data class Burger(
     val burgerId: String = "",

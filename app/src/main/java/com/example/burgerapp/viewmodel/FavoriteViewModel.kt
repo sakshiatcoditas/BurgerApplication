@@ -2,7 +2,7 @@ package com.example.burgerapp.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.burgerapp.burger.Burger
+import com.example.burgerapp.data.Burger
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import dagger.hilt.android.lifecycle.HiltViewModel

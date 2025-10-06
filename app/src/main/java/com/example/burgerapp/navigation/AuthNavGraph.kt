@@ -133,7 +133,6 @@ fun AuthNavGraph(
             )
         }
 
-        // In your AuthNavGraph or a separate AppNavGraph
         composable(
             route = "burgerDetail/{burgerId}",
             arguments = listOf(navArgument("burgerId") { type = NavType.StringType })

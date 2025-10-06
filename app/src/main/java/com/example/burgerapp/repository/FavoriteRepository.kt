@@ -1,6 +1,6 @@
 package com.example.burgerapp.repository
 
-import com.example.burgerapp.burger.Burger
+import com.example.burgerapp.data.Burger
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import kotlinx.coroutines.channels.awaitClose

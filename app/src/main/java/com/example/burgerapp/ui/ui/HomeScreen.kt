@@ -1,5 +1,7 @@
 package com.example.burgerapp.ui.ui
 
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -28,7 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
 import com.example.burgerapp.R
-import com.example.burgerapp.burger.Burger
+import com.example.burgerapp.data.Burger
 import com.example.burgerapp.ui.theme.LobsterFont
 import com.example.burgerapp.ui.theme.Typography
 import com.example.burgerapp.viewmodel.HomeViewModel
@@ -247,11 +249,13 @@ fun HomeScreen(
         }
     }
 }
+
+
 @Composable
 fun BurgerCard(
     burger: Burger,
     onFavoriteClick: () -> Unit,
-    onClick: () -> Unit= {}
+    onClick: () -> Unit = {}
 ) {
     Card(
         modifier = Modifier
@@ -267,15 +271,46 @@ fun BurgerCard(
                 .fillMaxSize()
                 .padding(8.dp)
         ) {
-            AsyncImage(
+            // ✅ Show loader while image is loading
+            SubcomposeAsyncImage(
                 model = burger.imageUrl.ifEmpty { "https://via.placeholder.com/150" },
                 contentDescription = burger.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f) // take remaining vertical space
+                    .weight(1f)
                     .clip(RoundedCornerShape(16.dp))
-            )
+            ) {
+                when (painter.state) {
+                    is coil.compose.AsyncImagePainter.State.Loading -> {
+                        // Loader while image is loading
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.LightGray.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = Color(0xFFEF2A39),
+                                strokeWidth = 3.dp,
+                                modifier = Modifier.size(32.dp)
+                            )
+                        }
+                    }
+                    is coil.compose.AsyncImagePainter.State.Error -> {
+                        // Fallback if image fails
+                        Icon(
+                            imageVector = Icons.Default.BrokenImage,
+                            contentDescription = "Error",
+                            tint = Color.Gray,
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
+                    else -> {
+                        SubcomposeAsyncImageContent()
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -292,9 +327,7 @@ fun BurgerCard(
             ) {
                 Text("$${burger.price}", fontWeight = FontWeight.Bold, color = Color.Black)
 
-                IconButton(
-                    onClick = onFavoriteClick
-                ) {
+                IconButton(onClick = onFavoriteClick) {
                     Icon(
                         imageVector = if (burger.isFavorite) Icons.Filled.Favorite else Icons.Outlined.Favorite,
                         contentDescription = "Favorite",
@@ -305,8 +338,8 @@ fun BurgerCard(
             }
         }
     }
-
 }
+
 
 @Composable
 fun HomeTopBar(

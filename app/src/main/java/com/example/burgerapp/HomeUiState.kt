@@ -1,6 +1,6 @@
 package com.example.burgerapp
 
-import com.example.burgerapp.burger.Burger
+import com.example.burgerapp.data.Burger
 
 data class HomeUiState(
 

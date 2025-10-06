@@ -24,15 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.burgerapp.R
-import com.example.burgerapp.burger.Burger
+import com.example.burgerapp.data.Burger
+import com.example.burgerapp.data.Topping
 import com.example.burgerapp.ui.theme.CherryRed
 import com.example.burgerapp.viewmodel.CustomViewModel
 
-// Topping/Side data class for UI rendering
-data class Topping(
-    val name: String, // Must match Firebase key
-    val imageRes: Int
-)
+
+
 
 @Composable
 fun CustomScreen(
@@ -255,7 +253,7 @@ fun CustomScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = topping.name.capitalize(),
+                                text = topping.name,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 12.sp,
                                 color = Color.White
@@ -324,7 +322,7 @@ fun CustomScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = side.name.capitalize(),
+                                text = side.name,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 12.sp,
                                 color = Color.White
