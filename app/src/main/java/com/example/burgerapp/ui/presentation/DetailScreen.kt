@@ -1,5 +1,7 @@
-package com.example.burgerapp.ui.ui
+package com.example.burgerapp.ui.presentation
 
+import androidx.compose.ui.res.stringResource
+import com.example.burgerapp.R
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
@@ -30,7 +32,11 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -38,8 +44,15 @@ import androidx.navigation.NavHostController
 import coil.compose.AsyncImagePainter
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
+import com.example.burgerapp.ui.theme.CherryRed
+import com.example.burgerapp.ui.theme.Gray
+import com.example.burgerapp.ui.theme.LightGray
+import com.example.burgerapp.ui.theme.green
+import com.example.burgerapp.ui.theme.yellow
 import com.example.burgerapp.viewmodel.DetailViewModel
 import kotlin.math.roundToInt
+
+
 
 
 @Composable
@@ -82,7 +95,7 @@ fun DraggableSpicySlider(
 
             // Track
             drawRoundRect(
-                color = Color.LightGray,
+                color = LightGray,
                 cornerRadius = CornerRadius(trackHeightPx / 2, trackHeightPx / 2),
                 topLeft = androidx.compose.ui.geometry.Offset(0f, trackY),
                 size = androidx.compose.ui.geometry.Size(width = size.width, height = trackHeightPx)
@@ -90,7 +103,7 @@ fun DraggableSpicySlider(
 
             // Fill
             drawRoundRect(
-                color = Color(0xFFD2042D),
+                color = CherryRed,
                 cornerRadius = CornerRadius(trackHeightPx / 2, trackHeightPx / 2),
                 topLeft = androidx.compose.ui.geometry.Offset(0f, trackY),
                 size = androidx.compose.ui.geometry.Size(width = size.width * animatedOffset, height = trackHeightPx)
@@ -109,7 +122,7 @@ fun DraggableSpicySlider(
                 .width(15.dp)
                 .height(25.dp)
                 .clip(RoundedCornerShape(4.dp))  // <-- ensures color stays inside the rounded shape
-                .background(Color(0xFFD2042D))
+                .background(CherryRed)
                 .align(Alignment.CenterStart)
 
         )
@@ -121,9 +134,9 @@ fun DraggableSpicySlider(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(" Mild", fontSize = 12.sp, color = Color(0xFF4CAF50))
-        Text(" Medium", fontSize = 12.sp, color = Color(0xFFFFC107))
-        Text(" Spicy", fontSize = 12.sp, color = Color.Red)
+        Text(stringResource(R.string.mild), fontSize = 12.sp, color = green)
+        Text(stringResource(R.string.medium), fontSize = 12.sp, color = yellow)
+        Text(stringResource(R.string.spicy), fontSize = 12.sp, color = Red)
 
 
     }
@@ -154,7 +167,7 @@ fun BurgerDetailScreen(
 
             // Back button
             IconButton(onClick = onBackClick) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -175,11 +188,11 @@ fun BurgerDetailScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(Color.LightGray.copy(alpha = 0.3f)),
+                                .background(LightGray.copy(alpha = 0.3f)),
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator(
-                                color = Color(0xFFD2042D),
+                                color = CherryRed,
                                 strokeWidth = 3.dp,
                                 modifier = Modifier.size(36.dp)
                             )
@@ -190,7 +203,7 @@ fun BurgerDetailScreen(
                         Icon(
                             imageVector = Icons.Default.BrokenImage,
                             contentDescription = "Image error",
-                            tint = Color.Gray,
+                            tint =Gray,
                             modifier = Modifier.size(64.dp)
                         )
                     }
@@ -208,20 +221,20 @@ fun BurgerDetailScreen(
                 text = burger.name,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.Black,
+                color = Black,
                 modifier = Modifier.fillMaxWidth()
             )
-            Text(
+            Text(// TODO: use icon for star and use common widget for this.
                 text = "⭐ ${burger.rating}",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Black,
+                color =Black,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
             Text(
-                text = burger.description.ifBlank { "No description available." },
+                text = burger.description.ifBlank {  stringResource(R.string.no_description) },
                 fontSize = 16.sp,
                 lineHeight = 28.sp,
-                color = Color.Gray,
+                color = Gray,
                 modifier = Modifier.padding(top = 6.dp, bottom = 12.dp)
             )
 
@@ -239,9 +252,9 @@ fun BurgerDetailScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Spiciness",
+                        text = stringResource(R.string.spiciness_level),
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black
+                        color = Black
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     DraggableSpicySlider(
@@ -258,11 +271,11 @@ fun BurgerDetailScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Portion",
+                        stringResource(R.string.portion),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         fontFamily = FontFamily.SansSerif,
-                        color = Color.Black
+                        color = Black
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(
@@ -271,12 +284,12 @@ fun BurgerDetailScreen(
                     ) {
                         Button(
                             onClick = { if (detailViewModel.portion > 1) detailViewModel.portion-- },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2042D)),
+                            colors = ButtonDefaults.buttonColors(containerColor = CherryRed),
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(0.dp),
                             modifier = Modifier.size(40.dp)
                         ) {
-                            Icon(Icons.Default.Remove, contentDescription = "Decrease", tint = Color.White)
+                            Icon(Icons.Default.Remove, contentDescription = stringResource(R.string.decrease), tint =White)
                         }
 
                         Text(
@@ -288,12 +301,12 @@ fun BurgerDetailScreen(
 
                         Button(
                             onClick = { detailViewModel.portion++ },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2042D)),
+                            colors = ButtonDefaults.buttonColors(containerColor = CherryRed),
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(0.dp),
                             modifier = Modifier.size(40.dp)
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = "Increase", tint = Color.White)
+                            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.increase), tint = White)
                         }
                     }
                 }
@@ -314,7 +327,7 @@ fun BurgerDetailScreen(
             // Price Button
             Button(
                 onClick = {},
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2042D)),
+                colors = ButtonDefaults.buttonColors(containerColor = CherryRed),
                 modifier = Modifier
                     .width(130.dp)
                     .height(60.dp),
@@ -324,7 +337,7 @@ fun BurgerDetailScreen(
                     text = "$${String.format("%.2f", burger.price * portion)}",
                     //.format(transform value to a specific pattern)
                     //.2f means 2 decimal places to be the value converted
-                    color = Color.White,
+                    color = White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -337,15 +350,15 @@ fun BurgerDetailScreen(
                         "customScreen/${burger.burgerId}/$portion/$spiceLevel"
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF000000)),
+                colors = ButtonDefaults.buttonColors(containerColor =Black),
                 modifier = Modifier
                     .width(230.dp)
                     .height(60.dp),
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Text(
-                    text = "Order Now",
-                    color = Color.White,
+                    stringResource(R.string.order_now),
+                    color = White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )

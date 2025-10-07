@@ -11,13 +11,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.burgerapp.AuthState
-import com.example.burgerapp.ui.ui.*
+import com.example.burgerapp.ui.presentation.*
+import com.example.burgerapp.ui.presentation.chat_screen.ChatScreen
+import com.example.burgerapp.ui.presentation.home_screen.HomeScreen
 import com.example.burgerapp.viewmodel.AuthViewModel
 import com.example.burgerapp.viewmodel.ChatViewModel
 import com.example.burgerapp.viewmodel.DetailViewModel
 import com.example.burgerapp.viewmodel.HomeViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
-import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun AuthNavGraph(

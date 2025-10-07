@@ -1,5 +1,6 @@
-package com.example.burgerapp.ui.ui
-
+package com.example.burgerapp.ui.presentation
+import androidx.compose.ui.res.stringResource
+import com.example.burgerapp.R
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -8,8 +9,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.burgerapp.ui.presentation.home_screen.BurgerCard
 import com.example.burgerapp.viewmodel.FavoriteViewModel
 
 @Composable
@@ -23,7 +27,7 @@ fun FavoriteScreen(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text("No favorites yet", style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.no_favorites_yet), style = MaterialTheme.typography.bodyLarge)
         }
     } else {
         LazyVerticalGrid(

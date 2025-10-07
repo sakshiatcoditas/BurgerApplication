@@ -1,5 +1,6 @@
-package com.example.burgerapp.ui.ui
-
+package com.example.burgerapp.ui.presentation
+import androidx.compose.ui.res.stringResource
+import com.example.burgerapp.R
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,6 +9,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
+
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,14 +47,14 @@ fun ForgotPasswordScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("Forgot Password", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)
+            Text(stringResource(R.string.forgot_password), fontSize = 28.sp, fontWeight = FontWeight.Bold, color = White)
 
             Spacer(Modifier.height(16.dp))
 
             Text(
-                "Enter your registered email address. We'll send you a reset link.",
+                stringResource(R.string.forgot_password_description),
                 fontSize = 16.sp,
-                color = Color.White
+                color = White
             )
 
             Spacer(Modifier.height(32.dp))
@@ -59,17 +62,17 @@ fun ForgotPasswordScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("Email", color = Color.White) },
+                label = { Text(stringResource(R.string.email), color = White) }, // TODO: use string resources
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.White,
-                    unfocusedBorderColor = Color.White,
-                    focusedLabelColor = Color.White,
-                    unfocusedLabelColor = Color.White,
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    cursorColor = Color.White
+                    focusedBorderColor = White,
+                    unfocusedBorderColor = White,
+                    focusedLabelColor = White,
+                    unfocusedLabelColor = White,
+                    focusedTextColor = White,
+                    unfocusedTextColor = White,
+                    cursorColor = White
                 )
             )
 
@@ -82,17 +85,17 @@ fun ForgotPasswordScreen(
                     .height(50.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White,
+                    containerColor = White,
                     contentColor = CherryRed
                 )
             ) {
-                Text("Send Reset Link", fontSize = 18.sp, color = CherryRed)
+                Text(stringResource(R.string.send_reset_link), fontSize = 18.sp, color = CherryRed)
             }
 
             Spacer(Modifier.height(16.dp))
 
             TextButton(onClick = onBackToLoginClick) {
-                Text("Back to Login", color = Color.White)
+                Text(stringResource(R.string.back_to_login), color =White)
             }
 
             // Loading indicator
@@ -101,7 +104,7 @@ fun ForgotPasswordScreen(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 24.dp),
-                    color = Color.White
+                    color = White
                 )
             }
         }

@@ -1,6 +1,9 @@
-package com.example.burgerapp.ui.ui
+package com.example.burgerapp.ui.presentation
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.res.stringResource
+import com.example.burgerapp.R
+
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,7 +28,7 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Profile",
+            stringResource(R.string.profile),
             style = MaterialTheme.typography.headlineMedium
         )
 

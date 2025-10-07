@@ -11,6 +11,7 @@ class GoogleSignInManager(
     private val authViewModel: AuthViewModel
 ) {
 
+    // TODO:
     private val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
         .requestIdToken(context.getString(com.example.burgerapp.R.string.default_web_client_id))
         .requestEmail()

@@ -1,6 +1,9 @@
-package com.example.burgerapp.ui.ui
+package com.example.burgerapp.ui.presentation
 
 import androidx.compose.foundation.Image
+import androidx.compose.ui.res.stringResource
+import com.example.burgerapp.ui.theme.CherryRed
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -20,6 +23,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -29,10 +34,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.burgerapp.R
 import com.example.burgerapp.data.Burger
 import com.example.burgerapp.data.Topping
-import com.example.burgerapp.ui.theme.CherryRed
+
 import com.example.burgerapp.viewmodel.CustomViewModel
-
-
 
 
 @Composable
@@ -48,6 +51,7 @@ fun CustomScreen(
 
     val options by viewModel.options.collectAsState()
 
+    // TODO: take this from firebase
     // Names **must exactly match Firebase keys**
     val toppingsList = listOf(
         Topping("bacon", R.drawable.bacon),
@@ -79,7 +83,7 @@ fun CustomScreen(
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
+                    contentDescription =  stringResource(R.string.back)
                 )
             }
 
@@ -106,7 +110,7 @@ fun CustomScreen(
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text(
-                        text = "Customize Your Burger to Your Tastes",
+                        text = stringResource(R.string.customize_burger),
                         fontFamily = FontFamily.Default,
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 16.sp,
@@ -114,7 +118,7 @@ fun CustomScreen(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "Ultimate Experience",
+                        text = stringResource(R.string.ultimate_experience),
                         fontFamily = FontFamily.Default,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp,
@@ -128,9 +132,9 @@ fun CustomScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "Spiciness",
+                            text = stringResource(R.string.spiciness),
                             fontWeight = FontWeight.Medium,
-                            color = Color.Black
+                            color = Black
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         DraggableSpicySlider(
@@ -147,11 +151,11 @@ fun CustomScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
-                            "Portion",
+                            text = stringResource(R.string.portion),
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Medium,
                             fontFamily = FontFamily.SansSerif,
-                            color = Color.Black
+                            color = Black
                         )
                         Spacer(modifier = Modifier.height(6.dp))
                         Row(
@@ -161,7 +165,7 @@ fun CustomScreen(
                             Button(
                                 onClick = { if (portion > 1) portion-- },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFD2042D)
+                                    containerColor = CherryRed
                                 ),
                                 shape = RoundedCornerShape(8.dp),
                                 contentPadding = PaddingValues(0.dp),
@@ -169,8 +173,8 @@ fun CustomScreen(
                             ) {
                                 Icon(
                                     Icons.Default.Remove,
-                                    contentDescription = "Decrease",
-                                    tint = Color.White
+                                    contentDescription = stringResource(R.string.decrease),
+                                    tint = White
                                 )
                             }
                             Text(
@@ -182,7 +186,7 @@ fun CustomScreen(
                             Button(
                                 onClick = { portion++ },
                                 colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color(0xFFD2042D)
+                                    containerColor = CherryRed
                                 ),
                                 shape = RoundedCornerShape(8.dp),
                                 contentPadding = PaddingValues(0.dp),
@@ -190,8 +194,9 @@ fun CustomScreen(
                             ) {
                                 Icon(
                                     Icons.Default.Add,
-                                    contentDescription = "Increase",
-                                    tint = Color.White
+                                    contentDescription = stringResource(R.string.increase),
+
+                                    tint = White
                                 )
                             }
                         }
@@ -204,13 +209,14 @@ fun CustomScreen(
 
         // ----------------- TOPPINGS -----------------
         Text(
-            text = "Toppings",
+            text = stringResource(R.string.toppings),
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 16.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
 
+        // TODO: separate widget
         LazyRow(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -219,51 +225,43 @@ fun CustomScreen(
                 val topping = toppingsList[index]
                 val isSelected = topping.name in selectedToppings
 
-                Box(
-                    modifier = Modifier.shadow(8.dp, RoundedCornerShape(16.dp)) // Extra shadow outside
+
+                Surface(
+                    modifier = Modifier
+                        .width(84.dp)
+                        .height(99.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    color = if (isSelected) CherryRed else Black,
+                    onClick = { viewModel.toggleTopping(topping.name) },
+                    shadowElevation = 8.dp // increased
                 ) {
-                    Surface(
-                        modifier = Modifier
-                            .width(84.dp)
-                            .height(99.dp)
-                            .clip(RoundedCornerShape(16.dp))
-                            .clickable(
-                                onClick = { viewModel.toggleTopping(topping.name) },
-                                indication = null,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ),
-                        shape = RoundedCornerShape(16.dp),
-                        color = if (isSelected) Color(0xFFD2042D) else Color.Black,
-                        shadowElevation = 8.dp // increased
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.SpaceBetween
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp)
+                                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+                                .background(White),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(52.dp)
-                                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                                    .background(Color.White),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Image(
-                                    painter = painterResource(topping.imageRes),
-                                    contentDescription = topping.name,
-                                    modifier = Modifier.size(40.dp)
-                                )
-                            }
-                            Text(
-                                text = topping.name,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 12.sp,
-                                color = Color.White,
-                                modifier = Modifier.align(Alignment.CenterHorizontally)
+                            Image(
+                                painter = painterResource(topping.imageRes),
+                                contentDescription = topping.name,
+                                modifier = Modifier.size(40.dp)
                             )
-                            Spacer(modifier = Modifier.height(4.dp))
                         }
+                        Text(
+                            text = topping.name,
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 12.sp,
+                            color =White,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
                     }
                 }
             }
@@ -273,7 +271,8 @@ fun CustomScreen(
 
 // ----------------- SIDES -----------------
         Text(
-            text = "Sides",
+            text = stringResource(R.string.sides),
+
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 16.dp)
@@ -302,7 +301,7 @@ fun CustomScreen(
                                 interactionSource = remember { MutableInteractionSource() }
                             ),
                         shape = RoundedCornerShape(16.dp),
-                        color = if (isSelected) Color(0xFFD2042D) else Color.Black,
+                        color = if (isSelected) CherryRed else Black,
                         shadowElevation = 8.dp // increased
                     ) {
                         Column(
@@ -315,7 +314,7 @@ fun CustomScreen(
                                     .fillMaxWidth()
                                     .height(52.dp)
                                     .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
-                                    .background(Color.White),
+                                    .background(White),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Image(
@@ -328,7 +327,7 @@ fun CustomScreen(
                                 text = side.name,
                                 fontWeight = FontWeight.Medium,
                                 fontSize = 12.sp,
-                                color = Color.White,
+                                color =White,
                                 modifier = Modifier.align(Alignment.CenterHorizontally)
                             )
                             Spacer(modifier = Modifier.height(4.dp))
@@ -359,12 +358,13 @@ fun CustomScreen(
                 text = "Total: $${String.format("%.2f", totalPrice)}",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = Black
             )
 
             Button(
                 onClick = {
                     // Pass burger.id, spiceLevel, portion, selectedToppings, selectedSides
+                    //for the payemnt screen
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = CherryRed),
                 modifier = Modifier
@@ -373,8 +373,8 @@ fun CustomScreen(
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Text(
-                    text = "Order Now",
-                    color = Color.White,
+                    text = stringResource(R.string.order_now),
+                    color = White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )

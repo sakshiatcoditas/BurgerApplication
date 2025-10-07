@@ -39,7 +39,7 @@ class CustomViewModel @Inject constructor() : ViewModel() {
         fetchOptionsFromFirebase()
     }
 
-    private fun fetchOptionsFromFirebase() {
+    private fun fetchOptionsFromFirebase() { // TODO: this should get called in suspend fuction.
         toppingsRef.get().addOnSuccessListener { snapshot ->
             val toppingsMap = snapshot.children.mapNotNull { child ->
                 val name = child.key

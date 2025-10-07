@@ -1,6 +1,8 @@
-package com.example.burgerapp.ui.ui
+package com.example.burgerapp.ui.presentation.chat_screen
 
-import android.graphics.drawable.Icon
+import androidx.compose.ui.res.stringResource
+import com.example.burgerapp.R
+
 import kotlin.collections.isNotEmpty
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -10,7 +12,6 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,6 +27,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -48,7 +53,8 @@ fun ChatScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Chat", color = WhiteText) },
+                title = { Text(stringResource(R.string.chat_title), color = WhiteText) },
+
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -60,7 +66,7 @@ fun ChatScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = stringResource(R.string.back_button),
                             tint = WhiteText
                         )
                     }
@@ -97,7 +103,7 @@ fun ChatScreen(
                                         shape = RoundedCornerShape(12.dp)
                                     )
                                     .padding(12.dp),
-                                color = Color.Black,
+                                color = Black,
                                 fontSize = 16.sp
                             )
                         }
@@ -122,11 +128,16 @@ fun ChatScreen(
                     TextField(
                         value = messageText,
                         onValueChange = { messageText = it },
-                        placeholder = { Text("Type a message", color = Color.Gray) },
+                        placeholder = {
+                            Text(
+                                stringResource(R.string.type_message),
+                                color = PurpleGrey40
+                            )
+                        },
                         modifier = Modifier
                             .weight(1f)
-                            .background(Color.White, RoundedCornerShape(8.dp)),
-                        textStyle = LocalTextStyle.current.copy(color = Color.Black),
+                            .background(White, RoundedCornerShape(8.dp)),
+                        textStyle = LocalTextStyle.current.copy(color =Black),
                         singleLine = true
                     )
 
@@ -137,9 +148,10 @@ fun ChatScreen(
                             messageText = ""
                         },
                         modifier = Modifier
-                            .background(Color.Red, shape = RoundedCornerShape(8.dp))
+                            .background(Red, shape = RoundedCornerShape(8.dp))
                     ) {
-                        Text("Send", color = Color.White)
+                        Text(stringResource(R.string.send)
+                            , color = White)
                     }
                 }
             }

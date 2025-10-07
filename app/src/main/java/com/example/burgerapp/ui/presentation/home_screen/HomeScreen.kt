@@ -1,4 +1,4 @@
-package com.example.burgerapp.ui.ui
+package com.example.burgerapp.ui.presentation.home_screen
 
 import coil.compose.SubcomposeAsyncImage
 import coil.compose.SubcomposeAsyncImageContent
@@ -35,8 +35,18 @@ import com.example.burgerapp.ui.theme.LobsterFont
 import com.example.burgerapp.ui.theme.Typography
 import com.example.burgerapp.viewmodel.HomeViewModel
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Gray
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.Transparent
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import coil.compose.AsyncImagePainter
+import com.example.burgerapp.ui.presentation.FavoriteScreen
+import com.example.burgerapp.ui.theme.CherryRed
+import com.example.burgerapp.ui.theme.LightGray
+import com.example.burgerapp.ui.theme.searchbarcolor
 import com.example.burgerapp.viewmodel.FavoriteViewModel
 
 @Composable
@@ -62,15 +72,15 @@ fun HomeScreen(
         },
         bottomBar = {
             val navBarItemColors = NavigationBarItemDefaults.colors(
-                selectedIconColor = Color.White,
-                unselectedIconColor = Color.White.copy(alpha = 0.7f),
-                selectedTextColor = Color.White,
-                unselectedTextColor = Color.White.copy(alpha = 0.7f),
-                indicatorColor = Color.Transparent
+                selectedIconColor = White,
+                unselectedIconColor = White.copy(alpha = 0.7f),
+                selectedTextColor = White,
+                unselectedTextColor = White.copy(alpha = 0.7f),
+                indicatorColor = Transparent
             )
 
             NavigationBar(
-                containerColor = Color(0xFFEF2A39),
+                containerColor= CherryRed,
                 modifier = Modifier.height(56.dp)
             ) {
                 NavigationBarItem(
@@ -138,11 +148,12 @@ fun HomeScreen(
                     placeholder = {
                         Text(
                             text = if (filteredBurgers.isEmpty() && uiState.searchText.isNotEmpty()) {
-                                "Search not found"
+                                stringResource(id = R.string.search_not_found)
+
                             } else {
                                 stringResource(id = R.string.search_food)
                             },
-                            color = if (filteredBurgers.isEmpty() && uiState.searchText.isNotEmpty()) Color.Red else Color.Gray
+                            color = if (filteredBurgers.isEmpty() && uiState.searchText.isNotEmpty()) Red else Gray
                         )
                     },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = stringResource(id = R.string.search_food)) },
@@ -152,26 +163,26 @@ fun HomeScreen(
                         .height(52.dp),
                     shape = RoundedCornerShape(26.dp),
                     colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xFFF3F4F6),
-                        unfocusedContainerColor = Color(0xFFF3F4F6),
-                        disabledContainerColor = Color(0xFFF3F4F6),
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
+                        focusedContainerColor = searchbarcolor,
+                        unfocusedContainerColor = searchbarcolor,
+                        disabledContainerColor = searchbarcolor,
+                        focusedIndicatorColor = Transparent,
+                        unfocusedIndicatorColor = Transparent,
+                        disabledIndicatorColor = Transparent
                     )
                 )
 
                 Box(
                     modifier = Modifier
                         .size(52.dp)
-                        .background(Color(0xFFEF2A39), RoundedCornerShape(16.dp))
+                        .background(CherryRed, RoundedCornerShape(16.dp))
                         .clickable { showFilterDialog = true },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.filter_icon),
                         contentDescription = stringResource(id = R.string.filter),
-                        tint = Color.White,
+                        tint =White,
                         modifier = Modifier.size(24.dp)
                     )
                 }
@@ -223,8 +234,8 @@ fun HomeScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "No Internet Connection",
-                            color = Color.Red,
+                            stringResource(id = R.string.no_internet_connection),
+                            color = Red,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -236,8 +247,8 @@ fun HomeScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Search not found",
-                            color = Color.Red,
+                            stringResource(id = R.string.search_not_found),
+                            color = Red,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold
                         )
@@ -292,7 +303,7 @@ fun ShimmerBurgerCard() {
             .fillMaxWidth()
             .height(300.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.LightGray.copy(alpha = 0.3f))
+        colors = CardDefaults.cardColors(containerColor = LightGray.copy(alpha = 0.3f))
     ) {
         Column(
             modifier = Modifier
@@ -304,21 +315,21 @@ fun ShimmerBurgerCard() {
                     .fillMaxWidth()
                     .weight(1f)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(Color.Gray.copy(alpha = 0.3f))
+                    .background(Gray.copy(alpha = 0.3f))
             )
             Spacer(modifier = Modifier.height(8.dp))
             Box(
                 modifier = Modifier
                     .height(20.dp)
                     .fillMaxWidth(0.7f)
-                    .background(Color.Gray.copy(alpha = 0.3f))
+                    .background(Gray.copy(alpha = 0.3f))
             )
             Spacer(modifier = Modifier.height(4.dp))
             Box(
                 modifier = Modifier
                     .height(20.dp)
                     .fillMaxWidth(0.5f)
-                    .background(Color.Gray.copy(alpha = 0.3f))
+                    .background(Gray.copy(alpha = 0.3f))
             )
         }
     }
@@ -338,7 +349,7 @@ fun BurgerCard(
             .height(300.dp) // fixed card height
             .clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = White),
         elevation = CardDefaults.cardElevation(6.dp)
     ) {
         Column(
@@ -346,9 +357,9 @@ fun BurgerCard(
                 .fillMaxSize()
                 .padding(8.dp)
         ) {
-            // ✅ Show loader while image is loading
-            SubcomposeAsyncImage(
-                model = burger.imageUrl.ifEmpty { "https://via.placeholder.com/150" },
+            //  Show loader while image is loading
+            SubcomposeAsyncImage( // TODO : handle null and empty state for image url.
+                model = burger.imageUrl.ifEmpty { "https://via.placeholder.com/150" }, // TODO: remove hard coded url
                 contentDescription = burger.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -357,27 +368,27 @@ fun BurgerCard(
                     .clip(RoundedCornerShape(16.dp))
             ) {
                 when (painter.state) {
-                    is coil.compose.AsyncImagePainter.State.Loading -> {
+                    is AsyncImagePainter.State.Loading -> {
                         // Loader while image is loading
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(Color.LightGray.copy(alpha = 0.3f)),
+                                .background(LightGray.copy(alpha = 0.3f)),
                             contentAlignment = Alignment.Center
                         ) {
                             CircularProgressIndicator(
-                                color = Color(0xFFEF2A39),
+                                color = CherryRed,
                                 strokeWidth = 3.dp,
                                 modifier = Modifier.size(32.dp)
                             )
                         }
                     }
-                    is coil.compose.AsyncImagePainter.State.Error -> {
+                    is AsyncImagePainter.State.Error -> {
                         // Fallback if image fails
                         Icon(
                             imageVector = Icons.Default.BrokenImage,
                             contentDescription = "Error",
-                            tint = Color.Gray,
+                            tint = Gray,
                             modifier = Modifier.size(48.dp)
                         )
                     }
@@ -389,9 +400,10 @@ fun BurgerCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(burger.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.Black)
-            Text(burger.type, color = Color.Gray)
-            Text("⭐ ${burger.rating}", fontSize = 14.sp, color = Color.Black)
+            Text(burger.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Black)
+            Text(burger.type, color = Gray)
+            // TODO: create a separate icon for this.
+            Text("⭐ ${burger.rating}", fontSize = 14.sp, color =Black)
 
             Spacer(modifier = Modifier.height(4.dp))
 
@@ -400,13 +412,13 @@ fun BurgerCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("$${burger.price}", fontWeight = FontWeight.Bold, color = Color.Black)
+                Text("$${burger.price}", fontWeight = FontWeight.Bold, color = Black)
 
                 IconButton(onClick = onFavoriteClick) {
                     Icon(
                         imageVector = if (burger.isFavorite) Icons.Filled.Favorite else Icons.Outlined.Favorite,
-                        contentDescription = "Favorite",
-                        tint = if (burger.isFavorite) Color(0xFFEF2A39) else Color.Gray,
+                        contentDescription = stringResource(R.string.favorites),
+                        tint = if (burger.isFavorite) CherryRed else Gray,
                         modifier = Modifier.size(28.dp)
                     )
                 }
@@ -442,7 +454,7 @@ fun HomeTopBar(
                 style = Typography.bodyLarge,
                 fontWeight = FontWeight.W500,
                 fontSize = 18.sp,
-                color = Color(0xFF6A6A6A)
+                color = Gray
             )
         }
 
@@ -482,19 +494,20 @@ fun UserAvatar(
                 modifier = Modifier.fillMaxSize()
             )
         } else if (!userEmail.isNullOrEmpty()) {
+            // TODO: check this logic once and trim the name.
             // Show initial from email
             val initial = userEmail.trim().substringBefore("@").firstOrNull()?.uppercase() ?: "U"
             Text(
                 text = initial,
-                color = Color.White,
+                color = White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
         } else {
             // Default placeholder
             Text(
-                text = "U",
-                color = Color.White,
+                text = stringResource(R.string.default_user_initial),
+                color = White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
@@ -524,7 +537,7 @@ fun CategoryChips(
         categories.forEach { category ->
             Surface(
                 modifier = Modifier.height(45.dp), // standard chip height
-                color = if (category == selectedCategory) Color(0xFFEF2A39) else Color(0xFFF3F4F6),
+                color = if (category == selectedCategory) CherryRed else White,
                 shape = RoundedCornerShape(18.dp), //
                 shadowElevation = 2.dp // subtle elevation for depth
             ) {
@@ -536,7 +549,7 @@ fun CategoryChips(
                 ) {
                     Text(
                         text = category,
-                        color = if (category == selectedCategory) Color.White else Color.Black,
+                        color = if (category == selectedCategory) White else Black,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium
                     )
