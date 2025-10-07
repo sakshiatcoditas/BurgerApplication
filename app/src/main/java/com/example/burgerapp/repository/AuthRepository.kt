@@ -5,6 +5,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,7 +24,18 @@ class AuthRepository @Inject constructor(
 
     // Register with email/password
     suspend fun register(email: String, password: String): AuthResult =
-        auth.createUserWithEmailAndPassword(email, password).await()
+        auth.createUserWithEmailAndPassword(email,password).await()
+
+    suspend fun saveUserNameToDatabase(userId: String, name: String, email: String) {
+        val dbRef = FirebaseDatabase.getInstance().reference.child("users").child(userId)
+        dbRef.setValue(mapOf(
+            "name" to name,
+            "email" to email
+        )).await()
+    }
+
+
+
 
     // Reset password
     suspend fun resetPassword(email: String): Void? =

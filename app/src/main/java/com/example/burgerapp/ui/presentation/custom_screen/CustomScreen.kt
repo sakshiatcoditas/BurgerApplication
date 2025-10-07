@@ -1,4 +1,4 @@
-package com.example.burgerapp.ui.presentation
+package com.example.burgerapp.ui.presentation.custom_screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.ui.res.stringResource
@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
@@ -34,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.burgerapp.R
 import com.example.burgerapp.data.Burger
 import com.example.burgerapp.data.Topping
+import com.example.burgerapp.ui.presentation.detail_screen.DraggableSpicySlider
 
 import com.example.burgerapp.viewmodel.CustomViewModel
 

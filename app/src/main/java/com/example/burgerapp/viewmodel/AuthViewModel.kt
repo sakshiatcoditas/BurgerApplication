@@ -10,6 +10,7 @@ import com.example.burgerapp.utils.AuthMessages
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -66,22 +67,47 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun register(email: String, password: String) {
-        if (email.isBlank() || password.isBlank()) {
-            _authState.value = AuthState.Error(AuthMessages.EMPTY_EMAIL_PASSWORD)
+    // In AuthViewModel
+    fun register(name: String, email: String, password: String) {
+        if (name.isBlank() || email.isBlank() || password.isBlank()) {
+            _authState.value = AuthState.Error("Name, Email or Password cannot be empty")
             return
         }
 
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             try {
-                repository.register(email, password)
+                val result = repository.register(email, password)
+                val user = result.user
+
+                user?.let {
+                    // Save name/email in Realtime Database
+                    repository.saveUserNameToDatabase(it.uid, name, email)
+
+                    // Force reload so that displayName is refreshed in FirebaseUser
+                    it.updateProfile(userProfileChangeRequest {
+                        displayName = name
+                    }).addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            FirebaseAuth.getInstance().currentUser?.reload()?.addOnSuccessListener {
+                                _currentUser.value = FirebaseAuth.getInstance().currentUser
+                            }
+                        }
+                    }
+                }
+
+
+                _authState.value = AuthState.Success("Registration successful")
 
             } catch (e: Exception) {
-                _authState.value = AuthState.Error(e.message ?: AuthMessages.REGISTER_FAILED)
+                _authState.value = AuthState.Error(e.message ?: "Registration Failed")
             }
         }
     }
+
+
+
+
 
     fun resetPassword(email: String) {
         if (email.isBlank()) {

@@ -12,6 +12,8 @@ import com.example.burgerapp.HomeUiState
 import com.example.burgerapp.data.Burger
 import com.example.burgerapp.repository.BurgerRepository
 import com.example.burgerapp.repository.FavoriteRepository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -92,14 +94,34 @@ class HomeViewModel @Inject constructor(
 
     // --- Load current user ---
     private fun loadCurrentUser() {
-        val user = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
-        _uiState.update {
-            it.copy(
-                userEmail = user?.displayName ?: user?.email ?: "U",
-                userPhotoUrl = user?.photoUrl?.toString()
-            )
+        val auth = FirebaseAuth.getInstance()
+        val user = auth.currentUser ?: return
+
+        val dbRef = FirebaseDatabase.getInstance().reference.child("users").child(user.uid)
+        dbRef.get().addOnSuccessListener { snapshot ->
+            val nameFromDB = snapshot.child("name").getValue(String::class.java)
+            val email = user.email
+            val photoUrl = user.photoUrl?.toString()
+
+            _uiState.update { state ->
+                state.copy(
+                    userEmail = email,
+                    userPhotoUrl = photoUrl,
+                    userName = if (!nameFromDB.isNullOrBlank()) {
+                        nameFromDB
+                    } else {
+                        email?.substringBefore("@") ?: "U"
+                    }
+                )
+            }
         }
     }
+
+
+
+
+
+
 
     // --- Network monitoring ---
     private fun monitorNetwork() {

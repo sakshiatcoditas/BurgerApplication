@@ -11,9 +11,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.burgerapp.AuthState
-import com.example.burgerapp.ui.presentation.*
 import com.example.burgerapp.ui.presentation.chat_screen.ChatScreen
+import com.example.burgerapp.ui.presentation.custom_screen.CustomScreen
+import com.example.burgerapp.ui.presentation.detail_screen.BurgerDetailScreen
+import com.example.burgerapp.ui.presentation.forgotpassword_screen.ForgotPasswordScreen
 import com.example.burgerapp.ui.presentation.home_screen.HomeScreen
+import com.example.burgerapp.ui.presentation.login_screen.LoginScreen
+import com.example.burgerapp.ui.presentation.profile_screen.ProfileScreen
+import com.example.burgerapp.ui.presentation.register_screen.RegisterScreen
+import com.example.burgerapp.ui.presentation.splash_screen.SplashScreen
 import com.example.burgerapp.viewmodel.AuthViewModel
 import com.example.burgerapp.viewmodel.ChatViewModel
 import com.example.burgerapp.viewmodel.DetailViewModel
@@ -81,11 +87,12 @@ fun AuthNavGraph(
             }
 
             RegisterScreen(
-                onRegisterClick = { email, password -> authViewModel.register(email, password) },
+                onRegisterClick = { name, email, password -> authViewModel.register(name, email, password) },
                 onGoogleRegisterClick = onGoogleRegisterClick,
                 onNavigateToLogin = { navController.popBackStack() },
                 authState = authState
             )
+
         }
 
         // --- Forgot Password Screen ---

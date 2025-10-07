@@ -1,4 +1,4 @@
-package com.example.burgerapp.ui.presentation
+package com.example.burgerapp.ui.presentation.detail_screen
 
 import androidx.compose.ui.res.stringResource
 import com.example.burgerapp.R
@@ -17,7 +17,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
@@ -32,11 +31,12 @@ import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,7 +51,6 @@ import com.example.burgerapp.ui.theme.green
 import com.example.burgerapp.ui.theme.yellow
 import com.example.burgerapp.viewmodel.DetailViewModel
 import kotlin.math.roundToInt
-
 
 
 
@@ -97,16 +96,16 @@ fun DraggableSpicySlider(
             drawRoundRect(
                 color = LightGray,
                 cornerRadius = CornerRadius(trackHeightPx / 2, trackHeightPx / 2),
-                topLeft = androidx.compose.ui.geometry.Offset(0f, trackY),
-                size = androidx.compose.ui.geometry.Size(width = size.width, height = trackHeightPx)
+                topLeft = Offset(0f, trackY),
+                size = Size(width = size.width, height = trackHeightPx)
             )
 
             // Fill
             drawRoundRect(
                 color = CherryRed,
                 cornerRadius = CornerRadius(trackHeightPx / 2, trackHeightPx / 2),
-                topLeft = androidx.compose.ui.geometry.Offset(0f, trackY),
-                size = androidx.compose.ui.geometry.Size(width = size.width * animatedOffset, height = trackHeightPx)
+                topLeft = Offset(0f, trackY),
+                size = Size(width = size.width * animatedOffset, height = trackHeightPx)
             )
         }
 

@@ -1,4 +1,4 @@
-package com.example.burgerapp.ui.presentation
+package com.example.burgerapp.ui.presentation.profile_screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.ui.res.stringResource

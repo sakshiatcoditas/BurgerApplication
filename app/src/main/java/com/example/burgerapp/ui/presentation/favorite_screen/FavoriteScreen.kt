@@ -1,4 +1,4 @@
-package com.example.burgerapp.ui.presentation
+package com.example.burgerapp.ui.presentation.favorite_screen
 import androidx.compose.ui.res.stringResource
 import com.example.burgerapp.R
 import androidx.compose.foundation.layout.*
@@ -9,11 +9,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.burgerapp.ui.presentation.home_screen.BurgerCard
+import com.example.burgerapp.ui.presentation.home_screen.components.BurgerCard
 import com.example.burgerapp.viewmodel.FavoriteViewModel
 
 @Composable
