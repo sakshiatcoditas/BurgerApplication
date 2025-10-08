@@ -33,6 +33,8 @@ class AuthViewModel @Inject constructor(
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> get() = _authState
 
+    private val _deliveryAddress = MutableStateFlow("")
+    val deliveryAddress: StateFlow<String> get() = _deliveryAddress
 
     // --- NEW: Current user flow ---
     private val _currentUser = MutableStateFlow(auth.currentUser)
@@ -43,6 +45,10 @@ class AuthViewModel @Inject constructor(
         auth.addAuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
             _currentUser.value = user
+
+            user?.uid?.let { uid ->
+                loadDeliveryAddress(uid)
+            }
 
             if (user != null) {
                 _authState.value = AuthState.Success("Logged in as ${user.email}")
@@ -71,6 +77,32 @@ class AuthViewModel @Inject constructor(
                 _authState.value = AuthState.Error(e.message ?: AuthMessages.LOGIN_FAILED)
             }
         }
+    }
+    private fun loadDeliveryAddress(uid: String) {
+        val ref = FirebaseDatabase.getInstance()
+            .reference.child("users").child(uid).child("deliveryAddress")
+
+        // One-time fetch
+        ref.get().addOnSuccessListener {
+            _deliveryAddress.value = it.getValue(String::class.java) ?: ""
+        }
+
+        // Realtime listener
+        ref.addValueEventListener(object : com.google.firebase.database.ValueEventListener {
+            override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+                _deliveryAddress.value = snapshot.getValue(String::class.java) ?: ""
+            }
+
+            override fun onCancelled(error: com.google.firebase.database.DatabaseError) {}
+        })
+    }
+
+
+    fun updateDeliveryAddress(uid: String, newAddress: String) {
+        _deliveryAddress.value = newAddress
+        FirebaseDatabase.getInstance()
+            .reference.child("users").child(uid).child("deliveryAddress")
+            .setValue(newAddress)
     }
 
     // In AuthViewModel

@@ -2,6 +2,7 @@ package com.example.burgerapp.ui.presentation.profile_screen
 
 import androidx.compose.ui.res.painterResource
 import com.example.burgerapp.R
+import com.example.burgerapp.viewmodel.AuthViewModel
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -21,7 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.burgerapp.viewmodel.AuthViewModel
+
 import com.google.firebase.auth.FirebaseUser
 
 import androidx.compose.ui.graphics.Color
@@ -37,25 +38,21 @@ fun ProfileScreen(
 ) {
     val user by viewModel.currentUser.collectAsState()
     val emailUserName by viewModel.emailUserName.collectAsState()
-    var name by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf(user?.email ?: "") }
-    var deliveryAddress by remember { mutableStateOf("") }
+    val deliveryAddress by viewModel.deliveryAddress.collectAsState()
 
+    var name by remember { mutableStateOf("") }
+    val email = user?.email ?: ""
     val isEditable = user?.displayName.isNullOrEmpty()
 
-    LaunchedEffect(user) {
+    // Initialize name
+    LaunchedEffect(user, emailUserName) {
         user?.let { firebaseUser ->
             if (!isEditable) {
                 name = firebaseUser.displayName ?: ""
             } else {
                 viewModel.fetchNameFromDatabase(firebaseUser.uid)
+                name = emailUserName ?: ""
             }
-        }
-    }
-
-    LaunchedEffect(emailUserName) {
-        if (isEditable) {
-            name = emailUserName ?: ""
         }
     }
 
@@ -83,7 +80,7 @@ fun ProfileScreen(
 
             // Back button
             IconButton(onClick = onBackClick) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack,  contentDescription = "Back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
 
             // Avatar
@@ -95,9 +92,9 @@ fun ProfileScreen(
             ) {
                 UserAvatar(
                     userName = user?.displayName ?: emailUserName,
-                    userPhotoUrl = null,
+                    userPhotoUrl = user?.photoUrl?.toString(),
                     modifier = Modifier
-                        .size(width = 139.dp, height = 139.dp)
+                        .size(139.dp)
                         .clip(RoundedCornerShape(16.dp))
                 )
             }
@@ -107,9 +104,7 @@ fun ProfileScreen(
             // Name field
             OutlinedTextField(
                 value = name,
-                onValueChange = { newName ->
-                    if (isEditable) name = newName
-                },
+                onValueChange = { newName -> if (isEditable) name = newName },
                 label = { Text("Name") },
                 singleLine = true,
                 enabled = isEditable,
@@ -121,7 +116,7 @@ fun ProfileScreen(
             // Email field (read-only)
             OutlinedTextField(
                 value = email,
-                onValueChange = { },
+                onValueChange = {},
                 label = { Text("Email") },
                 singleLine = true,
                 enabled = false,
@@ -130,84 +125,74 @@ fun ProfileScreen(
 
             Spacer(Modifier.height(16.dp))
 
-            // Delivery Address field
+            // Delivery Address (bind directly to ViewModel)
             OutlinedTextField(
                 value = deliveryAddress,
-                onValueChange = { deliveryAddress = it },
+                onValueChange = { newAddress ->
+                    user?.uid?.let { uid ->
+                        viewModel.updateDeliveryAddress(uid, newAddress)
+                    }
+                },
                 label = { Text("Delivery Address") },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            // Divider line
+            // Divider
             Spacer(modifier = Modifier.height(24.dp))
             HorizontalDivider(thickness = 1.dp, color = Color.Gray)
             Spacer(modifier = Modifier.height(16.dp))
 
-// Payment Details row
+            // Payment Details row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 8.dp)
-                    .clickable{},
+                    .clickable { /* Navigate */ },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "Payment Details",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.height(28.dp)
-                )
-                Icon(
-                    imageVector = Icons.Filled.ArrowForward,
-                    contentDescription = "Go to Payment Details"
-                )
+                Text("Payment Details", style = MaterialTheme.typography.bodyLarge)
+                Icon(Icons.Filled.ArrowForward, contentDescription = null)
             }
 
-// Order History row
+            // Order History row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 8.dp)
-                    .clickable{},
-
+                    .clickable { /* Navigate */ },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = "Order History",
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.height(28.dp)
-                )
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = "Go to Payment Details"
-                )
+                Text("Order History", style = MaterialTheme.typography.bodyLarge)
+                Icon(Icons.Filled.ArrowForward, contentDescription = null)
             }
 
             // Buttons row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp)
-                    .clickable{}, // optional spacing from above content
-                horizontalArrangement = Arrangement.spacedBy(16.dp) // spacing between the buttons
+                    .padding(top = 24.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 // Edit Profile Button
                 Button(
-                    onClick = { /* Handle edit profile */ },
+                    onClick = {
+                        user?.uid?.let { uid ->
+                            viewModel.updateEmailUserName(uid, name)
+                        }
+                    },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier
-                        .weight(1f) // fills proportionally
-                        .height(70.dp)
+                    modifier = Modifier.weight(1f).height(70.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
                         Text("Edit Profile", color = Color.White)
-                        Spacer(modifier = Modifier.width(8.dp))
+                        Spacer(Modifier.width(8.dp))
                         Icon(
                             painter = painterResource(id = R.drawable.edit),
                             contentDescription = "Edit",
@@ -221,16 +206,11 @@ fun ProfileScreen(
                     onClick = onLogoutClick,
                     shape = RoundedCornerShape(20.dp),
                     border = ButtonDefaults.outlinedButtonBorder.copy(width = 3.dp),
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(70.dp)
+                    modifier = Modifier.weight(1f).height(70.dp)
                 ) {
                     Text("Logout", color = Color.Black)
                 }
             }
-
-
         }
     }
 }
-
