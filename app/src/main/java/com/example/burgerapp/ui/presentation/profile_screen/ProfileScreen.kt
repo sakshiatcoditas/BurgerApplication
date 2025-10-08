@@ -1,8 +1,5 @@
-package com.example.burgerapp.ui.presentation.profile_screen
 
-import androidx.compose.ui.res.painterResource
-import com.example.burgerapp.R
-import com.example.burgerapp.viewmodel.AuthViewModel
+package com.example.burgerapp.ui.presentation.profile_screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,25 +7,21 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-
-import com.google.firebase.auth.FirebaseUser
-
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Brush
+import com.example.burgerapp.R
 import com.example.burgerapp.ui.presentation.home_screen.components.UserAvatar
-import com.example.burgerapp.ui.theme.searchbarcolor
+import com.example.burgerapp.viewmodel.AuthViewModel
+
+
 
 @Composable
 fun ProfileScreen(
@@ -40,28 +33,42 @@ fun ProfileScreen(
     val emailUserName by viewModel.emailUserName.collectAsState()
     val deliveryAddress by viewModel.deliveryAddress.collectAsState()
 
-    var name by remember { mutableStateOf("") }
-    val email = user?.email ?: ""
-    val isEditable = user?.displayName.isNullOrEmpty()
+    var isEditing by remember { mutableStateOf(false) } // toggle editing
+    var address by remember { mutableStateOf("") }
 
-    // Initialize name
-    LaunchedEffect(user, emailUserName) {
-        user?.let { firebaseUser ->
-            if (!isEditable) {
-                name = firebaseUser.displayName ?: ""
-            } else {
-                viewModel.fetchNameFromDatabase(firebaseUser.uid)
-                name = emailUserName ?: ""
-            }
-        }
+    val email = user?.email ?: ""
+
+
+
+    val displayName = user?.displayName ?: emailUserName ?: "User"
+
+
+
+    // Sync address from ViewModel
+    LaunchedEffect(deliveryAddress) {
+        address = deliveryAddress
     }
+
+    val neutralTextFieldColors = OutlinedTextFieldDefaults.colors(
+        focusedBorderColor = Color.Gray,
+        unfocusedBorderColor = Color.Gray,
+        errorBorderColor = Color.Gray,
+        focusedLabelColor = Color.DarkGray,
+        unfocusedLabelColor = Color.DarkGray,
+        focusedTextColor = Color.Black,
+        unfocusedTextColor = Color.Black,
+        cursorColor = Color.Transparent,
+        focusedContainerColor = Color.Transparent,
+        unfocusedContainerColor = Color.Transparent,
+        disabledContainerColor = Color.Transparent
+    )
+
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0x88FF0000))
     ) {
-        // White bottom dialog
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -78,12 +85,10 @@ fun ProfileScreen(
         ) {
             Spacer(modifier = Modifier.height(13.dp))
 
-            // Back button
             IconButton(onClick = onBackClick) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
 
-            // Avatar
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -91,7 +96,7 @@ fun ProfileScreen(
                 contentAlignment = Alignment.TopCenter
             ) {
                 UserAvatar(
-                    userName = user?.displayName ?: emailUserName,
+                    userName = displayName,
                     userPhotoUrl = user?.photoUrl?.toString(),
                     modifier = Modifier
                         .size(139.dp)
@@ -101,54 +106,61 @@ fun ProfileScreen(
 
             Spacer(Modifier.height(32.dp))
 
-            // Name field
+            // Name field (always read-only)
             OutlinedTextField(
-                value = name,
-                onValueChange = { newName -> if (isEditable) name = newName },
+                value = displayName,
+                onValueChange = {},
                 label = { Text("Name") },
                 singleLine = true,
-                enabled = isEditable,
-                modifier = Modifier.fillMaxWidth()
+                readOnly = true,
+                modifier = Modifier.fillMaxWidth(),
+                colors = neutralTextFieldColors
             )
+
 
             Spacer(Modifier.height(16.dp))
 
-            // Email field (read-only)
+            // Email field (always read-only)
             OutlinedTextField(
                 value = email,
                 onValueChange = {},
                 label = { Text("Email") },
                 singleLine = true,
-                enabled = false,
-                modifier = Modifier.fillMaxWidth()
+                readOnly = true,
+                modifier = Modifier.fillMaxWidth(),
+                colors = neutralTextFieldColors
+
             )
 
             Spacer(Modifier.height(16.dp))
 
-            // Delivery Address (bind directly to ViewModel)
+            // Delivery Address field (editable only in edit mode)
             OutlinedTextField(
                 value = deliveryAddress,
                 onValueChange = { newAddress ->
-                    user?.uid?.let { uid ->
-                        viewModel.updateDeliveryAddress(uid, newAddress)
+                    if (isEditing) {
+                        user?.uid?.let { uid ->
+                            viewModel.updateDeliveryAddress(uid, newAddress)
+                        }
                     }
                 },
                 label = { Text("Delivery Address") },
                 singleLine = true,
-                modifier = Modifier.fillMaxWidth()
+                readOnly = !isEditing, // only editable in edit mode
+                modifier = Modifier.fillMaxWidth(),
+                colors = neutralTextFieldColors
             )
 
-            // Divider
             Spacer(modifier = Modifier.height(24.dp))
-            HorizontalDivider(thickness = 1.dp, color = Color.Gray)
+            Divider(thickness = 1.dp, color = Color.Gray)
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Payment Details row
+            // Info Rows
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 8.dp)
-                    .clickable { /* Navigate */ },
+                    .clickable { /* Navigate to Payment */ },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -156,12 +168,11 @@ fun ProfileScreen(
                 Icon(Icons.Filled.ArrowForward, contentDescription = null)
             }
 
-            // Order History row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 8.dp)
-                    .clickable { /* Navigate */ },
+                    .clickable { /* Navigate to Order History */ },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -169,29 +180,38 @@ fun ProfileScreen(
                 Icon(Icons.Filled.ArrowForward, contentDescription = null)
             }
 
-            // Buttons row
+            // Buttons Row
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 24.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Edit Profile Button
+                // Edit / Save Button
                 Button(
                     onClick = {
-                        user?.uid?.let { uid ->
-                            viewModel.updateEmailUserName(uid, name)
+                        if (isEditing) {
+                            // Save new address
+                            user?.uid?.let { uid ->
+                                viewModel.updateDeliveryAddress(uid, address)
+                            }
                         }
+                        isEditing = !isEditing
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                     shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.weight(1f).height(70.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(70.dp)
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        Text("Edit Profile", color = Color.White)
+                        Text(
+                            text = if (isEditing) "Save" else "Edit Profile",
+                            color = Color.White
+                        )
                         Spacer(Modifier.width(8.dp))
                         Icon(
                             painter = painterResource(id = R.drawable.edit),
@@ -206,7 +226,9 @@ fun ProfileScreen(
                     onClick = onLogoutClick,
                     shape = RoundedCornerShape(20.dp),
                     border = ButtonDefaults.outlinedButtonBorder.copy(width = 3.dp),
-                    modifier = Modifier.weight(1f).height(70.dp)
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(70.dp)
                 ) {
                     Text("Logout", color = Color.Black)
                 }
@@ -214,3 +236,4 @@ fun ProfileScreen(
         }
     }
 }
+
