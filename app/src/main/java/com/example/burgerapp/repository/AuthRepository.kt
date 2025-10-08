@@ -34,6 +34,17 @@ class AuthRepository @Inject constructor(
         )).await()
     }
 
+    suspend fun getUserNameFromDatabase(userId: String): String? {
+        val snapshot = FirebaseDatabase.getInstance()
+            .reference
+            .child("users")
+            .child(userId)
+            .child("name")
+            .get()
+            .await()
+        return snapshot.getValue(String::class.java)
+    }
+
 
 
 
@@ -58,5 +69,6 @@ class AuthRepository @Inject constructor(
                 }
         }
     }
+
 
 }

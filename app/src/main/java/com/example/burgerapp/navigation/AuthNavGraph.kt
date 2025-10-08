@@ -25,6 +25,7 @@ import com.example.burgerapp.viewmodel.ChatViewModel
 import com.example.burgerapp.viewmodel.DetailViewModel
 import com.example.burgerapp.viewmodel.HomeViewModel
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun AuthNavGraph(
@@ -129,17 +130,30 @@ fun AuthNavGraph(
         composable("Profile") {
             val authViewModel: AuthViewModel = hiltViewModel()
             ProfileScreen(
-                googleSignInClient = googleSignInClient,
+                viewModel = authViewModel,
                 onLogoutClick = {
-                    authViewModel.resetAuthState()
-                    googleSignInClient.signOut().addOnCompleteListener {
-                        navController.navigate(Screen.Login.route) {
-                            popUpTo(Screen.Home.route) { inclusive = true }
-                        }
+                    // Sign out Firebase user (works for both email/password and Google)
+                    FirebaseAuth.getInstance().signOut()
+
+                    // Optionally sign out Google too, if they logged in via Google
+                    googleSignInClient.signOut()
+
+                    // Navigate to Login screen and clear backstack
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                },
+                onBackClick = {
+                    // Navigate to Home screen when back button is pressed
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Profile.route) { inclusive = true }
                     }
                 }
             )
         }
+
+
+
 
         composable(
             route = "burgerDetail/{burgerId}",

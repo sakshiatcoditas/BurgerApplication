@@ -11,6 +11,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.userProfileChangeRequest
+import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +24,11 @@ class AuthViewModel @Inject constructor(
     auth: FirebaseAuth
 
 ) : ViewModel() {
+
+
+    // Add at the top of the class
+    private val _emailUserName = MutableStateFlow<String?>(null)
+    val emailUserName: StateFlow<String?> get() = _emailUserName
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> get() = _authState
@@ -142,7 +148,32 @@ class AuthViewModel @Inject constructor(
         }
     }
 
+    fun fetchNameFromDatabase(userId: String) {
+        viewModelScope.launch {
+            try {
+                val name = repository.getUserNameFromDatabase(userId)
+                _emailUserName.value = name
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error fetching name from DB: ${e.message}")
+                _emailUserName.value = null
+            }
+        }
+    }
 
+    // --- New: Update name for email/password users ---
+    fun updateEmailUserName(uid: String, newName: String, onResult: (Boolean) -> Unit = {}) {
+        val user = FirebaseAuth.getInstance().currentUser
+        user?.updateProfile(userProfileChangeRequest { displayName = newName })?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val ref = FirebaseDatabase.getInstance().reference.child("users").child(uid)
+                ref.child("name").setValue(newName).addOnCompleteListener { dbTask ->
+                    onResult(dbTask.isSuccessful)
+                }
+            } else {
+                onResult(false)
+            }
+        }
+    }
 
     fun resetAuthState() {
         _authState.value = AuthState.Idle
