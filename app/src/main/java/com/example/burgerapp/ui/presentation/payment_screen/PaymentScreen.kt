@@ -43,11 +43,18 @@ fun PaymentScreen(
     portion: Int,
     spiceLevel: Float,
     onBackClick: () -> Unit,
-    viewModel: PaymentViewModel = hiltViewModel(),
+    paymentviewModel: PaymentViewModel = hiltViewModel(),
+    customviewModel: CustomViewModel = hiltViewModel(),
+    totalPrice:Float
 
 
 ) {
-    val selectedCardIndex by viewModel.selectedCard.collectAsState()
+    val selectedCardIndex by paymentviewModel.selectedCard.collectAsState()
+
+    val deliveryFee by paymentviewModel.deliveryFee.collectAsState()
+    val taxes by paymentviewModel.taxes.collectAsState()
+    val totalWithExtras = totalPrice + (totalPrice * taxes) + deliveryFee
+
 
 
     Column(
@@ -84,7 +91,8 @@ fun PaymentScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text("Order Total", color = Gray)
-            Text("$100", color = Gray)
+            Text("$${String.format("%.2f", totalPrice)}", color = BlackText, fontWeight = Bold)
+
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -96,7 +104,7 @@ fun PaymentScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text("Taxes", color = Gray)
-            Text("$12", color = Gray)
+            Text("$${String.format("%.2f", totalPrice * taxes)}", color = Gray)
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -108,7 +116,8 @@ fun PaymentScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text("Delivery Fees", color = Gray)
-            Text("$50", color = Gray)
+            Text("$${String.format("%.2f", deliveryFee)}", color = Gray)
+
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -125,8 +134,10 @@ fun PaymentScreen(
             modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            val totalWithExtras = totalPrice + (totalPrice * taxes) + deliveryFee
+
             Text("Total:", color = BlackText, fontWeight = Bold)
-            Text("$1000", color = BlackText, fontWeight = Bold)
+            Text("$${String.format("%.2f", totalWithExtras)}", color = BlackText, fontWeight = Bold)
         }
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -159,7 +170,7 @@ fun PaymentScreen(
                 cardImage = R.drawable.mastercard,
                 index = 0,
                 selectedIndex = selectedCardIndex,
-                onCardSelected = { viewModel.selectCard(it) }
+                onCardSelected = { paymentviewModel.selectCard(it) }
             )
 
             // --- Visa ---
@@ -169,7 +180,7 @@ fun PaymentScreen(
                 cardImage = R.drawable.visa,
                 index = 1,
                 selectedIndex = selectedCardIndex,
-                onCardSelected = { viewModel.selectCard(it) }
+                onCardSelected = { paymentviewModel.selectCard(it) }
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -180,7 +191,7 @@ fun PaymentScreen(
             ) {
                 Column {
                     Text("Total Price", color = BlackText)
-                    Text("$100", color = BlackText, fontWeight = SemiBold)
+                    Text("$${String.format("%.2f", totalWithExtras)}", color = BlackText, fontWeight = Bold)
                 }
 
                 Button(onClick = { /* Pay Now click */ }) {

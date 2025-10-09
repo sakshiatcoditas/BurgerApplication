@@ -48,8 +48,8 @@ fun CustomScreen(
     onBackClick: () -> Unit,
     viewModel: CustomViewModel = hiltViewModel()
 ) {
-    var spiceLevel by remember { mutableStateOf(initialSpiceLevel) }
-    var portion by remember { mutableStateOf(initialPortion) }
+    var spiceLevel by remember { mutableFloatStateOf(initialSpiceLevel) }
+    var portion by remember { mutableIntStateOf(initialPortion) }
 
     val options by viewModel.options.collectAsState()
 
@@ -349,6 +349,7 @@ fun CustomScreen(
             }
         }
 
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -366,7 +367,7 @@ fun CustomScreen(
             Button(
                 onClick = {
                     navController.navigate(
-                        "paymentScreen/${burger.burgerId}/$portion/$spiceLevel"
+                        "paymentScreen/${burger.burgerId}/$portion/$spiceLevel/$totalPrice"
                     )
 
 

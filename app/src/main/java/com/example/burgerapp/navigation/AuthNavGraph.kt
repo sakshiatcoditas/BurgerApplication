@@ -214,27 +214,30 @@ fun AuthNavGraph(
         }
 
         // --- Payment Screen ---
+
+
         composable(
-            route = "paymentScreen/{burgerId}/{portion}/{spiceLevel}",
+            route = "paymentScreen/{burgerId}/{portion}/{spiceLevel}/{totalPrice}",
             arguments = listOf(
                 navArgument("burgerId") { type = NavType.StringType },
                 navArgument("portion") { type = NavType.IntType },
-                navArgument("spiceLevel") { type = NavType.FloatType }
+                navArgument("spiceLevel") { type = NavType.FloatType },
+                navArgument("totalPrice") { type = NavType.FloatType } // add this
             )
         ) { backStackEntry ->
             val burgerId = backStackEntry.arguments?.getString("burgerId") ?: ""
             val portion = backStackEntry.arguments?.getInt("portion") ?: 1
             val spiceLevel = backStackEntry.arguments?.getFloat("spiceLevel") ?: 0.7f
+            val totalPrice = backStackEntry.arguments?.getFloat("totalPrice") ?: 0f
 
             PaymentScreen(
                 burgerId = burgerId,
                 portion = portion,
                 spiceLevel = spiceLevel,
+                totalPrice = totalPrice,
                 onBackClick = { navController.popBackStack() }
             )
         }
-
-
 
 
     }
