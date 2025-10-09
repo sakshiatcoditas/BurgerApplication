@@ -30,17 +30,15 @@ fun LoginScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
+
 
     // Show snackbar on error
     LaunchedEffect(authState) {
-        when (authState) {
-            is AuthState.Error -> coroutineScope.launch { // TODO: check this no need to coroutine scope again
-                snackbarHostState.showSnackbar(authState.message)
-            }
-            else -> {}
+        if (authState is AuthState.Error) {
+            snackbarHostState.showSnackbar(authState.message)
         }
     }
+
 
     Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->
         Column(
@@ -100,6 +98,7 @@ fun LoginScreen(
             )
 
             Spacer(Modifier.height(8.dp))
+
             TextButton(
                 onClick = onNavigateToForgotPassword,
                 modifier = Modifier.align(Alignment.End)

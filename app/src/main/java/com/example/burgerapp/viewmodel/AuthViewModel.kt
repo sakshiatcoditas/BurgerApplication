@@ -6,27 +6,31 @@ import androidx.lifecycle.viewModelScope
 import com.example.burgerapp.AuthState
 import com.example.burgerapp.repository.AuthRepository
 import com.example.burgerapp.utils.AuthMessages
-
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.userProfileChangeRequest
-import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
+import com.google.firebase.ktx.Firebase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.google.firebase.database.ValueEventListener
+
+
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val repository: AuthRepository,
     auth: FirebaseAuth
-
 ) : ViewModel() {
 
-
-    // Add at the top of the class
+    // --- StateFlows ---
     private val _emailUserName = MutableStateFlow<String?>(null)
     val emailUserName: StateFlow<String?> get() = _emailUserName
 
@@ -36,12 +40,11 @@ class AuthViewModel @Inject constructor(
     private val _deliveryAddress = MutableStateFlow("")
     val deliveryAddress: StateFlow<String> get() = _deliveryAddress
 
-    // --- NEW: Current user flow ---
     private val _currentUser = MutableStateFlow(auth.currentUser)
     val currentUser: StateFlow<FirebaseUser?> get() = _currentUser
 
     init {
-
+        // Auth state listener
         auth.addAuthStateListener { firebaseAuth ->
             val user = firebaseAuth.currentUser
             _currentUser.value = user
@@ -50,18 +53,15 @@ class AuthViewModel @Inject constructor(
                 loadDeliveryAddress(uid)
             }
 
-            if (user != null) {
-                _authState.value = AuthState.Success("Logged in as ${user.email}")
+            _authState.value = if (user != null) {
+                AuthState.Success("Logged in as ${user.email}")
             } else {
-                _authState.value = AuthState.Error("No user detected")
+                AuthState.Error("No user detected")
             }
-
-
         }
     }
 
-    //We will need to clean up the listener as Remove listener when ViewModel is cleared (to avoid leaks)
-
+    // --- Login ---
     fun login(email: String, password: String) {
         if (email.isBlank() || password.isBlank()) {
             _authState.value = AuthState.Error(AuthMessages.EMPTY_EMAIL_PASSWORD)
@@ -72,40 +72,41 @@ class AuthViewModel @Inject constructor(
             _authState.value = AuthState.Loading
             try {
                 repository.login(email, password)
-
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: AuthMessages.LOGIN_FAILED)
             }
         }
     }
+
+    // --- Delivery Address ---
     private fun loadDeliveryAddress(uid: String) {
-        val ref = FirebaseDatabase.getInstance()
-            .reference.child("users").child(uid).child("deliveryAddress")
+        val ref = Firebase.database.getReference("users/$uid/deliveryAddress")
 
         // One-time fetch
-        ref.get().addOnSuccessListener {
-            _deliveryAddress.value = it.getValue(String::class.java) ?: ""
+        ref.get().addOnSuccessListener { snapshot ->
+            _deliveryAddress.value = snapshot.getValue<String>() ?: ""
+        }.addOnFailureListener {
+            _deliveryAddress.value = ""
         }
 
-        // Realtime listener
-        ref.addValueEventListener(object : com.google.firebase.database.ValueEventListener {
-            override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
-                _deliveryAddress.value = snapshot.getValue(String::class.java) ?: ""
+        // Real-time updates (must implement ValueEventListener)
+        ref.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                _deliveryAddress.value = snapshot.getValue<String>() ?: ""
             }
 
-            override fun onCancelled(error: com.google.firebase.database.DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                // handle error if needed
+            }
         })
     }
 
-
     fun updateDeliveryAddress(uid: String, newAddress: String) {
         _deliveryAddress.value = newAddress
-        FirebaseDatabase.getInstance()
-            .reference.child("users").child(uid).child("deliveryAddress")
-            .setValue(newAddress)
+        Firebase.database.getReference("users/$uid/deliveryAddress").setValue(newAddress)
     }
 
-    // In AuthViewModel
+    // --- Registration ---
     fun register(name: String, email: String, password: String) {
         if (name.isBlank() || email.isBlank() || password.isBlank()) {
             _authState.value = AuthState.Error("Name, Email or Password cannot be empty")
@@ -122,31 +123,22 @@ class AuthViewModel @Inject constructor(
                     // Save name/email in Realtime Database
                     repository.saveUserNameToDatabase(it.uid, name, email)
 
-                    // Force reload so that displayName is refreshed in FirebaseUser
-                    it.updateProfile(userProfileChangeRequest {
-                        displayName = name
-                    }).addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            FirebaseAuth.getInstance().currentUser?.reload()?.addOnSuccessListener {
-                                _currentUser.value = FirebaseAuth.getInstance().currentUser
-                            }
+                    // Update Firebase displayName
+                    it.updateProfile(userProfileChangeRequest { displayName = name }).addOnSuccessListener {
+                        FirebaseAuth.getInstance().currentUser?.reload()?.addOnSuccessListener {
+                            _currentUser.value = FirebaseAuth.getInstance().currentUser
                         }
                     }
                 }
 
-
                 _authState.value = AuthState.Success("Registration successful")
-
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: "Registration Failed")
             }
         }
     }
 
-
-
-
-
+    // --- Reset Password ---
     fun resetPassword(email: String) {
         if (email.isBlank()) {
             _authState.value = AuthState.Error(AuthMessages.EMPTY_EMAIL)
@@ -168,46 +160,19 @@ class AuthViewModel @Inject constructor(
         _authState.value = AuthState.Error(message)
     }
 
-
+    // --- Google Auth ---
     fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
         viewModelScope.launch {
             _authState.value = AuthState.Loading
             try {
-                repository.firebaseAuthWithGoogle(account) // suspending, waits until Firebase signs in
+                repository.firebaseAuthWithGoogle(account)
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: AuthMessages.GOOGLE_FAILED)
             }
         }
     }
 
-    fun fetchNameFromDatabase(userId: String) {
-        viewModelScope.launch {
-            try {
-                val name = repository.getUserNameFromDatabase(userId)
-                _emailUserName.value = name
-            } catch (e: Exception) {
-                Log.e("AuthViewModel", "Error fetching name from DB: ${e.message}")
-                _emailUserName.value = null
-            }
-        }
-    }
 
-    // --- New: Update name for email/password users ---
-    fun updateEmailUserName(uid: String, newName: String, onResult: (Boolean) -> Unit = {}) {
-        val user = FirebaseAuth.getInstance().currentUser
-        user?.updateProfile(userProfileChangeRequest { displayName = newName })?.addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                val ref = FirebaseDatabase.getInstance().reference.child("users").child(uid)
-                ref.child("name").setValue(newName).addOnCompleteListener { dbTask ->
-                    onResult(dbTask.isSuccessful)
-                }
-            } else {
-                onResult(false)
-            }
-        }
-    }
 
-    fun resetAuthState() {
-        _authState.value = AuthState.Idle
-    }
+
 }
