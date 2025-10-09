@@ -23,7 +23,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val burgerRepository: BurgerRepository,
     private val favoriteRepository: FavoriteRepository,
-    private val app: Application
+    private val app: Application // added to monitor network
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(HomeUiState())
