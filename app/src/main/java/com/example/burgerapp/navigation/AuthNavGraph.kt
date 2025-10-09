@@ -17,6 +17,7 @@ import com.example.burgerapp.ui.presentation.detail_screen.BurgerDetailScreen
 import com.example.burgerapp.ui.presentation.forgotpassword_screen.ForgotPasswordScreen
 import com.example.burgerapp.ui.presentation.home_screen.HomeScreen
 import com.example.burgerapp.ui.presentation.login_screen.LoginScreen
+import com.example.burgerapp.ui.presentation.payment_screen.PaymentScreen
 import com.example.burgerapp.ui.presentation.profile_screen.ProfileScreen
 import com.example.burgerapp.ui.presentation.register_screen.RegisterScreen
 import com.example.burgerapp.ui.presentation.splash_screen.SplashScreen
@@ -204,12 +205,35 @@ fun AuthNavGraph(
             burgerState?.let { burger ->
                 CustomScreen(
                     burger = burger,
+                    navController = navController,
                     initialPortion = portion,
                     initialSpiceLevel = spiceLevel,
                     onBackClick = { navController.popBackStack() }
                 )
             }
         }
+
+        // --- Payment Screen ---
+        composable(
+            route = "paymentScreen/{burgerId}/{portion}/{spiceLevel}",
+            arguments = listOf(
+                navArgument("burgerId") { type = NavType.StringType },
+                navArgument("portion") { type = NavType.IntType },
+                navArgument("spiceLevel") { type = NavType.FloatType }
+            )
+        ) { backStackEntry ->
+            val burgerId = backStackEntry.arguments?.getString("burgerId") ?: ""
+            val portion = backStackEntry.arguments?.getInt("portion") ?: 1
+            val spiceLevel = backStackEntry.arguments?.getFloat("spiceLevel") ?: 0.7f
+
+            PaymentScreen(
+                burgerId = burgerId,
+                portion = portion,
+                spiceLevel = spiceLevel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
 
 
 

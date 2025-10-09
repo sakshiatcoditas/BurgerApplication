@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.burgerapp.R
 import com.example.burgerapp.data.Burger
 import com.example.burgerapp.data.Topping
@@ -41,6 +42,7 @@ import com.example.burgerapp.viewmodel.CustomViewModel
 @Composable
 fun CustomScreen(
     burger: Burger,
+    navController: NavController,
     initialSpiceLevel: Float,
     initialPortion: Int,
     onBackClick: () -> Unit,
@@ -363,8 +365,11 @@ fun CustomScreen(
 
             Button(
                 onClick = {
-                    // Pass burger.id, spiceLevel, portion, selectedToppings, selectedSides
-                    //for the payemnt screen
+                    navController.navigate(
+                        "paymentScreen/${burger.burgerId}/$portion/$spiceLevel"
+                    )
+
+
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = CherryRed),
                 modifier = Modifier
