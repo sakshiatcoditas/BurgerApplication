@@ -2,23 +2,16 @@ package com.example.burgerapp.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
+import com.example.burgerapp.data.Options
 import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+import com.example.burgerapp.data.Option
 
-// Price option (used for toppings & sides)
-data class Option(
-    val price: Double = 0.0
-)
 
-// Full set of options
-data class Options(
-    val toppings: Map<String, Option> = emptyMap(),
-    val sides: Map<String, Option> = emptyMap()
-)
 
 @HiltViewModel
 class CustomViewModel @Inject constructor() : ViewModel() {

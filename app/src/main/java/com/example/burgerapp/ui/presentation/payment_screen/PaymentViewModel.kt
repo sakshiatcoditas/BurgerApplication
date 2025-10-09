@@ -45,7 +45,7 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
-    // --- new function to fetch payment info from Firebase ---
+    // new function to fetch payment info from Firebase
     private fun fetchPaymentInfoFromFirebase() {
         viewModelScope.launch {
             try {

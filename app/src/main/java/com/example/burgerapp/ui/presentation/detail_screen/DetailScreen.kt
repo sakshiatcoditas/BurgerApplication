@@ -145,7 +145,7 @@ fun DraggableSpicySlider(
 @SuppressLint("DefaultLocale")
 @Composable
 fun BurgerDetailScreen(
-    burger: Burger, // keep as non-null
+    burger: Burger,
     onBackClick: () -> Unit,
     navController: NavHostController,
     detailViewModel: DetailViewModel = hiltViewModel()

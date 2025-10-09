@@ -60,7 +60,7 @@ class AuthRepository @Inject constructor(
                 .addOnCompleteListener { task ->
                     Log.d("BurgerApp","Ra1 :: $task")
                     if (task.isSuccessful) {
-                        continuation.resume(Unit) // now Success is emitted at the right time
+                        continuation.resume(Unit)
                     } else {
                         continuation.resumeWithException(
                             task.exception ?: Exception("Google sign in failed")

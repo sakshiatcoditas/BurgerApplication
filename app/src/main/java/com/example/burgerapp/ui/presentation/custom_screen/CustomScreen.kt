@@ -53,8 +53,8 @@ fun CustomScreen(
 
     val options by viewModel.options.collectAsState()
 
-    // TODO: take this from firebase
-    // Names **must exactly match Firebase keys**
+
+
     val toppingsList = listOf(
         Topping("bacon", R.drawable.bacon),
         Topping("tomato", R.drawable.tomato),

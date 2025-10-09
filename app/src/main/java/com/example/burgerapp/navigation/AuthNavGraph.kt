@@ -133,7 +133,7 @@ fun AuthNavGraph(
         composable("Profile") {
             val authViewModel: AuthViewModel = hiltViewModel()
             ProfileScreen(
-                navController = navController,   // ✅ Pass navController here
+                navController = navController,
                 viewModel = authViewModel,
                 onLogoutClick = {
                     //  Sign out Firebase user (works for both email/password and Google)
@@ -186,7 +186,7 @@ fun AuthNavGraph(
         }
 
 
-// --- Custom Screen ---
+//  Custom Screen
         composable(
             route = "customScreen/{burgerId}/{portion}/{spiceLevel}",
             arguments = listOf(
@@ -216,7 +216,7 @@ fun AuthNavGraph(
             }
         }
 
-        // --- Payment Screen ---
+        //  Payment Screen
 
 
         composable(
@@ -226,7 +226,7 @@ fun AuthNavGraph(
                 navArgument("portion") { type = NavType.IntType },
                 navArgument("spiceLevel") { type = NavType.FloatType },
                 navArgument("totalPrice") { type = NavType.FloatType },
-                navArgument("burgerName") { type = NavType.StringType } // <-- added
+                navArgument("burgerName") { type = NavType.StringType }
             )
         ) { backStackEntry ->
             val burgerId = backStackEntry.arguments?.getString("burgerId") ?: ""
@@ -267,12 +267,6 @@ fun AuthNavGraph(
                 onBackClick = { navController.popBackStack() }
             )
         }
-
-
-
-
-
-
 
     }
 }

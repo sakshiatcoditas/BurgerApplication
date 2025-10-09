@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,8 +36,14 @@ fun SuccessScreen(onGoBack: () -> Unit) {
             Box(
                 modifier = Modifier
                     .size(90.dp)
+                    .shadow(
+                        elevation = 8.dp, // adjust elevation
+                        shape = CircleShape,
+                        clip = false // true if you want content clipped to shape
+                    )
                     .background(Color(0xFF4CAF50), shape = CircleShape) // green success circle
             )
+
 
             Spacer(modifier = Modifier.height(28.dp)) // spacing below circle
 

@@ -25,40 +25,18 @@ class OrderViewModel @Inject constructor() : ViewModel() {
     fun fetchUserOrders(userId: String) {
         _isLoading.value = true
 
-        database.child(userId).addValueEventListener(object : com.google.firebase.database.ValueEventListener {
-            override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
-                val orderList = snapshot.children.mapNotNull { it.getValue(Order::class.java) }
-                _orders.value = orderList.sortedByDescending { it.timestamp }
-                _isLoading.value = false
-            }
+        database.child(userId)
+            .addValueEventListener(object : com.google.firebase.database.ValueEventListener {
+                override fun onDataChange(snapshot: com.google.firebase.database.DataSnapshot) {
+                    val orderList = snapshot.children.mapNotNull { it.getValue(Order::class.java) }
+                    _orders.value = orderList.sortedByDescending { it.timestamp }
+                    _isLoading.value = false
+                }
 
-            override fun onCancelled(error: com.google.firebase.database.DatabaseError) {
-                _isLoading.value = false
-            }
-        })
+                override fun onCancelled(error: com.google.firebase.database.DatabaseError) {
+                    _isLoading.value = false
+                }
+            })
     }
-
-    fun placeOrder(
-        userId: String,
-        burgerName: String,
-        totalPrice: Double,
-        toppings: List<String>,
-        sides: List<String>,
-        portion: Int
-    ) {
-        val order = Order(
-            burgerName = burgerName,
-            totalPrice = totalPrice,
-            toppings = toppings,
-            sides = sides,
-            portion = portion,   //  use portion instead of quantity
-            timestamp = System.currentTimeMillis()
-        )
-
-        // Save to Firebase
-        val ref = database.child(userId).push()
-        ref.setValue(order)
-    }
-
 
 }

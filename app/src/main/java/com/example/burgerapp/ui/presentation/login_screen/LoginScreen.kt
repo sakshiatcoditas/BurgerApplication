@@ -103,7 +103,7 @@ fun LoginScreen(
             TextButton(
                 onClick = onNavigateToForgotPassword,
                 modifier = Modifier.align(Alignment.End)
-            ) { // TODO: use string resources
+            ) {
                 Text(stringResource(R.string.forgot_password), color = White)
             }
 
@@ -142,7 +142,7 @@ fun LoginScreen(
                     contentDescription = "Google Sign-In",
                     tint = White
                 )
-                Spacer(Modifier.width(8.dp)) // TODO: use string resources
+                Spacer(Modifier.width(8.dp))
                 Text(stringResource(R.string.login_with_google), color = White, fontSize = 16.sp)
             }
 

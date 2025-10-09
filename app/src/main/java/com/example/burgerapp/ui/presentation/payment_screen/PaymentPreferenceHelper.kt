@@ -29,7 +29,7 @@ class PaymentPreferencesHelper @Inject constructor(
         }
     }
 
-    // Flow to read selected card index; default 0
+    // Flow to read selected card index
     val selectedCard: Flow<Int> = context.dataStore.data
         .map { prefs ->
             prefs[SELECTED_CARD_KEY] ?: 0

@@ -61,7 +61,7 @@ fun ForgotPasswordScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text(stringResource(R.string.email), color = White) }, // TODO: use string resources
+                label = { Text(stringResource(R.string.email), color = White) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
