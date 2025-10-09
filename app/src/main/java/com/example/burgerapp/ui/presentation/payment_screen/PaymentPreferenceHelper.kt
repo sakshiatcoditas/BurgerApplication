@@ -15,7 +15,7 @@ private val Context.dataStore by preferencesDataStore("payment_prefs")
 
 @Singleton
 class PaymentPreferencesHelper @Inject constructor(
-    @ApplicationContext private val context: Context // ✅ Use ApplicationContext
+    @ApplicationContext private val context: Context
 ) {
 
     companion object {

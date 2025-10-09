@@ -20,10 +20,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Black
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 import com.example.burgerapp.R
@@ -43,165 +47,180 @@ fun PaymentScreen(
     portion: Int,
     spiceLevel: Float,
     onBackClick: () -> Unit,
-    paymentviewModel: PaymentViewModel = hiltViewModel(),
-    customviewModel: CustomViewModel = hiltViewModel(),
-    totalPrice:Float
-
-
+    paymentViewModel: PaymentViewModel = hiltViewModel(),
+    customViewModel: CustomViewModel = hiltViewModel(),
+    totalPrice: Float,
+    onPaymentSuccess: () -> Unit
 ) {
-    val selectedCardIndex by paymentviewModel.selectedCard.collectAsState()
+    val selectedCardIndex by paymentViewModel.selectedCard.collectAsState()
+    val deliveryFee by paymentViewModel.deliveryFee.collectAsState()
+    val taxes by paymentViewModel.taxes.collectAsState()
 
-    val deliveryFee by paymentviewModel.deliveryFee.collectAsState()
-    val taxes by paymentviewModel.taxes.collectAsState()
-    val totalWithExtras = totalPrice + (totalPrice * taxes) + deliveryFee
+    // Check if Firebase data has loaded
+    val isLoading = deliveryFee == 0f && taxes == 0f
 
-
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp)
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-
-        IconButton(onClick = onBackClick) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(R.string.back)
-            )
+    if (isLoading) {
+        // Show a loading indicator while fetching fees and taxes
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
         }
+    } else {
+        // Calculate total once data is loaded
+        val totalWithExtras = totalPrice + (totalPrice * taxes) + deliveryFee
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Order Summary
-        Text(
-            modifier = Modifier.padding(start = 14.dp),
-            text = "Order Summary",
-            style = MaterialTheme.typography.titleLarge,
-            color = BlackText,
-            fontWeight = SemiBold
-        )
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(horizontal = 8.dp)
         ) {
-            Text("Order Total", color = Gray)
-            Text("$${String.format("%.2f", totalPrice)}", color = BlackText, fontWeight = Bold)
+            Spacer(modifier = Modifier.height(16.dp))
 
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("Taxes", color = Gray)
-            Text("$${String.format("%.2f", totalPrice * taxes)}", color = Gray)
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("Delivery Fees", color = Gray)
-            Text("$${String.format("%.2f", deliveryFee)}", color = Gray)
-
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        HorizontalDivider(
-            Modifier.padding(horizontal = 24.dp),
-            DividerDefaults.Thickness,
-            color = Gray
-        )
-
-        Spacer(modifier = Modifier.height(26.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            val totalWithExtras = totalPrice + (totalPrice * taxes) + deliveryFee
-
-            Text("Total:", color = BlackText, fontWeight = Bold)
-            Text("$${String.format("%.2f", totalWithExtras)}", color = BlackText, fontWeight = Bold)
-        }
-
-        Spacer(modifier = Modifier.height(14.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("Estimated delivery time:", color = BlackText, fontWeight = Bold)
-            Text("20mins", color = BlackText, fontWeight = Bold)
-        }
-
-        Spacer(modifier = Modifier.height(34.dp))
-
-        Column(modifier = Modifier.padding(start = 14.dp)) {
-
-            Text(
-                text = "Payment methods",
-                color = BlackText,
-                fontWeight = SemiBold,
-                style = MaterialTheme.typography.titleLarge
-            )
-
-            Spacer(modifier = Modifier.height(34.dp))
-
-            // --- MasterCard ---
-            PaymentCard(
-                cardName = "Credit card",
-                cardNumber = "5105 **** **** 0505",
-                cardImage = R.drawable.mastercard,
-                index = 0,
-                selectedIndex = selectedCardIndex,
-                onCardSelected = { paymentviewModel.selectCard(it) }
-            )
-
-            // --- Visa ---
-            PaymentCard(
-                cardName = "Debit card",
-                cardNumber = "5105 **** **** 0505",
-                cardImage = R.drawable.visa,
-                index = 1,
-                selectedIndex = selectedCardIndex,
-                onCardSelected = { paymentviewModel.selectCard(it) }
-            )
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = stringResource(R.string.back)
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            // Order Summary
+            Text(
+                modifier = Modifier.padding(start = 14.dp),
+                text = "Order Summary",
+                style = MaterialTheme.typography.titleLarge,
+                color = BlackText,
+                fontWeight = SemiBold
+            )
+
+            Spacer(modifier = Modifier.height(14.dp))
+
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column {
-                    Text("Total Price", color = BlackText)
-                    Text("$${String.format("%.2f", totalWithExtras)}", color = BlackText, fontWeight = Bold)
+                Text("Order Total", color = Gray)
+                Text("$${String.format("%.2f", totalPrice)}", color = BlackText, fontWeight = Bold)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Taxes", color = Gray)
+                Text("$${String.format("%.2f", totalPrice * taxes)}", color = Gray)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Delivery Fees", color = Gray)
+                Text("$${String.format("%.2f", deliveryFee)}", color = Gray)
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            HorizontalDivider(
+                Modifier.padding(horizontal = 24.dp),
+                DividerDefaults.Thickness,
+                color = Gray
+            )
+
+            Spacer(modifier = Modifier.height(26.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Total:", color = BlackText, fontWeight = Bold)
+                Text("$${String.format("%.2f", totalWithExtras)}", color = BlackText, fontWeight = Bold)
+            }
+
+            Spacer(modifier = Modifier.height(14.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text("Estimated delivery time:", color = BlackText, fontWeight = Bold)
+                Text("20mins", color = BlackText, fontWeight = Bold)
+            }
+
+            Spacer(modifier = Modifier.height(34.dp))
+
+            Column(modifier = Modifier.padding(start = 14.dp)) {
+                Text(
+                    text = "Payment methods",
+                    color = BlackText,
+                    fontWeight = SemiBold,
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                Spacer(modifier = Modifier.height(34.dp))
+
+                // --- MasterCard ---
+                PaymentCard(
+                    cardName = "Credit card",
+                    cardNumber = "5105 **** **** 0505",
+                    cardImage = R.drawable.mastercard,
+                    index = 0,
+                    selectedIndex = selectedCardIndex,
+                    onCardSelected = { paymentViewModel.selectCard(it) }
+                )
+
+                // --- Visa ---
+                PaymentCard(
+                    cardName = "Debit card",
+                    cardNumber = "5105 **** **** 0505",
+                    cardImage = R.drawable.visa,
+                    index = 1,
+                    selectedIndex = selectedCardIndex,
+                    onCardSelected = { paymentViewModel.selectCard(it) }
+                )
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("Total Price", color = Color.Black, fontSize = 14.sp)
+                        Text("$${String.format("%.2f", totalWithExtras)}", color = Color.Black, fontWeight = Bold, fontSize = 16.sp)
+                    }
+
+                    Button(
+                        onClick = {  onPaymentSuccess() },
+                        modifier = Modifier
+                            .size(width = 209.dp, height = 70.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                    ) {
+                        Text("Pay Now", color = Color.White, fontWeight = Bold, fontSize = 16.sp)
+                    }
                 }
 
-                Button(onClick = { /* Pay Now click */ }) {
-                    Text("Pay Now")
-                }
             }
         }
     }
 }
-
 @Composable
 fun PaymentCard(
     cardName: String,

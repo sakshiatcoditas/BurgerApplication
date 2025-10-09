@@ -15,7 +15,7 @@ class PaymentViewModel @Inject constructor(
     private val helper: PaymentPreferencesHelper
 ) : ViewModel() {
 
-    // --- existing selected card state ---
+
     private val _selectedCard = MutableStateFlow(0)
     val selectedCard: StateFlow<Int> get() = _selectedCard
 
@@ -62,4 +62,7 @@ class PaymentViewModel @Inject constructor(
             }
         }
     }
+
+
+
 }

@@ -1,5 +1,6 @@
 package com.example.burgerapp.navigation
 
+import SuccessScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -235,9 +236,28 @@ fun AuthNavGraph(
                 portion = portion,
                 spiceLevel = spiceLevel,
                 totalPrice = totalPrice,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                onPaymentSuccess = {
+                    navController.navigate("successScreen") {
+                        popUpTo("paymentScreen/$burgerId/$portion/$spiceLevel/$totalPrice") { inclusive = true }
+                    }
+                }
+            )
+
+        }
+        composable("successScreen") {
+            SuccessScreen(
+                onGoBack = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo("successScreen") { inclusive = true } // remove success screen from backstack
+                    }
+                }
             )
         }
+
+
+
+
 
 
     }
