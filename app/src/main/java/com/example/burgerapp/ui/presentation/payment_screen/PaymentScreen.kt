@@ -1,8 +1,10 @@
 package com.example.burgerapp.ui.presentation.payment_screen
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.ui.res.stringResource
 
 import androidx.compose.foundation.layout.*
@@ -11,10 +13,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 
 import androidx.compose.ui.Modifier
@@ -22,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 
 import com.example.burgerapp.R
 import com.example.burgerapp.ui.theme.BlackText
@@ -30,6 +33,8 @@ import com.example.burgerapp.ui.theme.Gray
 import com.example.burgerapp.ui.theme.LightGray
 import com.example.burgerapp.ui.theme.WhiteText
 import com.example.burgerapp.ui.theme.faintgrey
+import com.example.burgerapp.ui.theme.lightergray
+import com.example.burgerapp.viewmodel.CustomViewModel
 
 
 @Composable
@@ -37,8 +42,14 @@ fun PaymentScreen(
     burgerId: String,
     portion: Int,
     spiceLevel: Float,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    viewModel: PaymentViewModel = hiltViewModel(),
+
+
 ) {
+    val selectedCardIndex by viewModel.selectedCard.collectAsState()
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -46,7 +57,6 @@ fun PaymentScreen(
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Back button
         IconButton(onClick = onBackClick) {
             Icon(
                 Icons.AutoMirrored.Filled.ArrowBack,
@@ -55,56 +65,26 @@ fun PaymentScreen(
         }
 
         Spacer(modifier = Modifier.height(16.dp))
-//        Text(text = "Burger ID: $burgerId")
-//        Text(text = "Portion: $portion")
-//        Text(text = "Spice Level: $spiceLevel")
 
+        // Order Summary
         Text(
-            modifier = Modifier.fillMaxWidth()
-                .padding(start = 14.dp),
+            modifier = Modifier.padding(start = 14.dp),
             text = "Order Summary",
             style = MaterialTheme.typography.titleLarge,
             color = BlackText,
-            fontWeight = SemiBold,
-
-
-            )
+            fontWeight = SemiBold
+        )
 
         Spacer(modifier = Modifier.height(14.dp))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 24.dp, end = 16.dp),
+                .padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "Order Total",
-                color = Gray
-            )
-
-            Text(
-                text = "$100",
-                color = Gray
-            )
-        }
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 24.dp, end = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = "Taxes",
-                color = Gray
-            )
-
-            Text(
-                text = "$12",
-                color = Gray
-            )
+            Text("Order Total", color = Gray)
+            Text("$100", color = Gray)
         }
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -112,24 +92,29 @@ fun PaymentScreen(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 24.dp, end = 16.dp),
+                .padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "Delivery Fees",
-                color = Gray
-            )
+            Text("Taxes", color = Gray)
+            Text("$12", color = Gray)
+        }
 
-            Text(
-                text = "$50",
-                color = Gray
-            )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Delivery Fees", color = Gray)
+            Text("$50", color = Gray)
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         HorizontalDivider(
-            Modifier.padding(start = 24.dp, end = 16.dp),
+            Modifier.padding(horizontal = 24.dp),
             DividerDefaults.Thickness,
             color = Gray
         )
@@ -137,50 +122,26 @@ fun PaymentScreen(
         Spacer(modifier = Modifier.height(26.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(start = 24.dp, end = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-
-            Text(
-                text = "Total:",
-                color = BlackText,
-                fontWeight = Bold
-            )
-
-            Text(
-                text = "$1000",
-                color = BlackText, fontWeight = Bold
-            )
+            Text("Total:", color = BlackText, fontWeight = Bold)
+            Text("$1000", color = BlackText, fontWeight = Bold)
         }
+
         Spacer(modifier = Modifier.height(14.dp))
 
         Row(
-            modifier = Modifier.fillMaxWidth().padding(start = 24.dp, end = 16.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-
-            Text(
-                text = "Estimated delivery time:",
-                color = BlackText,
-                fontWeight = Bold
-            )
-
-            Text(
-                text = "20mins",
-                color = BlackText,
-                fontWeight = Bold
-            )
+            Text("Estimated delivery time:", color = BlackText, fontWeight = Bold)
+            Text("20mins", color = BlackText, fontWeight = Bold)
         }
 
         Spacer(modifier = Modifier.height(34.dp))
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 14.dp)
-        ) {
+        Column(modifier = Modifier.padding(start = 14.dp)) {
 
             Text(
                 text = "Payment methods",
@@ -189,113 +150,100 @@ fun PaymentScreen(
                 style = MaterialTheme.typography.titleLarge
             )
 
+            Spacer(modifier = Modifier.height(34.dp))
 
-            Spacer(Modifier.height(34.dp))
+            // --- MasterCard ---
+            PaymentCard(
+                cardName = "Credit card",
+                cardNumber = "5105 **** **** 0505",
+                cardImage = R.drawable.mastercard,
+                index = 0,
+                selectedIndex = selectedCardIndex,
+                onCardSelected = { viewModel.selectCard(it) }
+            )
 
-            Surface(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)           // height of the rectangle
-                    .padding(end = 14.dp),
-                color = BlackText,           // background color
-                shape = RoundedCornerShape(16.dp), // rounded corners
-                shadowElevation = 4.dp
+            // --- Visa ---
+            PaymentCard(
+                cardName = "Debit card",
+                cardNumber = "5105 **** **** 0505",
+                cardImage = R.drawable.visa,
+                index = 1,
+                selectedIndex = selectedCardIndex,
+                onCardSelected = { viewModel.selectCard(it) }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = 16.dp, end = 16.dp), // add end padding too
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.mastercard),
-                        contentDescription = "MasterCard",
-                        modifier = Modifier.size(width = 70.dp, height = 42.38.dp)
-                    )
-
-                    // Column with card info takes remaining space
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)  // crucial: only take remaining space
-                            .padding(start = 16.dp)
-                    ) {
-                        Text(text = "Credit card", color = WhiteText, fontWeight = SemiBold)
-                        Text(text = "5105 **** **** 0505", color = faintgrey)
-                    }
-
-                    // RadioButton stays at the end but inside Surface
-                    RadioButton(
-                        selected = true,
-                        onClick = { /* handle selection */ },
-                        colors = RadioButtonDefaults.colors(
-                            selectedColor = WhiteText,
-                            unselectedColor = BlackText
-                        )
-                    )
+                Column {
+                    Text("Total Price", color = BlackText)
+                    Text("$100", color = BlackText, fontWeight = SemiBold)
                 }
 
-
-
+                Button(onClick = { /* Pay Now click */ }) {
+                    Text("Pay Now")
+                }
             }
-            Spacer(Modifier.height(34.dp))
+        }
+    }
+}
 
-            Surface(
+@Composable
+fun PaymentCard(
+    cardName: String,
+    cardNumber: String,
+    cardImage: Int,
+    index: Int,
+    selectedIndex: Int,
+    onCardSelected: (Int) -> Unit
+) {
+    val isSelected = selectedIndex == index
+    val backgroundColor = if (isSelected) BlackText else lightergray
+    val borderColor = if (isSelected) WhiteText else backgroundColor
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(bottom = 16.dp)
+            .clickable { onCardSelected(index) },
+        color = backgroundColor,
+        shape = RoundedCornerShape(16.dp),
+        shadowElevation = if (isSelected) 8.dp else 4.dp,
+        border = BorderStroke(2.dp, borderColor)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = cardImage),
+                contentDescription = cardName,
+                modifier = Modifier.size(width = 70.dp, height = 42.38.dp)
+            )
+
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(80.dp)           // height of the rectangle
-                    .padding(end = 14.dp),
-                color = LightGray,           // background color
-                shape = RoundedCornerShape(16.dp), // rounded corners
-                shadowElevation = 4.dp
+                    .weight(1f)
+                    .padding(start = 16.dp)
             ) {
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(start = 16.dp, end = 16.dp), // add end padding too
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.visa),
-                        contentDescription = "Visa card",
-                        modifier = Modifier.size(width = 70.dp, height = 42.38.dp)
-                    )
-
-                    // Column with card info takes remaining space
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)  // crucial: only take remaining space
-                            .padding(start = 16.dp)
-                    ) {
-                        Text(text = "Debit card", color = BlackText, fontWeight = SemiBold)
-                        Text(text = "5105 **** **** 0505", color = faintgrey)
-                    }
-
-                    // RadioButton stays at the end but inside Surface
-                    RadioButton(
-                        selected = true,
-                        onClick = { /* handle selection */ },
-                        colors = RadioButtonDefaults.colors(
-                            selectedColor = WhiteText,
-                            unselectedColor = BlackText
-                        )
-                    )
-                }
-
-
-
+                Text(cardName, color = WhiteText, fontWeight = SemiBold)
+                Text(cardNumber, color = faintgrey)
             }
 
-            Row(){
-                Column(Modifier.fillMaxWidth()) {
-                    Text(text = "Total Price",color=BlackText)
-                    Text(text = "$100",color=BlackText, fontWeight = SemiBold)
-                }
-               Button(onClick = {}) {
-                   Text(text = "Pay Now")
-               }
-            }
+            RadioButton(
+                selected = isSelected,
+                onClick = { onCardSelected(index) },
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = WhiteText,
+                    unselectedColor = BlackText
+                )
+            )
         }
     }
 }
