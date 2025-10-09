@@ -82,21 +82,21 @@ class AuthViewModel @Inject constructor(
     private fun loadDeliveryAddress(uid: String) {
         val ref = Firebase.database.getReference("users/$uid/deliveryAddress")
 
-        // One-time fetch
+
         ref.get().addOnSuccessListener { snapshot ->
             _deliveryAddress.value = snapshot.getValue<String>() ?: ""
         }.addOnFailureListener {
             _deliveryAddress.value = ""
         }
 
-        // Real-time updates (must implement ValueEventListener)
+
         ref.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 _deliveryAddress.value = snapshot.getValue<String>() ?: ""
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // handle error if needed
+                Log.e("BurgerApp", "Failed to read value.", error.toException())
             }
         })
     }
@@ -120,7 +120,7 @@ class AuthViewModel @Inject constructor(
                 val user = result.user
 
                 user?.let {
-                    // Save name/email in Realtime Database
+                    // Save name-email in Realtime Database
                     repository.saveUserNameToDatabase(it.uid, name, email)
 
                     // Update Firebase displayName
@@ -171,8 +171,4 @@ class AuthViewModel @Inject constructor(
             }
         }
     }
-
-
-
-
 }
