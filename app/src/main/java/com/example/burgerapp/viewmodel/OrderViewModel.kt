@@ -38,5 +38,27 @@ class OrderViewModel @Inject constructor() : ViewModel() {
         })
     }
 
+    fun placeOrder(
+        userId: String,
+        burgerName: String,
+        totalPrice: Double,
+        toppings: List<String>,
+        sides: List<String>,
+        portion: Int
+    ) {
+        val order = Order(
+            burgerName = burgerName,
+            totalPrice = totalPrice,
+            toppings = toppings,
+            sides = sides,
+            portion = portion,   //  use portion instead of quantity
+            timestamp = System.currentTimeMillis()
+        )
+
+        // Save to Firebase
+        val ref = database.child(userId).push()
+        ref.setValue(order)
+    }
+
 
 }

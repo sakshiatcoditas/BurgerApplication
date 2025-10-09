@@ -5,7 +5,4 @@ data class Message(
     val text: String = "",
     val senderId: String = "",
     val timestamp: Long = System.currentTimeMillis()
-) {
-    val isUser: Boolean
-        get() = senderId != "BOT"
-}
+)

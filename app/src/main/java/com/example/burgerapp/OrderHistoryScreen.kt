@@ -94,7 +94,7 @@ fun OrderCard(order: Order) {
             if (order.sides.isNotEmpty()) {
                 Text("Sides: ${order.sides.joinToString()}")
             }
-            Text("Quantity: ${order.quantity}")
+            Text("Quantity: ${order.portion}")
 
             Spacer(modifier = Modifier.height(4.dp))
             Text(

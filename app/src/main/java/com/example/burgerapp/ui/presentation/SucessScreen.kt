@@ -17,8 +17,10 @@ import androidx.compose.ui.text.font.FontWeight
 fun SuccessScreen(onGoBack: () -> Unit) {
     Box(
         modifier = Modifier
-            .fillMaxSize(),
-        contentAlignment = Alignment.Center
+            .fillMaxSize()
+            ,
+        contentAlignment = Alignment.Center,
+
     ) {
         // Modal container
         Column(

@@ -21,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    //Check this launcher is this correct approach
+
 
 
     private val authViewModel: AuthViewModel by viewModels()
@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
             }
 
             BurgerAppTheme {
-                val navController = rememberNavController() // create inside app navigation.
+                val navController = rememberNavController()
 
                 Surface(color = Color.White) {
                     AuthNavGraph( // AppNavigation

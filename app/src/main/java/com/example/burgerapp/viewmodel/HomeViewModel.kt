@@ -119,10 +119,6 @@ class HomeViewModel @Inject constructor(
 
 
 
-
-
-
-
     // --- Network monitoring ---
     private fun monitorNetwork() {
         val connectivityManager =
