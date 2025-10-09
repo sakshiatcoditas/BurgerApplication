@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.burgerapp.AuthState
+import com.example.burgerapp.OrderHistoryScreen
 import com.example.burgerapp.ui.presentation.chat_screen.ChatScreen
 import com.example.burgerapp.ui.presentation.custom_screen.CustomScreen
 import com.example.burgerapp.ui.presentation.detail_screen.BurgerDetailScreen
@@ -132,21 +133,22 @@ fun AuthNavGraph(
         composable("Profile") {
             val authViewModel: AuthViewModel = hiltViewModel()
             ProfileScreen(
+                navController = navController,   // ✅ Pass navController here
                 viewModel = authViewModel,
                 onLogoutClick = {
-                    // Sign out Firebase user (works for both email/password and Google)
+                    //  Sign out Firebase user (works for both email/password and Google)
                     FirebaseAuth.getInstance().signOut()
 
-                    // Optionally sign out Google too, if they logged in via Google
+                    //  Also sign out Google (if logged in via Google)
                     googleSignInClient.signOut()
 
-                    // Navigate to Login screen and clear backstack
+                    //  Navigate to Login screen and clear backstack
                     navController.navigate(Screen.Login.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
                     }
                 },
                 onBackClick = {
-                    // Navigate to Home screen when back button is pressed
+                    //  Navigate back to Home screen
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Profile.route) { inclusive = true }
                     }
@@ -218,33 +220,36 @@ fun AuthNavGraph(
 
 
         composable(
-            route = "paymentScreen/{burgerId}/{portion}/{spiceLevel}/{totalPrice}",
+            route = "paymentScreen/{burgerId}/{portion}/{spiceLevel}/{totalPrice}/{burgerName}",
             arguments = listOf(
                 navArgument("burgerId") { type = NavType.StringType },
                 navArgument("portion") { type = NavType.IntType },
                 navArgument("spiceLevel") { type = NavType.FloatType },
-                navArgument("totalPrice") { type = NavType.FloatType } // add this
+                navArgument("totalPrice") { type = NavType.FloatType },
+                navArgument("burgerName") { type = NavType.StringType } // <-- added
             )
         ) { backStackEntry ->
             val burgerId = backStackEntry.arguments?.getString("burgerId") ?: ""
             val portion = backStackEntry.arguments?.getInt("portion") ?: 1
             val spiceLevel = backStackEntry.arguments?.getFloat("spiceLevel") ?: 0.7f
             val totalPrice = backStackEntry.arguments?.getFloat("totalPrice") ?: 0f
+            val burgerName = backStackEntry.arguments?.getString("burgerName") ?: "Custom Burger"
 
             PaymentScreen(
                 burgerId = burgerId,
+                burgerName = burgerName,
                 portion = portion,
                 spiceLevel = spiceLevel,
                 totalPrice = totalPrice,
                 onBackClick = { navController.popBackStack() },
                 onPaymentSuccess = {
                     navController.navigate("successScreen") {
-                        popUpTo("paymentScreen/$burgerId/$portion/$spiceLevel/$totalPrice") { inclusive = true }
+                        popUpTo("paymentScreen/$burgerId/$portion/$spiceLevel/$totalPrice/$burgerName") { inclusive = true }
                     }
                 }
             )
-
         }
+
         composable("successScreen") {
             SuccessScreen(
                 onGoBack = {
@@ -254,6 +259,15 @@ fun AuthNavGraph(
                 }
             )
         }
+
+        composable("orderHistory") {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+            OrderHistoryScreen(
+                userId = userId,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
 
 
 

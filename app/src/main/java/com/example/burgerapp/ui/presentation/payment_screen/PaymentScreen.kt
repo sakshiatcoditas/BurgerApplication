@@ -50,7 +50,8 @@ fun PaymentScreen(
     paymentViewModel: PaymentViewModel = hiltViewModel(),
     customViewModel: CustomViewModel = hiltViewModel(),
     totalPrice: Float,
-    onPaymentSuccess: () -> Unit
+    onPaymentSuccess: () -> Unit,
+    burgerName: String
 ) {
     val selectedCardIndex by paymentViewModel.selectedCard.collectAsState()
     val deliveryFee by paymentViewModel.deliveryFee.collectAsState()
@@ -207,14 +208,31 @@ fun PaymentScreen(
                     }
 
                     Button(
-                        onClick = {  onPaymentSuccess() },
+                        onClick = {
+                            //  Save order to Firebase
+                            paymentViewModel.saveOrderToFirebase(
+                                burgerName = burgerName,
+                                totalPrice = totalWithExtras,
+                                toppings = customViewModel.selectedToppings.toList(),
+                                spiceLevel = spiceLevel,
+                                portion = portion
+                            )
+
+                            onPaymentSuccess()
+                        },
                         modifier = Modifier
                             .size(width = 209.dp, height = 70.dp),
                         shape = RoundedCornerShape(20.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                     ) {
-                        Text("Pay Now", color = Color.White, fontWeight = Bold, fontSize = 16.sp)
+                        Text(
+                            text = "Pay Now",
+                            color = Color.White,
+                            fontWeight = Bold,
+                            fontSize = 16.sp
+                        )
                     }
+
                 }
 
             }

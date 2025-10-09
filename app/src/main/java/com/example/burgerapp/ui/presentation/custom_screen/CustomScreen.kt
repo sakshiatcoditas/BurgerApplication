@@ -367,7 +367,7 @@ fun CustomScreen(
             Button(
                 onClick = {
                     navController.navigate(
-                        "paymentScreen/${burger.burgerId}/$portion/$spiceLevel/$totalPrice"
+                        "paymentScreen/${burger.burgerId}/$portion/$spiceLevel/$totalPrice/${burger.name}"
                     )
 
 

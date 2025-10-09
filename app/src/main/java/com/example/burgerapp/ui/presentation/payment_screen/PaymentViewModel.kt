@@ -2,6 +2,7 @@ package com.example.burgerapp.ui.presentation.payment_screen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,6 +63,41 @@ class PaymentViewModel @Inject constructor(
             }
         }
     }
+
+
+    fun saveOrderToFirebase(
+        burgerName: String,
+        totalPrice: Float,
+        toppings: List<String>,
+        spiceLevel: Float,
+        portion: Int
+    ) {
+        viewModelScope.launch {
+            try {
+                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
+                val ordersRef = FirebaseDatabase.getInstance()
+                    .getReference("orders")
+                    .child(userId)
+
+                val orderId = ordersRef.push().key ?: return@launch
+
+                val orderData = mapOf(
+                    "orderId" to orderId,
+                    "burgerName" to burgerName,
+                    "toppings" to toppings,
+                    "spiceLevel" to spiceLevel,
+                    "portion" to portion,
+                    "totalPrice" to totalPrice,
+                    "timestamp" to System.currentTimeMillis()
+                )
+
+                ordersRef.child(orderId).setValue(orderData).await()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
 
 
 

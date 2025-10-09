@@ -16,8 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.burgerapp.R
 import com.example.burgerapp.ui.presentation.home_screen.components.UserAvatar
 import com.example.burgerapp.viewmodel.AuthViewModel
@@ -28,7 +30,9 @@ import com.example.burgerapp.viewmodel.AuthViewModel
 fun ProfileScreen(
     viewModel: AuthViewModel = hiltViewModel(),
     onLogoutClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    navController: NavController
+
 ) {
     val user by viewModel.currentUser.collectAsState()
     val emailUserName by viewModel.emailUserName.collectAsState()
@@ -173,12 +177,19 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp, vertical = 8.dp)
-                    .clickable { /* Navigate to Order History */ },
+                    .clickable { },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Order History", style = MaterialTheme.typography.bodyLarge)
-                Icon(Icons.Filled.ArrowForward, contentDescription = null)
+                Button(
+                    onClick = { navController.navigate("orderHistory") },
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
+                ) {
+                    Text("Order History", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+
             }
 
             // Buttons Row
