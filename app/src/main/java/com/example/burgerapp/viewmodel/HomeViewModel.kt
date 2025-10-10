@@ -69,7 +69,7 @@ class HomeViewModel @Inject constructor(
         }
 
         loadCurrentUser()
-        monitorNetwork() // <-- removed the `app` argument
+        monitorNetwork()
     }
 
 

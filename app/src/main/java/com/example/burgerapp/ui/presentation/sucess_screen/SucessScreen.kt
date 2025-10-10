@@ -14,14 +14,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material3.Icon
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+
 @Composable
 fun SuccessScreen(onGoBack: () -> Unit) {
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            ,
-        contentAlignment = Alignment.Center,
-
+            .fillMaxSize(),
+        contentAlignment = Alignment.Center
     ) {
         // Modal container
         Column(
@@ -32,22 +36,27 @@ fun SuccessScreen(onGoBack: () -> Unit) {
                 .padding(top = 26.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Top Circle
+            // Top Circle with Check
             Box(
                 modifier = Modifier
                     .size(90.dp)
                     .shadow(
-                        elevation = 8.dp, // adjust elevation
-                        shape = CircleShape,
-                        clip = false // true if you want content clipped to shape
+                        elevation = 8.dp,
+                        shape = CircleShape
                     )
-                    .background(Color(0xFF4CAF50), shape = CircleShape) // green success circle
-            )
+                    .background(Color(0xFF4CAF50), shape = CircleShape),
+                contentAlignment = Alignment.Center // center the check
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Check,
+                    contentDescription = "Success",
+                    tint = Color.White,
+                    modifier = Modifier.size(50.dp) // size of the checkmark
+                )
+            }
 
+            Spacer(modifier = Modifier.height(28.dp))
 
-            Spacer(modifier = Modifier.height(28.dp)) // spacing below circle
-
-            // "Success" text
             Text(
                 text = "Success",
                 fontSize = 28.sp,
@@ -57,7 +66,6 @@ fun SuccessScreen(onGoBack: () -> Unit) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Description text
             Text(
                 text = "Your payment was successful.\nA receipt for this purchase has been sent to your email.",
                 fontSize = 16.sp,
@@ -68,7 +76,6 @@ fun SuccessScreen(onGoBack: () -> Unit) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Go Back button
             Button(
                 onClick = onGoBack,
                 modifier = Modifier
@@ -82,7 +89,6 @@ fun SuccessScreen(onGoBack: () -> Unit) {
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
-
                 )
             }
         }

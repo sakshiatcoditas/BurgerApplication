@@ -39,7 +39,7 @@ class FavoriteViewModel @Inject constructor(
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Optional: handle errors
+
             }
         }
         userRef?.addValueEventListener(favoritesListener!!)

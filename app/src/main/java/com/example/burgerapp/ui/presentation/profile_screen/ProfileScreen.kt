@@ -73,7 +73,7 @@ fun ProfileScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0x88FF0000))
+            .background(Color(0x7CF13D3D))
     ) {
         Box(
             modifier = Modifier
@@ -184,7 +184,8 @@ fun ProfileScreen(
             ) {
                 Button(
                     onClick = { navController.navigate("orderHistory") },
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                        .padding(horizontal = 24.dp, vertical = 8.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Black)
                 ) {

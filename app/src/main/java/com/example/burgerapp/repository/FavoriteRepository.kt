@@ -58,7 +58,7 @@ class FavoriteRepository @Inject constructor(
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle if needed
+
             }
         })
     }
