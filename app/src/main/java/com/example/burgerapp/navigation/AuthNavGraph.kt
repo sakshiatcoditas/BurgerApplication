@@ -12,7 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.burgerapp.AuthState
-import com.example.burgerapp.OrderHistoryScreen
+import com.example.burgerapp.ui.presentation.orderhistory_screen.OrderHistoryScreen
 import com.example.burgerapp.ui.presentation.chat_screen.ChatScreen
 import com.example.burgerapp.ui.presentation.custom_screen.CustomScreen
 import com.example.burgerapp.ui.presentation.detail_screen.BurgerDetailScreen
@@ -39,7 +39,7 @@ fun AuthNavGraph(
 ) {
     NavHost(navController = navController, startDestination = Screen.Splash.route) {
 
-        // --- Splash Screen ---
+        //  Splash Screen -
         composable(Screen.Splash.route) {
             SplashScreen(
                 onNavigateToLogin = {
@@ -123,14 +123,14 @@ fun AuthNavGraph(
 
         composable("Chat") { backStackEntry ->
 
-            val chatViewModel: ChatViewModel = hiltViewModel() // scoped to activity, not composable
+            val chatViewModel: ChatViewModel = hiltViewModel()
 
             ChatScreen(navController = navController, viewModel = chatViewModel)
         }
 
 
         // --- Profile Screen ---
-        composable("Profile") {
+        composable(Screen.Profile.route) {
             val authViewModel: AuthViewModel = hiltViewModel()
             ProfileScreen(
                 navController = navController,
@@ -139,7 +139,7 @@ fun AuthNavGraph(
                     //  Sign out Firebase user (works for both email/password and Google)
                     FirebaseAuth.getInstance().signOut()
 
-                    //  Also sign out Google (if logged in via Google)
+                    //  Also sign out Google (if logged in with google)
                     googleSignInClient.signOut()
 
                     //  Navigate to Login screen and clear backstack
@@ -198,7 +198,7 @@ fun AuthNavGraph(
             val detailViewModel: DetailViewModel = hiltViewModel()
             val burgerId = backStackEntry.arguments?.getString("burgerId") ?: ""
             val portion = backStackEntry.arguments?.getInt("portion") ?: 1
-            val spiceLevel = backStackEntry.arguments?.getFloat("spiceLevel") ?: 0.7f
+            val spiceLevel = backStackEntry.arguments?.getFloat("spiceLevel") ?: 0.5f
 
             LaunchedEffect(burgerId) {
                 detailViewModel.loadBurger(burgerId)
@@ -231,7 +231,7 @@ fun AuthNavGraph(
         ) { backStackEntry ->
             val burgerId = backStackEntry.arguments?.getString("burgerId") ?: ""
             val portion = backStackEntry.arguments?.getInt("portion") ?: 1
-            val spiceLevel = backStackEntry.arguments?.getFloat("spiceLevel") ?: 0.7f
+            val spiceLevel = backStackEntry.arguments?.getFloat("spiceLevel") ?: 0.5f
             val totalPrice = backStackEntry.arguments?.getFloat("totalPrice") ?: 0f
             val burgerName = backStackEntry.arguments?.getString("burgerName") ?: "Custom Burger"
 
@@ -250,17 +250,17 @@ fun AuthNavGraph(
             )
         }
 
-        composable("successScreen") {
+        composable(Screen.Success.route) {
             SuccessScreen(
                 onGoBack = {
                     navController.navigate(Screen.Home.route) {
-                        popUpTo("successScreen") { inclusive = true } // remove success screen from backstack
+                        popUpTo("successScreen") { inclusive = true }
                     }
                 }
             )
         }
 
-        composable("orderHistory") {
+        composable(Screen.OrderHistory.route) {
             val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
             OrderHistoryScreen(
                 userId = userId,

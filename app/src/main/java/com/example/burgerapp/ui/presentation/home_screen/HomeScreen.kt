@@ -37,7 +37,7 @@ fun HomeScreen(
         topBar = {
             HomeTopBar(
                 navController = navController,
-                userName = uiState.userName ?: "",   // <-- pass userName
+                userName = uiState.userName ?: "",
                 userPhotoUrl = uiState.userPhotoUrl
             )
         },

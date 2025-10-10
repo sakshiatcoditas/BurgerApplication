@@ -1,8 +1,7 @@
 package com.example.burgerapp.data
 
 data class Topping(
-    val name: String, // Must match Firebase key
+    val name: String,
     val imageRes: Int
 )
 
-//nullable all data classes

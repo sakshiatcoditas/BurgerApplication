@@ -65,8 +65,8 @@ fun BurgerCard(
                 .padding(8.dp)
         ) {
             //  Show loader while image is loading
-            SubcomposeAsyncImage( // TODO : handle null and empty state for image url.
-                model = burger.imageUrl.ifEmpty { "https://via.placeholder.com/150" }, // TODO: remove hard coded url
+            SubcomposeAsyncImage(
+                model = burger.imageUrl.ifEmpty { "https://via.placeholder.com/150" },
                 contentDescription = burger.name,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -109,7 +109,7 @@ fun BurgerCard(
 
             Text(burger.name, fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Black)
             Text(burger.type, color = Gray)
-            // TODO: create a separate icon for this.
+
             Text("⭐ ${burger.rating}", fontSize = 14.sp, color =Black)
 
             Spacer(modifier = Modifier.height(4.dp))

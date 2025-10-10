@@ -223,7 +223,7 @@ fun BurgerDetailScreen(
                 color = Black,
                 modifier = Modifier.fillMaxWidth()
             )
-            Text(// TODO: use icon for star and use common widget for this.
+            Text(
                 text = "⭐ ${burger.rating}",
                 style = MaterialTheme.typography.bodyMedium,
                 color =Black,

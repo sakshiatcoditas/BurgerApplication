@@ -1,4 +1,4 @@
-package com.example.burgerapp
+package com.example.burgerapp.ui.presentation.orderhistory_screen
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -84,19 +84,19 @@ fun OrderCard(order: Order) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(order.burgerName, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text("Total: ₹${order.totalPrice}", fontWeight = FontWeight.Medium)
+            Text(order.burgerName,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp)
 
-            if (order.toppings.isNotEmpty()) {
-                Text("Toppings: ${order.toppings.joinToString()}")
-            }
-            if (order.sides.isNotEmpty()) {
-                Text("Sides: ${order.sides.joinToString()}")
-            }
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text("Total: ₹${order.totalPrice}",
+                fontWeight = FontWeight.Medium)
+
             Text("Quantity: ${order.portion}")
 
             Spacer(modifier = Modifier.height(4.dp))
+
             Text(
                 text = "Ordered on: ${
                     SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(order.timestamp)

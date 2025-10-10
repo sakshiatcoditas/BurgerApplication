@@ -43,7 +43,7 @@ fun CategoryChips(
                 modifier = Modifier.height(45.dp), // standard chip height
                 color = if (category == selectedCategory) CherryRed else White,
                 shape = RoundedCornerShape(18.dp),
-                shadowElevation = 2.dp // subtle elevation for depth
+                shadowElevation = 2.dp
             ) {
                 Box(
                     modifier = Modifier
