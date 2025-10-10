@@ -71,18 +71,16 @@ class PaymentViewModel @Inject constructor(
         toppings: List<String>,
         spiceLevel: Float,
         portion: Int
-    ) {
-        viewModelScope.launch {
-            try {
-                val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@launch
-                val ordersRef = FirebaseDatabase.getInstance()
+    ) = viewModelScope.launch {
+        try {
+            FirebaseAuth.getInstance().currentUser?.uid?.let { userId ->
+                val orderRef = FirebaseDatabase.getInstance()
                     .getReference("orders")
                     .child(userId)
-
-                val orderId = ordersRef.push().key ?: return@launch
+                    .push() // generates new child key
 
                 val orderData = mapOf(
-                    "orderId" to orderId,
+                    "orderId" to orderRef.key,
                     "burgerName" to burgerName,
                     "toppings" to toppings,
                     "spiceLevel" to spiceLevel,
@@ -91,10 +89,10 @@ class PaymentViewModel @Inject constructor(
                     "timestamp" to System.currentTimeMillis()
                 )
 
-                ordersRef.child(orderId).setValue(orderData).await()
-            } catch (e: Exception) {
-                e.printStackTrace()
+                orderRef.setValue(orderData).await()
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
