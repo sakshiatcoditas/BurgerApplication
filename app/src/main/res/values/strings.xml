@@ -11,6 +11,7 @@
     <string name="google_login_success">Google login successful</string>
     <string name="reset_link">"Enter your registered email address. We'll send you a reset link."</string>
     <string name="email">Email</string>
+
     <string name="send_reset_link">"Send Reset Link"</string>
     <string name="back_to_login">"Back to Login"</string>
     <string name="welcome_back">"Welcome Back"</string>
@@ -26,7 +27,7 @@
     <string name="register">Register</string>
     <string name="register_with_google">Register with Google</string>
     <string name="already_have_account">Already have an account? Login</string>
-
+<string name="google_sign_in">Google Sign-In</string>
     <string name="order_your_favourite_food">Order your favourite food!</string>
     <string name="search_food">Search food</string>
     <string name="filter">Filter</string>
@@ -39,5 +40,46 @@
     <string name="chat">Chat</string>
     <string name="default_user_initial">U</string>
 
+    <string name="chat_title">Chat</string>
+    <string name="type_message">Type a message</string>
+    <string name="send">Send</string>
+    <string name="back_button">Back</string>
+    <string name="search_not_found">Search not found</string>
+<string name="no_internet_connection">No Internet Connection</string>
+
+    <string name="customize_burger">Customize Your Burger to Your Tastes</string>
+    <string name="ultimate_experience">Ultimate Experience</string>
+    <string name="spiciness">Spiciness</string>
+    <string name="portion">Portion</string>
+    <string name="decrease">Decrease</string>
+    <string name="increase">Increase</string>
+    <string name="toppings">Toppings</string>
+    <string name="sides">Sides</string>
+    <string name="total_price">Total:</string>
+    <string name="order_now">Order Now</string>
+    <string name="back">Back</string>
+    <string name="burger_image">Burger Image</string>
+    <string name="no_favorites_yet">No favorites yet</string>
+    <string name="favorites_title">Favorites</string>
+    <string name="empty_favorites_message">You haven’t added any burgers to favorites yet!</string>
+
+
+
+    <string name="mild">Mild</string>
+    <string name="medium">Medium</string>
+    <string name="spicy">Spicy</string>
+    <string name="spiciness_level">Spiciness</string>
+
+    <string name="no_description">No description available.</string>
+
+    <string name="forgot_password_title">Forgot Password</string>
+    <string name="forgot_password_description">Enter your registered email address. We\'ll send you a reset link.</string>
+    <string name="email_label">Email</string>
+
+    <string name="reset_success">Password reset link sent successfully.</string>
+    <string name="reset_error">Failed to send reset link. Please try again.</string>
+    <string name="logout">Logout</string>
+    <string name="name">Name</string>
+<string name="user">"U"</string>
 
 </resources>

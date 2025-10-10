@@ -1,9 +1,11 @@
-package com.example.burgerapp.ui.ui
+package com.example.burgerapp.ui.presentation.detail_screen
 
+import androidx.compose.ui.res.stringResource
+import androidx.compose.material.icons.filled.Star
+import com.example.burgerapp.R
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
@@ -16,27 +18,43 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
 
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberAsyncImagePainter
-import com.example.burgerapp.burger.Burger
+
+import com.example.burgerapp.data.Burger
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.ui.draw.shadow
+import androidx.compose.material.icons.filled.BrokenImage
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImagePainter
+import coil.compose.SubcomposeAsyncImage
+import coil.compose.SubcomposeAsyncImageContent
+import com.example.burgerapp.ui.theme.CherryRed
+import com.example.burgerapp.ui.theme.Gray
+import com.example.burgerapp.ui.theme.LightGray
+import com.example.burgerapp.ui.theme.green
+import com.example.burgerapp.ui.theme.yellow
 import com.example.burgerapp.viewmodel.DetailViewModel
 import kotlin.math.roundToInt
+
 
 
 @Composable
@@ -44,10 +62,6 @@ fun DraggableSpicySlider(
     spiceLevel: Float,
     onSpiceChange: (Float) -> Unit
 ) {
-    val sliderWidth = 150.dp
-    val sliderHeight = 8.dp
-    val thumbSize = 25.dp
-
     val animatedOffset by animateFloatAsState(
         targetValue = spiceLevel,
         label = "thumbAnimation"
@@ -57,8 +71,8 @@ fun DraggableSpicySlider(
 
     Box(
         modifier = Modifier
-            .width(sliderWidth)
-            .height(thumbSize)
+            .width(SliderDefaults.sliderWidth)
+            .height(SliderDefaults.thumbSize)
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
@@ -74,42 +88,40 @@ fun DraggableSpicySlider(
                 .fillMaxWidth()
                 .align(Alignment.Center)
         ) {
-            val trackHeightPx = with(density) { sliderHeight.toPx() }
+            val trackHeightPx = with(density) { SliderDefaults.sliderHeight.toPx() }
             val trackY = (size.height - trackHeightPx) / 2  // center track vertically
 
             // Track
             drawRoundRect(
-                color = Color.LightGray,
+                color = LightGray,
                 cornerRadius = CornerRadius(trackHeightPx / 2, trackHeightPx / 2),
-                topLeft = androidx.compose.ui.geometry.Offset(0f, trackY),
-                size = androidx.compose.ui.geometry.Size(width = size.width, height = trackHeightPx)
+                topLeft = Offset(0f, trackY),
+                size = Size(width = size.width, height = trackHeightPx)
             )
 
             // Fill
             drawRoundRect(
-                color = Color(0xFFD2042D),
+                color = CherryRed,
                 cornerRadius = CornerRadius(trackHeightPx / 2, trackHeightPx / 2),
-                topLeft = androidx.compose.ui.geometry.Offset(0f, trackY),
-                size = androidx.compose.ui.geometry.Size(width = size.width * animatedOffset, height = trackHeightPx)
+                topLeft = Offset(0f, trackY),
+                size = Size(width = size.width * animatedOffset, height = trackHeightPx)
             )
         }
-
 
         // Thumb
         Box(
             modifier = Modifier
                 .offset {
-                    val maxOffsetPx = with(density) { (sliderWidth - 15.dp).toPx() } // width
+                    val maxOffsetPx = with(density) { (SliderDefaults.sliderWidth - SliderDefaults.thumbSize / 2).toPx() }
                     val xPx = (animatedOffset * maxOffsetPx).coerceIn(0f, maxOffsetPx)
                     IntOffset(xPx.roundToInt(), 0)
                 }
-                .width(15.dp)  // narrower width
-                .height(25.dp) // keep same height
-                .background(Color(0xFFD2042D), RoundedCornerShape(4.dp))
+                .width(SliderDefaults.thumbSize)
+                .height(SliderDefaults.thumbSize)
+                .clip(RoundedCornerShape(4.dp))
+                .background(CherryRed)
                 .align(Alignment.CenterStart)
-                .shadow(2.dp, RoundedCornerShape(4.dp))
         )
-
     }
 
     // Labels
@@ -117,17 +129,16 @@ fun DraggableSpicySlider(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Text(" Spicy", fontSize = 12.sp, color = Color.Red)
-        Text(" Medium", fontSize = 12.sp, color = Color(0xFFFFC107))
-        Text(" Mild", fontSize = 12.sp, color = Color(0xFF4CAF50))
+        Text(stringResource(R.string.mild), fontSize = 12.sp, color = green)
+        Text(stringResource(R.string.medium), fontSize = 12.sp, color = yellow)
+        Text(stringResource(R.string.spicy), fontSize = 12.sp, color = Red)
     }
 }
-
 //  Burger Detail Screen
 @SuppressLint("DefaultLocale")
 @Composable
 fun BurgerDetailScreen(
-    burger: Burger, // keep as non-null
+    burger: Burger,
     onBackClick: () -> Unit,
     navController: NavHostController,
     detailViewModel: DetailViewModel = hiltViewModel()
@@ -142,27 +153,58 @@ fun BurgerDetailScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 8.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Back button
             IconButton(onClick = onBackClick) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
             }
 
             Spacer(modifier = Modifier.height(16.dp))
 
             // Burger Image
-            Image(
-                painter = rememberAsyncImagePainter(burger.imageUrl),
+            SubcomposeAsyncImage(
+                model = burger.imageUrl,
                 contentDescription = burger.name,
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .width(350.dp)
                     .height(280.dp)
-                    .align(Alignment.CenterHorizontally),
-                contentScale = ContentScale.Crop
-            )
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                when (painter.state) {
+                    is AsyncImagePainter.State.Loading -> {
+                        // Show loader while image loads
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(LightGray.copy(alpha = 0.3f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                color = CherryRed,
+                                strokeWidth = 3.dp,
+                                modifier = Modifier.size(36.dp)
+                            )
+                        }
+                    }
+                    is AsyncImagePainter.State.Error -> {
+                        // Show fallback if image fails
+                        Icon(
+                            imageVector = Icons.Default.BrokenImage,
+                            contentDescription = "Image error",
+                            tint =Gray,
+                            modifier = Modifier.size(64.dp)
+                        )
+                    }
+                    else -> {
+                        // Show the actual image when loaded
+                        SubcomposeAsyncImageContent()
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -171,20 +213,33 @@ fun BurgerDetailScreen(
                 text = burger.name,
                 fontSize = 25.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.Black,
+                color = Black,
                 modifier = Modifier.fillMaxWidth()
             )
-            Text(
-                text = "⭐ ${burger.rating}",
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.Black,
+
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 4.dp)
-            )
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = "Rating Star",
+                    tint = Color.Yellow
+                )
+                Spacer(modifier = Modifier.width(4.dp)) // space between icon and text
+                Text(
+                    text = "${burger.rating}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black
+                )
+            }
+
             Text(
-                text = burger.description.ifBlank { "No description available." },
+                text = burger.description.ifBlank {  stringResource(R.string.no_description) },
                 fontSize = 16.sp,
                 lineHeight = 28.sp,
-                color = Color.Gray,
+                color = Gray,
                 modifier = Modifier.padding(top = 6.dp, bottom = 12.dp)
             )
 
@@ -202,9 +257,9 @@ fun BurgerDetailScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = "Spiciness",
+                        text = stringResource(R.string.spiciness_level),
                         fontWeight = FontWeight.Medium,
-                        color = Color.Black
+                        color = Black
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     DraggableSpicySlider(
@@ -221,11 +276,11 @@ fun BurgerDetailScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        "Portion",
+                        stringResource(R.string.portion),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         fontFamily = FontFamily.SansSerif,
-                        color = Color.Black
+                        color = Black
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Row(
@@ -234,12 +289,12 @@ fun BurgerDetailScreen(
                     ) {
                         Button(
                             onClick = { if (detailViewModel.portion > 1) detailViewModel.portion-- },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2042D)),
+                            colors = ButtonDefaults.buttonColors(containerColor = CherryRed),
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(0.dp),
                             modifier = Modifier.size(40.dp)
                         ) {
-                            Icon(Icons.Default.Remove, contentDescription = "Decrease", tint = Color.White)
+                            Icon(Icons.Default.Remove, contentDescription = stringResource(R.string.decrease), tint =White)
                         }
 
                         Text(
@@ -251,12 +306,12 @@ fun BurgerDetailScreen(
 
                         Button(
                             onClick = { detailViewModel.portion++ },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2042D)),
+                            colors = ButtonDefaults.buttonColors(containerColor = CherryRed),
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(0.dp),
                             modifier = Modifier.size(40.dp)
                         ) {
-                            Icon(Icons.Default.Add, contentDescription = "Increase", tint = Color.White)
+                            Icon(Icons.Default.Add, contentDescription = stringResource(R.string.increase), tint = White)
                         }
                     }
                 }
@@ -274,10 +329,10 @@ fun BurgerDetailScreen(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Price Button (optional, just shows total price)
+            // Price Button
             Button(
                 onClick = {},
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD2042D)),
+                colors = ButtonDefaults.buttonColors(containerColor = CherryRed),
                 modifier = Modifier
                     .width(130.dp)
                     .height(60.dp),
@@ -285,7 +340,9 @@ fun BurgerDetailScreen(
             ) {
                 Text(
                     text = "$${String.format("%.2f", burger.price * portion)}",
-                    color = Color.White,
+                    //.format(transform value to a specific pattern)
+                    //.2f means 2 decimal places to be the value converted
+                    color = White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
@@ -298,20 +355,25 @@ fun BurgerDetailScreen(
                         "customScreen/${burger.burgerId}/$portion/$spiceLevel"
                     )
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF000000)),
+                colors = ButtonDefaults.buttonColors(containerColor =Black),
                 modifier = Modifier
                     .width(230.dp)
                     .height(60.dp),
                 shape = RoundedCornerShape(20.dp)
             ) {
                 Text(
-                    text = "Order Now",
-                    color = Color.White,
+                    stringResource(R.string.order_now),
+                    color = White,
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
         }
     }
+}
+ object SliderDefaults {
+    val sliderWidth: Dp = 150.dp
+    val sliderHeight: Dp = 8.dp
+    val thumbSize: Dp = 25.dp
 }
 

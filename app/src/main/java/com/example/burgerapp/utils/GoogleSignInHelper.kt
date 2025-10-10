@@ -11,6 +11,8 @@ class GoogleSignInManager(
     private val authViewModel: AuthViewModel
 ) {
 
+    // TODO: dont keep token in string.
+    // it should be in sharedPreference or in encrypted format.
     private val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
         .requestIdToken(context.getString(com.example.burgerapp.R.string.default_web_client_id))
         .requestEmail()
@@ -18,6 +20,8 @@ class GoogleSignInManager(
 
     val googleSignInClient = GoogleSignIn.getClient(context, gso)
 
+    // TODO :: mmove this into the viewmodel with proper Result
+    // we can have this in module no need to pass viewmodel here.
     fun handleSignInResult(data: Intent?) {
         val task = GoogleSignIn.getSignedInAccountFromIntent(data)
         try {

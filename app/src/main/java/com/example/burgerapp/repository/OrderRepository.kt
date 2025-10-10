@@ -1,29 +1,29 @@
 package com.example.burgerapp.repository
 
-import com.example.burgerapp.data.Burger
-import com.google.firebase.database.ktx.database
+import com.example.burgerapp.data.Order
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.getValue
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.ValueEventListener
-import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
 @Singleton
-class BurgerRepository @Inject constructor() {
+class OrderRepository @Inject constructor(
+    private val database: FirebaseDatabase
+) {
 
-    private val database = Firebase.database
+    fun getUserOrders(userId: String): Flow<List<Order>> = callbackFlow {
+        val ref = database.reference.child("orders").child(userId)
 
-    fun getBurgers(): Flow<List<Burger>> = callbackFlow {
-        val ref = database.getReference("burgers")
         val listener = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val burgers = snapshot.children.mapNotNull { it.getValue<Burger>() }
-                trySend(burgers).isSuccess
+                val orders = snapshot.children.mapNotNull { it.getValue<Order>() }
+                trySend(orders.sortedByDescending { it.timestamp }).isSuccess
             }
 
             override fun onCancelled(error: DatabaseError) {

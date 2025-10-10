@@ -1,21 +1,21 @@
-package com.example.burgerapp.ui.ui
+package com.example.burgerapp.ui.presentation.splash_screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.burgerapp.R
+import com.example.burgerapp.ui.theme.CherryRed
 import com.example.burgerapp.ui.theme.LobsterFont
 import kotlinx.coroutines.delay
 import com.google.firebase.auth.FirebaseAuth
@@ -38,7 +38,7 @@ fun SplashScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primary)
+            .background(CherryRed)
     ) {
         // Centered title
         Box(
@@ -49,7 +49,7 @@ fun SplashScreen(
                 text = stringResource(id = R.string.app_name),
                 fontFamily = LobsterFont,
                 fontSize = 60.sp,
-                color = Color.White
+                color = White
             )
         }
 

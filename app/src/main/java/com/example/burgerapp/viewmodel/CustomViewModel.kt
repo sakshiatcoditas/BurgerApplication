@@ -2,63 +2,45 @@ package com.example.burgerapp.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
-import com.google.firebase.database.FirebaseDatabase
+import androidx.lifecycle.viewModelScope
+import com.example.burgerapp.data.Option
+import com.example.burgerapp.data.Options
+import com.example.burgerapp.repository.CustomRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-// Price option (used for toppings & sides)
-data class Option(
-    val price: Double = 0.0
-)
-
-// Full set of options
-data class Options(
-    val toppings: Map<String, Option> = emptyMap(),
-    val sides: Map<String, Option> = emptyMap()
-)
-
 @HiltViewModel
-class CustomViewModel @Inject constructor() : ViewModel() {
+class CustomViewModel @Inject constructor(
+    private val repository: CustomRepository
+) : ViewModel() {
 
-    // Selections (live reactive lists)
+    // Selected toppings and sides
     val selectedToppings = mutableStateListOf<String>()
     val selectedSides = mutableStateListOf<String>()
 
-    // Firebase-loaded options with prices
+    // Firebase-loaded options
     private val _options = MutableStateFlow(Options())
     val options: StateFlow<Options> = _options.asStateFlow()
 
-    private val database = FirebaseDatabase.getInstance()
-    private val toppingsRef = database.getReference("customizationOptions/toppings")
-    private val sidesRef = database.getReference("customizationOptions/sides")
-
     init {
-        fetchOptionsFromFirebase()
+        fetchOptions()
     }
 
-    private fun fetchOptionsFromFirebase() {
-        toppingsRef.get().addOnSuccessListener { snapshot ->
-            val toppingsMap = snapshot.children.mapNotNull { child ->
-                val name = child.key
-                val option = child.getValue(Option::class.java)
-                if (name != null && option != null) name to option else null
-            }.toMap()
-
-            sidesRef.get().addOnSuccessListener { sidesSnapshot ->
-                val sidesMap = sidesSnapshot.children.mapNotNull { child ->
-                    val name = child.key
-                    val option = child.getValue(Option::class.java)
-                    if (name != null && option != null) name to option else null
-                }.toMap()
-
-                _options.value = Options(toppings = toppingsMap, sides = sidesMap)
+    // Fetch options from repository
+    private fun fetchOptions() {
+        viewModelScope.launch {
+            try {
+                _options.value = repository.fetchOptions()
+            } catch (e: Exception) {
+                // Handle error (e.g., log or set empty options)
+                _options.value = Options()
             }
         }
     }
-
 
     // Toggle selection
     fun toggleTopping(name: String) {
@@ -71,7 +53,7 @@ class CustomViewModel @Inject constructor() : ViewModel() {
         else selectedSides.add(name)
     }
 
-    // Compute total price
+    // Compute final price
     fun getFinalPrice(basePrice: Double, portion: Int): Double {
         val toppingsPrice = selectedToppings.sumOf { topping ->
             _options.value.toppings[topping]?.price ?: 0.0

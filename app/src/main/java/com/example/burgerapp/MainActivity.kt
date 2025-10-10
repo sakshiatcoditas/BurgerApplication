@@ -8,6 +8,7 @@ import androidx.activity.viewModels
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.navigation.compose.rememberNavController
 import com.example.burgerapp.navigation.AuthNavGraph
 import com.example.burgerapp.ui.theme.BurgerAppTheme
@@ -20,9 +21,6 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    //Check this launcher is this correct approach
-
 
     private val authViewModel: AuthViewModel by viewModels()
     private lateinit var googleSignInManager: GoogleSignInManager
@@ -46,9 +44,9 @@ class MainActivity : ComponentActivity() {
             }
 
             BurgerAppTheme {
-                val navController = rememberNavController() // create inside app navigation.
+                val navController = rememberNavController()
 
-                Surface(color = Color.White) {
+                Surface(color = White) {
                     AuthNavGraph( // AppNavigation
                         navController = navController,
                         onGoogleLoginClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) },

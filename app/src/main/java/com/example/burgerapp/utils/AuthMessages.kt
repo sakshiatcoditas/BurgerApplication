@@ -1,7 +1,10 @@
 package com.example.burgerapp.utils
 
+// TODO move this to string res
 object AuthMessages{
-    const val EMPTY_EMAIL_PASSWORD = "Email and password cannot be empty"
+    const val EMPTY_EMAIL_PASSWORD_NAME = "Name, Email and password cannot be empty"
+
+    const val EMPTY_EMAIL_PASSWORD="Email & Password cannot be empty"
     const val EMPTY_EMAIL="Email cannot be empty"
 
     const val LOGIN_SUCCESS="Login successful"
