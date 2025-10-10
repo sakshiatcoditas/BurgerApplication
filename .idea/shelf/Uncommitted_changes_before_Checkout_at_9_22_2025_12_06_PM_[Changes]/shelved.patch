@@ -1,0 +1,189 @@
+Index: app/src/main/java/com/example/burgerapp/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.burgerapp\r\n\r\nimport android.os.Bundle\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport androidx.activity.result.contract.ActivityResultContracts\r\nimport androidx.activity.viewModels\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.runtime.LaunchedEffect\r\nimport androidx.compose.runtime.mutableStateOf\r\nimport androidx.compose.runtime.remember\r\nimport androidx.compose.runtime.setValue\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.burgerapp.navigation.AuthNavGraph\r\nimport com.example.burgerapp.ui.theme.BurgerAppTheme\r\nimport com.example.burgerapp.viewmodel.AuthViewModel\r\nimport com.google.android.gms.auth.api.signin.GoogleSignIn\r\nimport com.google.android.gms.auth.api.signin.GoogleSignInOptions\r\nimport dagger.hilt.android.AndroidEntryPoint\r\nimport kotlinx.coroutines.delay\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.compose.runtime.saveable.rememberSaveable\r\n\r\n@AndroidEntryPoint\r\nclass MainActivity : ComponentActivity() {\r\n\r\n    private val authViewModel: AuthViewModel by viewModels()\r\n    private lateinit var googleSignInManager: GoogleSignInManager\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n\r\n        googleSignInManager = GoogleSignInManager(this, authViewModel)\r\n\r\n        val launcher = registerForActivityResult(\r\n            ActivityResultContracts.StartActivityForResult()\r\n        ) { result ->\r\n            googleSignInManager.handleSignInResult(result.data)\r\n        }\r\n\r\n        setContent {\r\n            BurgerAppTheme {\r\n                // Use rememberSaveable to preserve state across configuration changes\r\n                var showSplash by rememberSaveable { mutableStateOf(true) }\r\n\r\n                LaunchedEffect(Unit) {\r\n                    delay(3000) // Show splash for 3 seconds\r\n                    showSplash = false\r\n                }\r\n\r\n                Surface(color = Color.White) {\r\n                    if (showSplash) {\r\n                        // Splash screen\r\n                        SplashScreen()\r\n                    } else {\r\n                        // Login/Register screen\r\n                        val navController = rememberNavController()\r\n                        AuthNavGraph(\r\n                            navController = navController,\r\n                            authViewModel = authViewModel,\r\n                            onGoogleLoginClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) },\r\n                            onGoogleRegisterClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) }\r\n                        )\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/MainActivity.kt b/app/src/main/java/com/example/burgerapp/MainActivity.kt
+--- a/app/src/main/java/com/example/burgerapp/MainActivity.kt	(revision 6cf701e3c9f709cae10275e00fdc7f3fa25b9e7c)
++++ b/app/src/main/java/com/example/burgerapp/MainActivity.kt	(date 1758521227905)
+@@ -8,15 +8,14 @@
+ import androidx.compose.material3.Surface
+ import androidx.compose.runtime.LaunchedEffect
+ import androidx.compose.runtime.mutableStateOf
+-import androidx.compose.runtime.remember
++
+ import androidx.compose.runtime.setValue
+ import androidx.compose.ui.graphics.Color
+ import androidx.navigation.compose.rememberNavController
+ import com.example.burgerapp.navigation.AuthNavGraph
+ import com.example.burgerapp.ui.theme.BurgerAppTheme
+ import com.example.burgerapp.viewmodel.AuthViewModel
+-import com.google.android.gms.auth.api.signin.GoogleSignIn
+-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
++
+ import dagger.hilt.android.AndroidEntryPoint
+ import kotlinx.coroutines.delay
+ import androidx.compose.runtime.getValue
+@@ -36,7 +35,7 @@
+         val launcher = registerForActivityResult(
+             ActivityResultContracts.StartActivityForResult()
+         ) { result ->
+-            googleSignInManager.handleSignInResult(result.data)
++           googleSignInManager.handleSignInResult(result.data)
+         }
+ 
+         setContent {
+@@ -52,7 +51,7 @@
+                 Surface(color = Color.White) {
+                     if (showSplash) {
+                         // Splash screen
+-                        SplashScreen()
++                        SplashScreen() // move this in nav host
+                     } else {
+                         // Login/Register screen
+                         val navController = rememberNavController()
+Index: app/src/main/java/com/example/burgerapp/GoogleSignInManager.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.burgerapp\r\n\r\nimport android.content.Context\r\nimport android.content.Intent\r\nimport com.example.burgerapp.viewmodel.AuthViewModel\r\nimport com.google.android.gms.auth.api.signin.GoogleSignIn\r\nimport com.google.android.gms.auth.api.signin.GoogleSignInOptions\r\n\r\nclass GoogleSignInManager(\r\n    private val context: Context,\r\n    private val authViewModel: AuthViewModel\r\n) {\r\n\r\n    private val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)\r\n        .requestIdToken(context.getString(R.string.default_web_client_id))\r\n        .requestEmail()\r\n        .build()\r\n\r\n    val googleSignInClient = GoogleSignIn.getClient(context, gso)\r\n\r\n    fun handleSignInResult(data: Intent?) {\r\n        val task = GoogleSignIn.getSignedInAccountFromIntent(data)\r\n        try {\r\n            val account = task.getResult(Exception::class.java)\r\n            account?.let { authViewModel.firebaseAuthWithGoogle(it) }\r\n        } catch (e: Exception) {\r\n            authViewModel.setAuthMessage(\r\n                e.message ?: context.getString(R.string.google_login_failed)\r\n            )\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/GoogleSignInManager.kt b/app/src/main/java/com/example/burgerapp/GoogleSignInManager.kt
+--- a/app/src/main/java/com/example/burgerapp/GoogleSignInManager.kt	(revision 6cf701e3c9f709cae10275e00fdc7f3fa25b9e7c)
++++ b/app/src/main/java/com/example/burgerapp/GoogleSignInManager.kt	(date 1758520351907)
+@@ -8,7 +8,7 @@
+ 
+ class GoogleSignInManager(
+     private val context: Context,
+-    private val authViewModel: AuthViewModel
++    private val authViewModel: AuthViewModel // dont pass viewmodel here
+ ) {
+ 
+     private val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+Index: app/src/main/java/com/example/burgerapp/navigation/AuthNavGraph.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.burgerapp.navigation\r\n\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.runtime.collectAsState\r\nimport androidx.compose.runtime.getValue\r\nimport androidx.navigation.NavHostController\r\nimport androidx.navigation.compose.NavHost\r\nimport androidx.navigation.compose.composable\r\nimport com.example.burgerapp.ui.ui.ForgotPasswordScreen\r\nimport com.example.burgerapp.ui.ui.LoginScreen\r\nimport com.example.burgerapp.ui.ui.RegisterScreen\r\nimport com.example.burgerapp.viewmodel.AuthViewModel\r\n\r\n@Composable\r\nfun AuthNavGraph(\r\n    navController: NavHostController,\r\n    authViewModel: AuthViewModel,\r\n    onGoogleLoginClick: () -> Unit,\r\n    onGoogleRegisterClick: () -> Unit\r\n) {\r\n    val message by authViewModel.authMessage.collectAsState()\r\n\r\n    NavHost(navController = navController, startDestination = Screen.Login.route) {\r\n\r\n        // Login\r\n        composable(Screen.Login.route) {\r\n            LoginScreen(\r\n                onLoginClick = { email, password -> authViewModel.login(email, password) },\r\n                onGoogleLoginClick = onGoogleLoginClick,\r\n                onNavigateToRegister = { navController.navigate(Screen.Register.route) },\r\n                onNavigateToForgotPassword = { navController.navigate(Screen.ForgotPassword.route) },\r\n                message = message\r\n            )\r\n        }\r\n\r\n        // Register\r\n        composable(Screen.Register.route) {\r\n            RegisterScreen(\r\n                onRegisterClick = { email, password -> authViewModel.register(email, password) },\r\n                onGoogleRegisterClick = onGoogleRegisterClick,\r\n                onNavigateToLogin = { navController.popBackStack() },\r\n                message = message\r\n            )\r\n        }\r\n\r\n        // Forgot Password\r\n        composable(Screen.ForgotPassword.route) {\r\n            ForgotPasswordScreen(\r\n                onSendResetClick = { email -> authViewModel.resetPassword(email) },\r\n                onBackToLoginClick = { navController.popBackStack() },\r\n                message = message\r\n            )\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/navigation/AuthNavGraph.kt b/app/src/main/java/com/example/burgerapp/navigation/AuthNavGraph.kt
+--- a/app/src/main/java/com/example/burgerapp/navigation/AuthNavGraph.kt	(revision 6cf701e3c9f709cae10275e00fdc7f3fa25b9e7c)
++++ b/app/src/main/java/com/example/burgerapp/navigation/AuthNavGraph.kt	(date 1758523001390)
+@@ -13,9 +13,9 @@
+ 
+ @Composable
+ fun AuthNavGraph(
+-    navController: NavHostController,
+-    authViewModel: AuthViewModel,
+-    onGoogleLoginClick: () -> Unit,
++    navController: NavHostController, // no need to pass
++    authViewModel: AuthViewModel, // use hilt
++    onGoogleLoginClick: () -> Unit, // wrong
+     onGoogleRegisterClick: () -> Unit
+ ) {
+     val message by authViewModel.authMessage.collectAsState()
+Index: app/src/main/java/com/example/burgerapp/utils/AuthMessages.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.burgerapp.utils\r\n\r\nobject AuthMessages{\r\n    const val EMPTY_EMAIL_PASSWORD = \"Email and password cannot be empty\"\r\n    const val EMPTY_EMAIL=\"Email cannot be empty\"\r\n\r\n    const val LOGIN_SUCCESS=\"Login successful\"\r\n    const val LOGIN_FAILED=\"Login failed\"\r\n\r\n    const val REGISTER_SUCCESS=\"Register successful\"\r\n    const val REGISTER_FAILED=\"Registration failed\"\r\n\r\n    const val RESET_SUCCESS = \"Reset email sent\"\r\n    const val RESET_FAILED = \"Failed to send reset email\"\r\n\r\n    const val GOOGLE_SUCCESS = \"Google login successful\"\r\n    const val GOOGLE_FAILED = \"Google login failed\"\r\n\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/utils/AuthMessages.kt b/app/src/main/java/com/example/burgerapp/utils/AuthMessages.kt
+--- a/app/src/main/java/com/example/burgerapp/utils/AuthMessages.kt	(revision 6cf701e3c9f709cae10275e00fdc7f3fa25b9e7c)
++++ b/app/src/main/java/com/example/burgerapp/utils/AuthMessages.kt	(date 1758523001400)
+@@ -1,5 +1,7 @@
+ package com.example.burgerapp.utils
+ 
++// why object class
++
+ object AuthMessages{
+     const val EMPTY_EMAIL_PASSWORD = "Email and password cannot be empty"
+     const val EMPTY_EMAIL="Email cannot be empty"
+Index: app/src/main/java/com/example/burgerapp/viewmodel/AuthViewModel.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.burgerapp.viewmodel\r\n\r\nimport androidx.lifecycle.ViewModel\r\nimport androidx.lifecycle.viewModelScope\r\nimport com.example.burgerapp.repository.AuthRepository\r\nimport com.example.burgerapp.utils.AuthMessages\r\nimport com.google.android.gms.auth.api.signin.GoogleSignInAccount\r\nimport com.google.firebase.auth.FirebaseAuth\r\nimport com.google.firebase.auth.GoogleAuthProvider\r\nimport dagger.hilt.android.lifecycle.HiltViewModel\r\nimport kotlinx.coroutines.flow.MutableStateFlow\r\nimport kotlinx.coroutines.flow.StateFlow\r\nimport kotlinx.coroutines.launch\r\nimport javax.inject.Inject\r\n\r\n@HiltViewModel\r\nclass AuthViewModel @Inject constructor(\r\n    private val repository: AuthRepository\r\n) : ViewModel() {\r\n\r\n    private val _authMessage = MutableStateFlow(\"\")\r\n    val authMessage: StateFlow<String> get() = _authMessage\r\n\r\n    fun setAuthMessage(message: String) {\r\n        _authMessage.value = message\r\n    }\r\n\r\n    fun login(email: String, password: String) {\r\n        if (email.isBlank() || password.isBlank()) {\r\n            _authMessage.value = AuthMessages.EMPTY_EMAIL_PASSWORD\r\n            return\r\n        }\r\n\r\n        repository.login(email, password)\r\n            .addOnSuccessListener { _authMessage.value = AuthMessages.LOGIN_SUCCESS }\r\n            .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.LOGIN_FAILED }\r\n    }\r\n\r\n    fun register(email: String, password: String) {\r\n        if (email.isBlank() || password.isBlank()) {\r\n            _authMessage.value = AuthMessages.EMPTY_EMAIL_PASSWORD\r\n            return\r\n        }\r\n\r\n        repository.register(email, password)\r\n            .addOnSuccessListener { _authMessage.value = AuthMessages.REGISTER_SUCCESS }\r\n            .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.REGISTER_FAILED }\r\n    }\r\n\r\n    fun resetPassword(email: String) {\r\n        if (email.isBlank()) {\r\n            _authMessage.value = AuthMessages.EMPTY_EMAIL\r\n            return\r\n        }\r\n\r\n        repository.resetPassword(email)\r\n            .addOnSuccessListener { _authMessage.value = AuthMessages.GOOGLE_SUCCESS }\r\n            .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.GOOGLE_FAILED }\r\n    }\r\n\r\n    fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {\r\n        repository.firebaseAuthWithGoogle(account)\r\n            .addOnSuccessListener { _authMessage.value = AuthMessages.GOOGLE_SUCCESS }\r\n            .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.GOOGLE_FAILED }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/viewmodel/AuthViewModel.kt b/app/src/main/java/com/example/burgerapp/viewmodel/AuthViewModel.kt
+--- a/app/src/main/java/com/example/burgerapp/viewmodel/AuthViewModel.kt	(revision 6cf701e3c9f709cae10275e00fdc7f3fa25b9e7c)
++++ b/app/src/main/java/com/example/burgerapp/viewmodel/AuthViewModel.kt	(date 1758517980722)
+@@ -54,8 +54,8 @@
+         }
+ 
+         repository.resetPassword(email)
+-            .addOnSuccessListener { _authMessage.value = AuthMessages.GOOGLE_SUCCESS }
+-            .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.GOOGLE_FAILED }
++            .addOnSuccessListener { _authMessage.value = AuthMessages.RESET_SUCCESS }
++            .addOnFailureListener { _authMessage.value = it.message ?: AuthMessages.RESET_FAILED }
+     }
+ 
+     fun firebaseAuthWithGoogle(account: GoogleSignInAccount) {
+Index: app/src/main/java/com/example/burgerapp/ui/ui/ForgotPasswordScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.burgerapp.ui.ui\r\n\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.foundation.shape.RoundedCornerShape\r\nimport androidx.compose.material3.*\r\nimport androidx.compose.runtime.*\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport com.example.burgerapp.ui.theme.CherryRed\r\nimport kotlinx.coroutines.launch\r\n\r\n@Composable\r\nfun ForgotPasswordScreen(\r\n    onSendResetClick: (String) -> Unit,\r\n    onBackToLoginClick: () -> Unit,\r\n    message: String = \"\"\r\n) {\r\n    var email by remember { mutableStateOf(\"\") }\r\n    val snackbarHostState = remember { SnackbarHostState() }\r\n    val coroutineScope = rememberCoroutineScope()\r\n\r\n    LaunchedEffect(message) {\r\n        if (message.isNotBlank()) {\r\n            coroutineScope.launch { snackbarHostState.showSnackbar(message) }\r\n        }\r\n    }\r\n\r\n    Scaffold(snackbarHost = { SnackbarHost(snackbarHostState) }) { padding ->\r\n        Column(\r\n            modifier = Modifier\r\n                .fillMaxSize()\r\n                .background(CherryRed)\r\n                .padding(24.dp)\r\n                .padding(padding),\r\n            verticalArrangement = Arrangement.Center,\r\n            horizontalAlignment = Alignment.CenterHorizontally\r\n        ) {\r\n            Text(\"Forgot Password\", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.White)\r\n\r\n            Spacer(Modifier.height(16.dp))\r\n\r\n            Text(\r\n                \"Enter your registered email address. We'll send you a reset link.\",\r\n                fontSize = 16.sp,\r\n                color = Color.White\r\n            )\r\n\r\n            Spacer(Modifier.height(32.dp))\r\n\r\n            OutlinedTextField(\r\n                value = email,\r\n                onValueChange = { email = it },\r\n                label = { Text(\"Email\", color = Color.White) },\r\n                singleLine = true,\r\n                modifier = Modifier.fillMaxWidth(),\r\n                colors = OutlinedTextFieldDefaults.colors(\r\n                    focusedBorderColor = Color.White,\r\n                    unfocusedBorderColor = Color.White,\r\n                    focusedLabelColor = Color.White,\r\n                    unfocusedLabelColor = Color.White,\r\n                    focusedTextColor = Color.White,\r\n                    unfocusedTextColor = Color.White,\r\n                    cursorColor = Color.White\r\n                )\r\n            )\r\n\r\n            Spacer(Modifier.height(24.dp))\r\n\r\n            Button(\r\n                onClick = { onSendResetClick(email) },\r\n                modifier = Modifier.fillMaxWidth().height(50.dp),\r\n                shape = RoundedCornerShape(12.dp),\r\n                colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = CherryRed)\r\n            ) {\r\n                Text(\"Send Reset Link\", fontSize = 18.sp, color = CherryRed)\r\n            }\r\n\r\n            Spacer(Modifier.height(16.dp))\r\n\r\n            TextButton(onClick = onBackToLoginClick) {\r\n                Text(\"Back to Login\", color = Color.White)\r\n            }\r\n        }\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/ui/ui/ForgotPasswordScreen.kt b/app/src/main/java/com/example/burgerapp/ui/ui/ForgotPasswordScreen.kt
+--- a/app/src/main/java/com/example/burgerapp/ui/ui/ForgotPasswordScreen.kt	(revision 6cf701e3c9f709cae10275e00fdc7f3fa25b9e7c)
++++ b/app/src/main/java/com/example/burgerapp/ui/ui/ForgotPasswordScreen.kt	(date 1758518088902)
+@@ -60,12 +60,11 @@
+                 modifier = Modifier.fillMaxWidth(),
+                 colors = OutlinedTextFieldDefaults.colors(
+                     focusedBorderColor = Color.White,
+-                    unfocusedBorderColor = Color.White,
++
+                     focusedLabelColor = Color.White,
+-                    unfocusedLabelColor = Color.White,
+-                    focusedTextColor = Color.White,
+-                    unfocusedTextColor = Color.White,
+-                    cursorColor = Color.White
++
++                    focusedTextColor = Color.White
++
+                 )
+             )
+ 
+Index: app/src/main/java/com/example/burgerapp/SplashScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.burgerapp\r\n\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.res.stringResource\r\nimport androidx.compose.ui.text.font.Font\r\nimport androidx.compose.ui.text.font.FontFamily\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.compose.ui.zIndex\r\nimport com.example.burgerapp.R\r\nimport com.example.burgerapp.ui.theme.LobsterFont\r\n\r\n@Composable\r\nfun SplashScreen() {\r\n  //  val lobsterFont = FontFamily(Font(R.font.lobster_regular))\r\n\r\n    Box(\r\n        modifier = Modifier\r\n            .fillMaxSize()\r\n            .background(MaterialTheme.colorScheme.primary)\r\n    ) {\r\n        // Centered title\r\n        Box(\r\n            modifier = Modifier\r\n                .fillMaxSize(),\r\n            contentAlignment = Alignment.Center\r\n        ) {\r\n            Text(\r\n                text = stringResource(id = R.string.app_name),\r\n                fontFamily = LobsterFont,\r\n                fontSize = 60.sp,\r\n                color = Color.White\r\n            )\r\n        }\r\n\r\n        // Loader2: extreme bottom-left\r\n        Image(\r\n            painter = painterResource(id = R.drawable.splash_image_left2),\r\n            contentDescription = \"Loader 2\",\r\n            modifier = Modifier\r\n                .align(Alignment.BottomStart)\r\n                .offset(x = (-42).dp) // horizontal offset only\r\n                .size(width = 246.dp, height = 288.dp)\r\n        )\r\n\r\n        // Loader1: also sticks to bottom, overlapping Loader2 a bit\r\n        Image(\r\n            painter = painterResource(id = R.drawable.splash_image_right1),\r\n            contentDescription = \"Loader 1\",\r\n            modifier = Modifier\r\n                .align(Alignment.BottomStart) // sticks to bottom\r\n                .offset(x = 134.dp) // horizontal shift\r\n                .size(width = 202.dp, height = 202.dp)\r\n                .zIndex(1f) // drawn above loader2\r\n        )\r\n    }\r\n}\r\n
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/SplashScreen.kt b/app/src/main/java/com/example/burgerapp/SplashScreen.kt
+--- a/app/src/main/java/com/example/burgerapp/SplashScreen.kt	(revision 6cf701e3c9f709cae10275e00fdc7f3fa25b9e7c)
++++ b/app/src/main/java/com/example/burgerapp/SplashScreen.kt	(date 1758520467568)
+@@ -18,7 +18,7 @@
+ import androidx.compose.ui.zIndex
+ import com.example.burgerapp.R
+ import com.example.burgerapp.ui.theme.LobsterFont
+-
++// rmove unused imports.
+ @Composable
+ fun SplashScreen() {
+   //  val lobsterFont = FontFamily(Font(R.font.lobster_regular))
+@@ -44,7 +44,7 @@
+ 
+         // Loader2: extreme bottom-left
+         Image(
+-            painter = painterResource(id = R.drawable.splash_image_left2),
++            painter = painterResource(id = R.drawable.splash_image_left2),// rename this
+             contentDescription = "Loader 2",
+             modifier = Modifier
+                 .align(Alignment.BottomStart)
+@@ -54,7 +54,7 @@
+ 
+         // Loader1: also sticks to bottom, overlapping Loader2 a bit
+         Image(
+-            painter = painterResource(id = R.drawable.splash_image_right1),
++            painter = painterResource(id = R.drawable.splash_image_right1), // rename
+             contentDescription = "Loader 1",
+             modifier = Modifier
+                 .align(Alignment.BottomStart) // sticks to bottom

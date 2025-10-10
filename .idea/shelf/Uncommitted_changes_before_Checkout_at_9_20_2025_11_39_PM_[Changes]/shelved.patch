@@ -1,0 +1,24 @@
+Index: app/src/main/java/com/example/burgerapp/SplashScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.burgerapp\r\n\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.res.stringResource\r\nimport androidx.compose.ui.text.font.Font\r\nimport androidx.compose.ui.text.font.FontFamily\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.compose.ui.zIndex\r\nimport com.example.burgerapp.R\r\nimport com.example.burgerapp.ui.theme.LobsterFont\r\n\r\n@Composable\r\nfun SplashScreen() {\r\n  //  val lobsterFont = FontFamily(Font(R.font.lobster_regular))\r\n\r\n    Box(\r\n        modifier = Modifier\r\n            .fillMaxSize()\r\n            .background(MaterialTheme.colorScheme.primary)\r\n    ) {\r\n        // Centered title\r\n        Box(\r\n            modifier = Modifier\r\n                .fillMaxSize(),\r\n            contentAlignment = Alignment.Center\r\n        ) {\r\n            Text(\r\n                text = stringResource(id = R.string.app_name),\r\n                fontFamily = LobsterFont,\r\n                fontSize = 60.sp,\r\n                color = Color.White\r\n            )\r\n        }\r\n\r\n        // Loader2: extreme bottom-left\r\n        Image(\r\n            painter = painterResource(id = R.drawable.splash_image_left2),\r\n            contentDescription = \"Loader 2\",\r\n            modifier = Modifier\r\n                .align(Alignment.BottomStart)\r\n                .offset(x = (-42).dp) // horizontal offset only\r\n                .size(width = 246.dp, height = 288.dp)\r\n        )\r\n\r\n        // Loader1: also sticks to bottom, overlapping Loader2 a bit\r\n        Image(\r\n            painter = painterResource(id = R.drawable.splash_image_right1),\r\n            contentDescription = \"Loader 1\",\r\n            modifier = Modifier\r\n                .align(Alignment.BottomStart) // sticks to bottom\r\n                .offset(x = 134.dp) // horizontal shift\r\n                .size(width = 202.dp, height = 202.dp)\r\n                .zIndex(1f) // drawn above loader2\r\n        )\r\n    }\r\n}\r\n
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/SplashScreen.kt b/app/src/main/java/com/example/burgerapp/SplashScreen.kt
+--- a/app/src/main/java/com/example/burgerapp/SplashScreen.kt	(revision 06dc5bb5bf3fe29ccd98f4847f8a784f10152947)
++++ b/app/src/main/java/com/example/burgerapp/SplashScreen.kt	(date 1758391376503)
+@@ -21,7 +21,7 @@
+ 
+ @Composable
+ fun SplashScreen() {
+-  //  val lobsterFont = FontFamily(Font(R.font.lobster_regular))
++    //  val lobsterFont = FontFamily(Font(R.font.lobster_regular))
+ 
+     Box(
+         modifier = Modifier
+@@ -63,4 +63,4 @@
+                 .zIndex(1f) // drawn above loader2
+         )
+     }
+-}
++}
+\ No newline at end of file

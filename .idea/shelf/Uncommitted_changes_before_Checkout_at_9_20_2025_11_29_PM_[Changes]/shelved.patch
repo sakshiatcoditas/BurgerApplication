@@ -1,0 +1,792 @@
+Index: app/src/main/java/com/example/burgerapp/ui/theme/Color.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.burgerapp.ui.theme\r\n\r\nimport androidx.compose.ui.graphics.Color\r\n\r\nval Purple80 = Color(0xFFD0BCFF)\r\nval PurpleGrey80 = Color(0xFFCCC2DC)\r\nval Pink80 = Color(0xFFEFB8C8)\r\n\r\nval Purple40 = Color(0xFF6650a4)\r\nval PurpleGrey40 = Color(0xFF625b71)\r\nval Pink40 = Color(0xFF7D5260)\r\nval CherryRed = Color(0xFFB22222)\r\nval WhiteText = Color(0xFFFFFFFF)\r\nval LightGray = Color(0xFFF5F5F5)\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/ui/theme/Color.kt b/app/src/main/java/com/example/burgerapp/ui/theme/Color.kt
+--- a/app/src/main/java/com/example/burgerapp/ui/theme/Color.kt	(revision 1ee8e92c53edde620128d8f85a3426af845c9dc9)
++++ b/app/src/main/java/com/example/burgerapp/ui/theme/Color.kt	(date 1758390395068)
+@@ -9,6 +9,12 @@
+ val Purple40 = Color(0xFF6650a4)
+ val PurpleGrey40 = Color(0xFF625b71)
+ val Pink40 = Color(0xFF7D5260)
++
++
++val CherryRed = Color(0xFFB22222)
++// Background for splash
++val WhiteText = Color(0xFFFFFFFF)
++
+ val CherryRed = Color(0xFFB22222)
+ val WhiteText = Color(0xFFFFFFFF)
+ val LightGray = Color(0xFFF5F5F5)
+Index: build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// Top-level build file where you can add configuration options common to all sub-projects/modules.\r\n// Top-level build.gradle.kts\r\nplugins {\r\n    alias(libs.plugins.android.application) apply false\r\n    alias(libs.plugins.kotlin.android) apply false\r\n    alias(libs.plugins.kotlin.compose) apply false\r\n    id(\"com.google.gms.google-services\") version \"4.4.3\" apply false\r\n    alias(libs.plugins.hilt.android) apply false // <-- Change to use the alias\r\n\r\n\r\n    //com.google.gms.google-services\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/build.gradle.kts b/build.gradle.kts
+--- a/build.gradle.kts	(revision 1ee8e92c53edde620128d8f85a3426af845c9dc9)
++++ b/build.gradle.kts	(date 1758390376999)
+@@ -1,12 +1,9 @@
+ // Top-level build file where you can add configuration options common to all sub-projects/modules.
+-// Top-level build.gradle.kts
+ plugins {
+     alias(libs.plugins.android.application) apply false
+     alias(libs.plugins.kotlin.android) apply false
+     alias(libs.plugins.kotlin.compose) apply false
+-    id("com.google.gms.google-services") version "4.4.3" apply false
+-    alias(libs.plugins.hilt.android) apply false // <-- Change to use the alias
++    alias(libs.plugins.google.services) apply false
+ 
+-
+-    //com.google.gms.google-services
+-}
++    id("com.google.firebase.crashlytics") version "3.0.6" apply false
++}
+\ No newline at end of file
+Index: app/src/main/java/com/example/burgerapp/MainActivity.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.burgerapp\r\n\r\nimport android.os.Bundle\r\nimport androidx.activity.ComponentActivity\r\nimport androidx.activity.compose.setContent\r\nimport androidx.activity.result.contract.ActivityResultContracts\r\nimport androidx.activity.viewModels\r\nimport androidx.compose.material3.Surface\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.navigation.compose.rememberNavController\r\nimport com.example.burgerapp.navigation.AuthNavGraph\r\nimport com.example.burgerapp.ui.theme.BurgerAppTheme\r\nimport com.example.burgerapp.viewmodel.AuthViewModel\r\nimport com.google.android.gms.auth.api.signin.GoogleSignIn\r\nimport com.google.android.gms.auth.api.signin.GoogleSignInOptions\r\nimport dagger.hilt.android.AndroidEntryPoint\r\n\r\n@AndroidEntryPoint\r\nclass MainActivity : ComponentActivity() {\r\n\r\n    private val authViewModel: AuthViewModel by viewModels()\r\n    private lateinit var googleSignInManager: GoogleSignInManager\r\n\r\n    override fun onCreate(savedInstanceState: Bundle?) {\r\n        super.onCreate(savedInstanceState)\r\n\r\n        googleSignInManager = GoogleSignInManager(this, authViewModel)\r\n\r\n        val launcher = registerForActivityResult(\r\n            ActivityResultContracts.StartActivityForResult()\r\n        ) { result ->\r\n            googleSignInManager.handleSignInResult(result.data)\r\n        }\r\n\r\n        setContent {\r\n            BurgerAppTheme {\r\n                Surface(color = androidx.compose.ui.graphics.Color.White) {\r\n                    val navController = rememberNavController()\r\n\r\n                    AuthNavGraph(\r\n                        navController = navController,\r\n                        authViewModel = authViewModel,\r\n                        onGoogleLoginClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) },\r\n                        onGoogleRegisterClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) }\r\n                    )\r\n                }\r\n            }\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/MainActivity.kt b/app/src/main/java/com/example/burgerapp/MainActivity.kt
+--- a/app/src/main/java/com/example/burgerapp/MainActivity.kt	(revision 1ee8e92c53edde620128d8f85a3426af845c9dc9)
++++ b/app/src/main/java/com/example/burgerapp/MainActivity.kt	(date 1758390401290)
+@@ -3,48 +3,26 @@
+ import android.os.Bundle
+ import androidx.activity.ComponentActivity
+ import androidx.activity.compose.setContent
+-import androidx.activity.result.contract.ActivityResultContracts
+-import androidx.activity.viewModels
+-import androidx.compose.material3.Surface
+-import androidx.compose.ui.graphics.Color
+-import androidx.navigation.compose.rememberNavController
+-import com.example.burgerapp.navigation.AuthNavGraph
++import androidx.compose.runtime.LaunchedEffect
++import androidx.compose.ui.Modifier
++
+ import com.example.burgerapp.ui.theme.BurgerAppTheme
+-import com.example.burgerapp.viewmodel.AuthViewModel
+-import com.google.android.gms.auth.api.signin.GoogleSignIn
+-import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+-import dagger.hilt.android.AndroidEntryPoint
++import kotlinx.coroutines.delay
+ 
+-@AndroidEntryPoint
+ class MainActivity : ComponentActivity() {
+-
+-    private val authViewModel: AuthViewModel by viewModels()
+-    private lateinit var googleSignInManager: GoogleSignInManager
+-
+     override fun onCreate(savedInstanceState: Bundle?) {
+         super.onCreate(savedInstanceState)
+-
+-        googleSignInManager = GoogleSignInManager(this, authViewModel)
+-
+-        val launcher = registerForActivityResult(
+-            ActivityResultContracts.StartActivityForResult()
+-        ) { result ->
+-            googleSignInManager.handleSignInResult(result.data)
+-        }
+-
+         setContent {
+             BurgerAppTheme {
+-                Surface(color = androidx.compose.ui.graphics.Color.White) {
+-                    val navController = rememberNavController()
++                // Show splash first
++                SplashScreen()
+ 
+-                    AuthNavGraph(
+-                        navController = navController,
+-                        authViewModel = authViewModel,
+-                        onGoogleLoginClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) },
+-                        onGoogleRegisterClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) }
+-                    )
++                // Later: add navigation to Login/Register after delay
++                LaunchedEffect(Unit) {
++                    delay(3000) // 3 sec splash
++                    // TODO: Navigate to Login/Register screen
+                 }
+             }
+         }
+     }
+-}
+\ No newline at end of file
++}
+Index: app/build.gradle.kts
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>plugins {\r\n    alias(libs.plugins.android.application)\r\n    alias(libs.plugins.kotlin.android)\r\n    alias(libs.plugins.kotlin.compose)\r\n\r\n    id(\"com.google.gms.google-services\")\r\n    id(\"com.google.dagger.hilt.android\")\r\n    kotlin(\"kapt\")\r\n}\r\n\r\nandroid {\r\n    namespace = \"com.example.burgerapp\"\r\n    compileSdk = 36\r\n\r\n    defaultConfig {\r\n        applicationId = \"com.example.burgerapp\"\r\n        minSdk = 24\r\n        targetSdk = 36\r\n        versionCode = 1\r\n        versionName = \"1.0\"\r\n\r\n        testInstrumentationRunner = \"androidx.test.runner.AndroidJUnitRunner\"\r\n    }\r\n\r\n    buildTypes {\r\n        release {\r\n            isMinifyEnabled = false\r\n            proguardFiles(\r\n                getDefaultProguardFile(\"proguard-android-optimize.txt\"),\r\n                \"proguard-rules.pro\"\r\n            )\r\n        }\r\n    }\r\n    compileOptions {\r\n        sourceCompatibility = JavaVersion.VERSION_11\r\n        targetCompatibility = JavaVersion.VERSION_11\r\n    }\r\n    kotlinOptions {\r\n        jvmTarget = \"11\"\r\n    }\r\n    buildFeatures {\r\n        compose = true\r\n    }\r\n}\r\n\r\ndependencies {\r\n//    implementation(\"androidx.navigation:navigation-compose-android:2.9.4\")\r\n    implementation(\"com.google.dagger:hilt-android:2.56.2\")\r\n    implementation(libs.hilt.android) // Hilt runtime\r\n    kapt(libs.dagger.hilt.android.compiler) // Use the full alias defined in libs.versions.toml\r\n    implementation(libs.androidx.hilt.navigation.compose.v110alpha01)\r\n\r\n    implementation(libs.firebase.analytics)\r\n    implementation(platform(\"com.google.firebase:firebase-bom:32.3.1\"))\r\n\r\n    // Firebase Authentication (no version number needed, BoM manages it)\r\n    implementation(libs.firebase.auth.ktx)\r\n    implementation(libs.play.services.auth)\r\n\r\n    // Google Sign-In\r\n    //implementation(\"com.google.android.gms:play-services-auth:20.7.0\") // stable version\r\n\r\n    // Navigation\r\n    implementation(libs.androidx.navigation.runtime.android)\r\n    implementation(libs.androidx.navigation.compose)\r\n\r\n    // Other dependencies remain unchanged\r\n    implementation(libs.androidx.core.ktx)\r\n    implementation(libs.androidx.lifecycle.runtime.ktx)\r\n    implementation(libs.androidx.activity.compose)\r\n    implementation(platform(libs.androidx.compose.bom))\r\n    implementation(libs.androidx.ui)\r\n    implementation(libs.androidx.ui.graphics)\r\n    implementation(libs.androidx.ui.tooling.preview)\r\n    implementation(libs.androidx.material3)\r\n\r\n\r\n    testImplementation(libs.junit)\r\n    androidTestImplementation(libs.androidx.junit)\r\n    androidTestImplementation(libs.androidx.espresso.core)\r\n    androidTestImplementation(platform(libs.androidx.compose.bom))\r\n    androidTestImplementation(libs.androidx.ui.test.junit4)\r\n    debugImplementation(libs.androidx.ui.tooling)\r\n    debugImplementation(libs.androidx.ui.test.manifest)\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/build.gradle.kts b/app/build.gradle.kts
+--- a/app/build.gradle.kts	(revision 1ee8e92c53edde620128d8f85a3426af845c9dc9)
++++ b/app/build.gradle.kts	(date 1758391100953)
+@@ -1,11 +1,12 @@
++
++
+ plugins {
+     alias(libs.plugins.android.application)
+     alias(libs.plugins.kotlin.android)
+     alias(libs.plugins.kotlin.compose)
+-
+-    id("com.google.gms.google-services")
+-    id("com.google.dagger.hilt.android")
++    alias(libs.plugins.hilt.android) // use alias from version catalog
+     kotlin("kapt")
++    alias(libs.plugins.google-services) // Google Services plugin
+ }
+ 
+ android {
+@@ -31,55 +32,53 @@
+             )
+         }
+     }
++
+     compileOptions {
+         sourceCompatibility = JavaVersion.VERSION_11
+         targetCompatibility = JavaVersion.VERSION_11
+     }
++
+     kotlinOptions {
+         jvmTarget = "11"
+     }
++
+     buildFeatures {
+         compose = true
+     }
+ }
+ 
+ dependencies {
+-//    implementation("androidx.navigation:navigation-compose-android:2.9.4")
+-    implementation("com.google.dagger:hilt-android:2.56.2")
+-    implementation(libs.hilt.android) // Hilt runtime
+-    kapt(libs.dagger.hilt.android.compiler) // Use the full alias defined in libs.versions.toml
+-    implementation(libs.androidx.hilt.navigation.compose.v110alpha01)
+-
+-    implementation(libs.firebase.analytics)
+-    implementation(platform("com.google.firebase:firebase-bom:32.3.1"))
++    // Hilt
++    implementation(libs.hilt.android)
++    kapt(libs.dagger-hilt-compiler)
++    implementation(libs.androidx-hilt-navigation-compose)
+ 
+-    // Firebase Authentication (no version number needed, BoM manages it)
+-    implementation(libs.firebase.auth.ktx)
+-    implementation(libs.play.services.auth)
+-
+-    // Google Sign-In
+-    //implementation("com.google.android.gms:play-services-auth:20.7.0") // stable version
++    // Firebase
++    implementation(platform(libs.firebase-bom))
++    implementation(libs.firebase-auth-ktx)
++    implementation(libs.play-services-auth)
+ 
+     // Navigation
+-    implementation(libs.androidx.navigation.runtime.android)
+-    implementation(libs.androidx.navigation.compose)
++    implementation(libs.androidx-navigation-compose)
+ 
+-    // Other dependencies remain unchanged
+-    implementation(libs.androidx.core.ktx)
+-    implementation(libs.androidx.lifecycle.runtime.ktx)
+-    implementation(libs.androidx.activity.compose)
+-    implementation(platform(libs.androidx.compose.bom))
+-    implementation(libs.androidx.ui)
+-    implementation(libs.androidx.ui.graphics)
+-    implementation(libs.androidx.ui.tooling.preview)
+-    implementation(libs.androidx.material3)
++    // Compose & AndroidX
++    implementation("libs.androidx-core-ktx")
++    implementation("libs.androidx-lifecycle-runtime-ktx")
++    implementation(libs.androidx-activity-compose)
++    implementation(platform(libs.androidx-compose-bom))
++    implementation(libs.androidx-ui)
++    implementation(libs.androidx-ui-graphics)
++    implementation(libs.androidx-ui-tooling-preview)
++    implementation(libs.androidx-material3)
+ 
+-
++    // Testing
+     testImplementation(libs.junit)
+-    androidTestImplementation(libs.androidx.junit)
+-    androidTestImplementation(libs.androidx.espresso.core)
+-    androidTestImplementation(platform(libs.androidx.compose.bom))
+-    androidTestImplementation(libs.androidx.ui.test.junit4)
+-    debugImplementation(libs.androidx.ui.tooling)
+-    debugImplementation(libs.androidx.ui.test.manifest)
+-}
+\ No newline at end of file
++    androidTestImplementation(libs.androidx-junit)
++    androidTestImplementation(libs.androidx-espresso-core)
++    androidTestImplementation(platform(libs.androidx-compose-bom))
++    androidTestImplementation(libs.androidx-ui-test-junit4)
++
++    // Debug
++    debugImplementation(libs.androidx-ui-tooling)
++    debugImplementation(libs.androidx-ui-test-manifest)
++}
+Index: app/src/main/java/com/example/burgerapp/ui/theme/Theme.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.burgerapp.ui.theme\r\n\r\nimport android.app.Activity\r\nimport android.os.Build\r\nimport androidx.compose.foundation.isSystemInDarkTheme\r\nimport androidx.compose.material3.MaterialTheme\r\nimport androidx.compose.material3.darkColorScheme\r\nimport androidx.compose.material3.dynamicDarkColorScheme\r\nimport androidx.compose.material3.dynamicLightColorScheme\r\nimport androidx.compose.material3.lightColorScheme\r\nimport androidx.compose.runtime.Composable\r\nimport androidx.compose.ui.platform.LocalContext\r\n\r\nprivate val DarkColorScheme = darkColorScheme(\r\n    primary = Purple80,\r\n    secondary = PurpleGrey80,\r\n    tertiary = Pink80\r\n)\r\n\r\nprivate val LightColorScheme = lightColorScheme(\r\n    primary = Purple40,\r\n    secondary = PurpleGrey40,\r\n    tertiary = Pink40\r\n\r\n    /* Other default colors to override\r\n    background = Color(0xFFFFFBFE),\r\n    surface = Color(0xFFFFFBFE),\r\n    onPrimary = Color.White,\r\n    onSecondary = Color.White,\r\n    onTertiary = Color.White,\r\n    onBackground = Color(0xFF1C1B1F),\r\n    onSurface = Color(0xFF1C1B1F),\r\n    */\r\n)\r\n\r\n@Composable\r\nfun BurgerAppTheme(\r\n    darkTheme: Boolean = isSystemInDarkTheme(),\r\n    // Dynamic color is available on Android 12+\r\n    dynamicColor: Boolean = true,\r\n    content: @Composable () -> Unit\r\n) {\r\n    val colorScheme = when {\r\n        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {\r\n            val context = LocalContext.current\r\n            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)\r\n        }\r\n\r\n        darkTheme -> DarkColorScheme\r\n        else -> LightColorScheme\r\n    }\r\n\r\n    MaterialTheme(\r\n        colorScheme = colorScheme,\r\n        typography = Typography,\r\n        content = content\r\n    )\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/ui/theme/Theme.kt b/app/src/main/java/com/example/burgerapp/ui/theme/Theme.kt
+--- a/app/src/main/java/com/example/burgerapp/ui/theme/Theme.kt	(revision 1ee8e92c53edde620128d8f85a3426af845c9dc9)
++++ b/app/src/main/java/com/example/burgerapp/ui/theme/Theme.kt	(date 1758390200197)
+@@ -1,6 +1,5 @@
+ package com.example.burgerapp.ui.theme
+ 
+-import android.app.Activity
+ import android.os.Build
+ import androidx.compose.foundation.isSystemInDarkTheme
+ import androidx.compose.material3.MaterialTheme
+@@ -12,31 +11,26 @@
+ import androidx.compose.ui.platform.LocalContext
+ 
+ private val DarkColorScheme = darkColorScheme(
+-    primary = Purple80,
+-    secondary = PurpleGrey80,
+-    tertiary = Pink80
++    primary = CherryRed,
++    onPrimary = WhiteText,
++    background = CherryRed,
++    onBackground = WhiteText,
++    surface = CherryRed,
++    onSurface = WhiteText
+ )
+ 
+ private val LightColorScheme = lightColorScheme(
+-    primary = Purple40,
+-    secondary = PurpleGrey40,
+-    tertiary = Pink40
+-
+-    /* Other default colors to override
+-    background = Color(0xFFFFFBFE),
+-    surface = Color(0xFFFFFBFE),
+-    onPrimary = Color.White,
+-    onSecondary = Color.White,
+-    onTertiary = Color.White,
+-    onBackground = Color(0xFF1C1B1F),
+-    onSurface = Color(0xFF1C1B1F),
+-    */
++    primary = CherryRed,
++    onPrimary = WhiteText,
++    background = WhiteText,
++    onBackground = CherryRed,
++    surface = WhiteText,
++    onSurface = CherryRed
+ )
+ 
+ @Composable
+ fun BurgerAppTheme(
+     darkTheme: Boolean = isSystemInDarkTheme(),
+-    // Dynamic color is available on Android 12+
+     dynamicColor: Boolean = true,
+     content: @Composable () -> Unit
+ ) {
+@@ -45,7 +39,6 @@
+             val context = LocalContext.current
+             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+         }
+-
+         darkTheme -> DarkColorScheme
+         else -> LightColorScheme
+     }
+@@ -55,4 +48,4 @@
+         typography = Typography,
+         content = content
+     )
+-}
+\ No newline at end of file
++}
+Index: app/src/main/res/values/strings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><resources>\r\n    <string name=\"app_name\">BurgerApp</string>\r\n    <string name=\"default_web_client_id\">YOUR_WEB_CLIENT_ID_HERE</string>\r\n    <string name=\"google_login_failed\">Google login failed</string>\r\n    <string name=\"login_success\">Login successful</string>\r\n    <string name=\"login_failed\">Login failed</string>\r\n    <string name=\"register_success\">Registration successful</string>\r\n    <string name=\"register_failed\">Registration failed</string>\r\n    <string name=\"reset_email_sent\">Reset email sent</string>\r\n    <string name=\"reset_email_failed\">Failed to send reset email</string>\r\n    <string name=\"google_login_success\">Google login successful</string>\r\n\r\n<string name=\"forgot_password\">Forgot password</string>\r\n\r\n\r\n</resources>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/res/values/strings.xml b/app/src/main/res/values/strings.xml
+--- a/app/src/main/res/values/strings.xml	(revision 1ee8e92c53edde620128d8f85a3426af845c9dc9)
++++ b/app/src/main/res/values/strings.xml	(date 1758390402359)
+@@ -1,16 +1,4 @@
+ <resources>
+-    <string name="app_name">BurgerApp</string>
+-    <string name="default_web_client_id">YOUR_WEB_CLIENT_ID_HERE</string>
+-    <string name="google_login_failed">Google login failed</string>
+-    <string name="login_success">Login successful</string>
+-    <string name="login_failed">Login failed</string>
+-    <string name="register_success">Registration successful</string>
+-    <string name="register_failed">Registration failed</string>
+-    <string name="reset_email_sent">Reset email sent</string>
+-    <string name="reset_email_failed">Failed to send reset email</string>
+-    <string name="google_login_success">Google login successful</string>
+-
+-<string name="forgot_password">Forgot password</string>
+-
++    <string name="app_name">Foodgo</string>
+ 
+ </resources>
+\ No newline at end of file
+Index: gradle/libs.versions.toml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>[versions]\r\nagp = \"8.11.2\"\r\nfirebaseBomVersion = \"32.3.1\"\r\nhiltAndroid = \"2.52\"\r\nhiltAndroidCompiler = \"2.52\"\r\nhiltNavigationCompose = \"1.2.0\"\r\nhiltNavigationComposeVersion = \"1.1.0-alpha01\"\r\nkotlin = \"2.0.21\"\r\ncoreKtx = \"1.17.0\"\r\njunit = \"4.13.2\"\r\njunitVersion = \"1.3.0\"\r\n\r\nespressoCore = \"3.7.0\"\r\nlifecycleRuntimeKtx = \"2.9.3\"\r\nactivityCompose = \"1.11.0\"\r\ncomposeBom = \"2024.09.00\"\r\nnavigationRuntimeAndroid = \"2.9.4\"\r\nnavigationCompose = \"2.9.4\"\r\nfirebaseBom = \"34.2.0\"\r\nplayServicesAuth = \"20.7.0\"\r\nfirebaseAuthKtx = \"24.0.1\"\r\nfirebase-analytics = \"21.3.0\"\r\nhilt = \"2.52\"\r\nfirebaseFirestoreKtx = \"26.0.0\"\r\n\r\n[libraries]\r\n# AndroidX\r\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\r\nandroidx-hilt-navigation-compose = { module = \"androidx.hilt:hilt-navigation-compose\", version.ref = \"hiltNavigationCompose\" }\r\nandroidx-hilt-navigation-compose-v110alpha01 = { module = \"androidx.hilt:hilt-navigation-compose\", version.ref = \"hiltNavigationComposeVersion\" }\r\ndagger-hilt-android-compiler = { module = \"com.google.dagger:hilt-android-compiler\", version.ref = \"hiltAndroidCompiler\" }\r\nfirebase-bom-v3231 = { module = \"com.google.firebase:firebase-bom\", version.ref = \"firebaseBomVersion\" }\r\nhilt-android = { module = \"com.google.dagger:hilt-android\", version.ref = \"hiltAndroid\" }\r\njunit = { group = \"junit\", name = \"junit\", version.ref = \"junit\" }\r\nandroidx-junit = { group = \"androidx.test.ext\", name = \"junit\", version.ref = \"junitVersion\" }\r\nandroidx-espresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espressoCore\" }\r\nandroidx-lifecycle-runtime-ktx = { group = \"androidx.lifecycle\", name = \"lifecycle-runtime-ktx\", version.ref = \"lifecycleRuntimeKtx\" }\r\nandroidx-activity-compose = { group = \"androidx.activity\", name = \"activity-compose\", version.ref = \"activityCompose\" }\r\nandroidx-compose-bom = { group = \"androidx.compose\", name = \"compose-bom\", version.ref = \"composeBom\" }\r\nandroidx-ui = { group = \"androidx.compose.ui\", name = \"ui\" }\r\nandroidx-ui-graphics = { group = \"androidx.compose.ui\", name = \"ui-graphics\" }\r\nandroidx-ui-tooling = { group = \"androidx.compose.ui\", name = \"ui-tooling\" }\r\nandroidx-ui-tooling-preview = { group = \"androidx.compose.ui\", name = \"ui-tooling-preview\" }\r\nandroidx-ui-test-manifest = { group = \"androidx.compose.ui\", name = \"ui-test-manifest\" }\r\nandroidx-ui-test-junit4 = { group = \"androidx.compose.ui\", name = \"ui-test-junit4\" }\r\nandroidx-material3 = { group = \"androidx.compose.material3\", name = \"material3\" }\r\nandroidx-navigation-runtime-android = { group = \"androidx.navigation\", name = \"navigation-runtime-android\", version.ref = \"navigationRuntimeAndroid\" }\r\nandroidx-navigation-compose = { group = \"androidx.navigation\", name = \"navigation-compose\", version.ref = \"navigationCompose\" }\r\n\r\n# Firebase\r\nfirebase-bom = { module = \"com.google.firebase:firebase-bom\", version.ref = \"firebaseBom\" }\r\nfirebase-analytics = { module = \"com.google.firebase:firebase-analytics\",version.ref=\"firebase-analytics\"}\r\nfirebase-auth-ktx = { module = \"com.google.firebase:firebase-auth-ktx\"}\r\n\r\n# Google Sign-In\r\nplay-services-auth = { group = \"com.google.android.gms\", name = \"play-services-auth\", version.ref = \"playServicesAuth\" }\r\nfirebase-firestore-ktx = { group = \"com.google.firebase\", name = \"firebase-firestore-ktx\", version.ref = \"firebaseFirestoreKtx\" }\r\n\r\n[plugins]\r\nandroid-application = { id = \"com.android.application\", version.ref = \"agp\" }\r\nkotlin-android = { id = \"org.jetbrains.kotlin.android\", version.ref = \"kotlin\" }\r\nkotlin-compose = { id = \"org.jetbrains.kotlin.plugin.compose\", version.ref = \"kotlin\" }\r\nhilt-android = { id = \"com.google.dagger.hilt.android\", version.ref = \"hilt\" }
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/gradle/libs.versions.toml b/gradle/libs.versions.toml
+--- a/gradle/libs.versions.toml	(revision 1ee8e92c53edde620128d8f85a3426af845c9dc9)
++++ b/gradle/libs.versions.toml	(date 1758390651485)
+@@ -1,36 +1,16 @@
+ [versions]
+ agp = "8.11.2"
+-firebaseBomVersion = "32.3.1"
+-hiltAndroid = "2.52"
+-hiltAndroidCompiler = "2.52"
+-hiltNavigationCompose = "1.2.0"
+-hiltNavigationComposeVersion = "1.1.0-alpha01"
+-kotlin = "2.0.21"
++kotlin = "2.2.20"
+ coreKtx = "1.17.0"
+ junit = "4.13.2"
+ junitVersion = "1.3.0"
+-
+ espressoCore = "3.7.0"
+-lifecycleRuntimeKtx = "2.9.3"
++lifecycleRuntimeKtx = "2.9.4"
+ activityCompose = "1.11.0"
+-composeBom = "2024.09.00"
+-navigationRuntimeAndroid = "2.9.4"
+-navigationCompose = "2.9.4"
+-firebaseBom = "34.2.0"
+-playServicesAuth = "20.7.0"
+-firebaseAuthKtx = "24.0.1"
+-firebase-analytics = "21.3.0"
+-hilt = "2.52"
+-firebaseFirestoreKtx = "26.0.0"
++composeBom = "2025.09.00"
+ 
+ [libraries]
+-# AndroidX
+ androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+-androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+-androidx-hilt-navigation-compose-v110alpha01 = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationComposeVersion" }
+-dagger-hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
+-firebase-bom-v3231 = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBomVersion" }
+-hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
+ junit = { group = "junit", name = "junit", version.ref = "junit" }
+ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+@@ -44,20 +24,26 @@
+ androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+ androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+ androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+-androidx-navigation-runtime-android = { group = "androidx.navigation", name = "navigation-runtime-android", version.ref = "navigationRuntimeAndroid" }
+-androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
++# Hilt
++hilt-android = { group = "com.google.dagger", name = "hilt-android", version = "2.56.2" }
++dagger-hilt-compiler = { group = "com.google.dagger", name = "hilt-compiler", version = "2.56.2" }
++androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version = "1.1.0-alpha01" }
+ 
+ # Firebase
+-firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+-firebase-analytics = { module = "com.google.firebase:firebase-analytics",version.ref="firebase-analytics"}
+-firebase-auth-ktx = { module = "com.google.firebase:firebase-auth-ktx"}
++firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version = "32.3.1" }
++firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version = "1.7.0" }
+ 
+ # Google Sign-In
+-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
+-firebase-firestore-ktx = { group = "com.google.firebase", name = "firebase-firestore-ktx", version.ref = "firebaseFirestoreKtx" }
++play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version = "20.7.0" }
++
++# Navigation
++androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.7.0" }
++
+ 
+ [plugins]
++hilt-android = { id = "com.google.dagger.hilt.android", version = "2.56.2" }
+ android-application = { id = "com.android.application", version.ref = "agp" }
+ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+-hilt-android = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+\ No newline at end of file
++google-services = { id = "com.google.gms.google-services", version = "4.4.3" }
++
+Index: .idea/inspectionProfiles/Project_Default.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/inspectionProfiles/Project_Default.xml b/.idea/inspectionProfiles/Project_Default.xml
+new file mode 100644
+--- /dev/null	(date 1758390200180)
++++ b/.idea/inspectionProfiles/Project_Default.xml	(date 1758390200180)
+@@ -0,0 +1,50 @@
++<component name="InspectionProjectProfileManager">
++  <profile version="1.0">
++    <option name="myName" value="Project Default" />
++    <inspection_tool class="ComposePreviewDimensionRespectsLimit" enabled="true" level="WARNING" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="ComposePreviewMustBeTopLevelFunction" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="ComposePreviewNeedsComposableAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="ComposePreviewNotSupportedInUnitTestFiles" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="GlancePreviewDimensionRespectsLimit" enabled="true" level="WARNING" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="GlancePreviewMustBeTopLevelFunction" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="GlancePreviewNeedsComposableAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="GlancePreviewNotSupportedInUnitTestFiles" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewAnnotationInFunctionWithParameters" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewApiLevelMustBeValid" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewDeviceShouldUseNewSpec" enabled="true" level="WEAK WARNING" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewFontScaleMustBeGreaterThanZero" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewMultipleParameterProviders" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewParameterProviderOnFirstParameter" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++    <inspection_tool class="PreviewPickerAnnotation" enabled="true" level="ERROR" enabled_by_default="true">
++      <option name="composableFile" value="true" />
++    </inspection_tool>
++  </profile>
++</component>
+\ No newline at end of file
+Index: app/src/main/java/com/example/burgerapp/ui/theme/Type.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.burgerapp.ui.theme\r\n\r\nimport androidx.compose.material3.Typography\r\nimport androidx.compose.ui.text.TextStyle\r\nimport androidx.compose.ui.text.font.FontFamily\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.unit.sp\r\n\r\n// Set of Material typography styles to start with\r\nval Typography = Typography(\r\n    bodyLarge = TextStyle(\r\n        fontFamily = FontFamily.Default,\r\n        fontWeight = FontWeight.Normal,\r\n        fontSize = 16.sp,\r\n        lineHeight = 24.sp,\r\n        letterSpacing = 0.5.sp\r\n    )\r\n    /* Other default text styles to override\r\n    titleLarge = TextStyle(\r\n        fontFamily = FontFamily.Default,\r\n        fontWeight = FontWeight.Normal,\r\n        fontSize = 22.sp,\r\n        lineHeight = 28.sp,\r\n        letterSpacing = 0.sp\r\n    ),\r\n    labelSmall = TextStyle(\r\n        fontFamily = FontFamily.Default,\r\n        fontWeight = FontWeight.Medium,\r\n        fontSize = 11.sp,\r\n        lineHeight = 16.sp,\r\n        letterSpacing = 0.5.sp\r\n    )\r\n    */\r\n)
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/ui/theme/Type.kt b/app/src/main/java/com/example/burgerapp/ui/theme/Type.kt
+--- a/app/src/main/java/com/example/burgerapp/ui/theme/Type.kt	(revision 1ee8e92c53edde620128d8f85a3426af845c9dc9)
++++ b/app/src/main/java/com/example/burgerapp/ui/theme/Type.kt	(date 1758390200197)
+@@ -1,12 +1,15 @@
+ package com.example.burgerapp.ui.theme
+-
+ import androidx.compose.material3.Typography
+ import androidx.compose.ui.text.TextStyle
++import androidx.compose.ui.text.font.Font
+ import androidx.compose.ui.text.font.FontFamily
+ import androidx.compose.ui.text.font.FontWeight
+ import androidx.compose.ui.unit.sp
++import com.example.burgerapp.R
+ 
+ // Set of Material typography styles to start with
++
++val LobsterFont = FontFamily(Font(R.font.lobster_regular))
+ val Typography = Typography(
+     bodyLarge = TextStyle(
+         fontFamily = FontFamily.Default,
+Index: .idea/appInsightsSettings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/appInsightsSettings.xml b/.idea/appInsightsSettings.xml
+new file mode 100644
+--- /dev/null	(date 1758390200180)
++++ b/.idea/appInsightsSettings.xml	(date 1758390200180)
+@@ -0,0 +1,33 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="AppInsightsSettings">
++    <option name="selectedTabId" value="Firebase Crashlytics" />
++    <option name="tabSettings">
++      <map>
++        <entry key="Firebase Crashlytics">
++          <value>
++            <InsightsFilterSettings>
++              <option name="connection">
++                <ConnectionSetting>
++                  <option name="appId" value="com.example.burgerapp" />
++                  <option name="mobileSdkAppId" value="1:110002710378:android:aed02a477d5aaf8c19a713" />
++                  <option name="projectId" value="burgerapplication-6e01d" />
++                  <option name="projectNumber" value="110002710378" />
++                </ConnectionSetting>
++              </option>
++              <option name="failureTypes">
++                <list>
++                  <option value="ANR" />
++                  <option value="NON_FATAL" />
++                </list>
++              </option>
++              <option name="signal" value="SIGNAL_UNSPECIFIED" />
++              <option name="timeIntervalDays" value="THIRTY_DAYS" />
++              <option name="visibilityType" value="ALL" />
++            </InsightsFilterSettings>
++          </value>
++        </entry>
++      </map>
++    </option>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+new file mode 100644
+--- /dev/null	(date 1758390200197)
++++ b/.idea/vcs.xml	(date 1758390200197)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings">
++    <mapping directory="" vcs="Git" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/deploymentTargetSelector.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/deploymentTargetSelector.xml b/.idea/deploymentTargetSelector.xml
+new file mode 100644
+--- /dev/null	(date 1758390200180)
++++ b/.idea/deploymentTargetSelector.xml	(date 1758390200180)
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="deploymentTargetSelector">
++    <selectionStates>
++      <SelectionState runConfigName="app">
++        <option name="selectionMode" value="DROPDOWN" />
++      </SelectionState>
++    </selectionStates>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/gradle.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/gradle.xml b/.idea/gradle.xml
+new file mode 100644
+--- /dev/null	(date 1758390200180)
++++ b/.idea/gradle.xml	(date 1758390200180)
+@@ -0,0 +1,19 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="GradleMigrationSettings" migrationVersion="1" />
++  <component name="GradleSettings">
++    <option name="linkedExternalProjectsSettings">
++      <GradleProjectSettings>
++        <option name="testRunner" value="CHOOSE_PER_TEST" />
++        <option name="externalProjectPath" value="$PROJECT_DIR$" />
++        <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
++        <option name="modules">
++          <set>
++            <option value="$PROJECT_DIR$" />
++            <option value="$PROJECT_DIR$/app" />
++          </set>
++        </option>
++      </GradleProjectSettings>
++    </option>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/runConfigurations.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/runConfigurations.xml b/.idea/runConfigurations.xml
+new file mode 100644
+--- /dev/null	(date 1758390200197)
++++ b/.idea/runConfigurations.xml	(date 1758390200197)
+@@ -0,0 +1,17 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="RunConfigurationProducerService">
++    <option name="ignoredProducers">
++      <set>
++        <option value="com.intellij.execution.junit.AbstractAllInDirectoryConfigurationProducer" />
++        <option value="com.intellij.execution.junit.AllInPackageConfigurationProducer" />
++        <option value="com.intellij.execution.junit.PatternConfigurationProducer" />
++        <option value="com.intellij.execution.junit.TestInClassConfigurationProducer" />
++        <option value="com.intellij.execution.junit.UniqueIdConfigurationProducer" />
++        <option value="com.intellij.execution.junit.testDiscovery.JUnitTestDiscoveryConfigurationProducer" />
++        <option value="org.jetbrains.kotlin.idea.junit.KotlinJUnitRunConfigurationProducer" />
++        <option value="org.jetbrains.kotlin.idea.junit.KotlinPatternConfigurationProducer" />
++      </set>
++    </option>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+new file mode 100644
+--- /dev/null	(date 1758390200170)
++++ b/.idea/.gitignore	(date 1758390200170)
+@@ -0,0 +1,3 @@
++# Default ignored files
++/shelf/
++/workspace.xml
+Index: .idea/AndroidProjectSystem.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/AndroidProjectSystem.xml b/.idea/AndroidProjectSystem.xml
+new file mode 100644
+--- /dev/null	(date 1758390200170)
++++ b/.idea/AndroidProjectSystem.xml	(date 1758390200170)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="AndroidProjectSystem">
++    <option name="providerId" value="com.android.tools.idea.GradleProjectSystem" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+new file mode 100644
+--- /dev/null	(date 1758390200180)
++++ b/.idea/compiler.xml	(date 1758390200180)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="CompilerConfiguration">
++    <bytecodeTargetLevel target="21" />
++  </component>
++</project>
+\ No newline at end of file
+Index: app/src/main/java/com/example/burgerapp/SplashScreen.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/burgerapp/SplashScreen.kt b/app/src/main/java/com/example/burgerapp/SplashScreen.kt
+new file mode 100644
+--- /dev/null	(date 1758390200197)
++++ b/app/src/main/java/com/example/burgerapp/SplashScreen.kt	(date 1758390200197)
+@@ -0,0 +1,66 @@
++package com.example.burgerapp
++
++import androidx.compose.foundation.Image
++import androidx.compose.foundation.background
++import androidx.compose.foundation.layout.*
++import androidx.compose.material3.MaterialTheme
++import androidx.compose.material3.Text
++import androidx.compose.runtime.Composable
++import androidx.compose.ui.Alignment
++import androidx.compose.ui.Modifier
++import androidx.compose.ui.graphics.Color
++import androidx.compose.ui.res.painterResource
++import androidx.compose.ui.res.stringResource
++import androidx.compose.ui.text.font.Font
++import androidx.compose.ui.text.font.FontFamily
++import androidx.compose.ui.unit.dp
++import androidx.compose.ui.unit.sp
++import androidx.compose.ui.zIndex
++import com.example.burgerapp.R
++import com.example.burgerapp.ui.theme.LobsterFont
++
++@Composable
++fun SplashScreen() {
++  //  val lobsterFont = FontFamily(Font(R.font.lobster_regular))
++
++    Box(
++        modifier = Modifier
++            .fillMaxSize()
++            .background(MaterialTheme.colorScheme.primary)
++    ) {
++        // Centered title
++        Box(
++            modifier = Modifier
++                .fillMaxSize(),
++            contentAlignment = Alignment.Center
++        ) {
++            Text(
++                text = stringResource(id = R.string.app_name),
++                fontFamily = LobsterFont,
++                fontSize = 60.sp,
++                color = Color.White
++            )
++        }
++
++        // Loader2: extreme bottom-left
++        Image(
++            painter = painterResource(id = R.drawable.splash_image_left2),
++            contentDescription = "Loader 2",
++            modifier = Modifier
++                .align(Alignment.BottomStart)
++                .offset(x = (-42).dp) // horizontal offset only
++                .size(width = 246.dp, height = 288.dp)
++        )
++
++        // Loader1: also sticks to bottom, overlapping Loader2 a bit
++        Image(
++            painter = painterResource(id = R.drawable.splash_image_right1),
++            contentDescription = "Loader 1",
++            modifier = Modifier
++                .align(Alignment.BottomStart) // sticks to bottom
++                .offset(x = 134.dp) // horizontal shift
++                .size(width = 202.dp, height = 202.dp)
++                .zIndex(1f) // drawn above loader2
++        )
++    }
++}
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+new file mode 100644
+--- /dev/null	(date 1758390749995)
++++ b/.idea/misc.xml	(date 1758390749995)
+@@ -0,0 +1,4 @@
++<project version="4">
++  <component name="ExternalStorageConfigurationManager" enabled="true" />
++  <component name="ProjectRootManager" version="2" languageLevel="JDK_21" default="true" project-jdk-name="jbr-21" project-jdk-type="JavaSDK" />
++</project>
+\ No newline at end of file
