@@ -3,45 +3,58 @@ package com.example.burgerapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.SideEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.navigation.compose.rememberNavController
+import com.example.burgerapp.navigation.AuthNavGraph
 import com.example.burgerapp.ui.theme.BurgerAppTheme
+import com.example.burgerapp.utils.GoogleSignInManager
+import com.example.burgerapp.viewmodel.AuthViewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import dagger.hilt.android.AndroidEntryPoint
 
+
+
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    private val authViewModel: AuthViewModel by viewModels()
+    private lateinit var googleSignInManager: GoogleSignInManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        googleSignInManager = GoogleSignInManager(this, authViewModel)
+
+        val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            googleSignInManager.handleSignInResult(result.data)
+        }
+
         setContent {
+
+            val systemUiController = rememberSystemUiController()
+
+            //  Hide system nav bar
+            SideEffect {
+                systemUiController.isNavigationBarVisible = false
+            }
+
             BurgerAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+                val navController = rememberNavController()
+
+                Surface(color = White) {
+                    AuthNavGraph( // AppNavigation
+                        navController = navController,
+                        onGoogleLoginClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) },
+                        onGoogleRegisterClick = { launcher.launch(googleSignInManager.googleSignInClient.signInIntent) },
+                        googleSignInClient = googleSignInManager.googleSignInClient
                     )
                 }
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    BurgerAppTheme {
-        Greeting("Android")
     }
 }
