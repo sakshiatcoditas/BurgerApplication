@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.burgerapp.data.Order
+import com.example.burgerapp.toFormattedDate
 import com.example.burgerapp.viewmodel.OrderViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -97,10 +98,10 @@ fun OrderCard(order: Order) {
 
             Spacer(modifier = Modifier.height(4.dp))
 
+
+
             Text(
-                text = "Ordered on: ${
-                    SimpleDateFormat("dd MMM yyyy, hh:mm a", Locale.getDefault()).format(order.timestamp)
-                }",
+                text = "Ordered on: ${order.timestamp.toFormattedDate()}",
                 color = Color.Gray,
                 fontSize = 12.sp
             )

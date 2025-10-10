@@ -22,9 +22,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-
-
-
     private val authViewModel: AuthViewModel by viewModels()
     private lateinit var googleSignInManager: GoogleSignInManager
 

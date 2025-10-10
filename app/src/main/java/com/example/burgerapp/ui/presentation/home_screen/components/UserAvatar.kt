@@ -55,7 +55,7 @@ fun UserAvatar(
             )
         } else {
             Text(
-                text = "U",
+                text = stringResource(R.string.user),
                 color = White,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp

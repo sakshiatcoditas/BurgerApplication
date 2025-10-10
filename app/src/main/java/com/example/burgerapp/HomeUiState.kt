@@ -5,7 +5,8 @@ import com.example.burgerapp.data.Burger
 data class HomeUiState(
 
     val burgers: List<Burger> = emptyList(),
-    val categories: List<String> =listOf("All", "Veg", "NonVeg", "Classic","Combos") ,
+
+    val categories: List<String> = listOf("All", "Veg", "NonVeg", "Classic","Combos") ,
     val searchText: String = "",
     val userName: String? = null,
     val selectedCategory: String = "All",

@@ -80,6 +80,6 @@
     <string name="reset_error">Failed to send reset link. Please try again.</string>
     <string name="logout">Logout</string>
     <string name="name">Name</string>
-
+<string name="user">"U"</string>
 
 </resources>

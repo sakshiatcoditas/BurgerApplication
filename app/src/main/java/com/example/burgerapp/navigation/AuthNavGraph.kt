@@ -113,42 +113,42 @@ fun AuthNavGraph(
 
         // --- Home Screen ---
         composable(Screen.Home.route) {
-            val homeViewModel: HomeViewModel = hiltViewModel()
+            HomeScreen(navController = navController)
+        }
 
-            HomeScreen(
-                navController = navController,
-                homeViewModel = homeViewModel
+
+        composable(Screen.Chat.route) {
+            val viewModel: ChatViewModel = hiltViewModel()
+            ChatScreen(
+                viewModel = viewModel,
+                onBackClick = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
-        composable("Chat") { backStackEntry ->
-
-            val chatViewModel: ChatViewModel = hiltViewModel()
-
-            ChatScreen(navController = navController, viewModel = chatViewModel)
-        }
 
 
         // --- Profile Screen ---
         composable(Screen.Profile.route) {
+
             val authViewModel: AuthViewModel = hiltViewModel()
+
             ProfileScreen(
                 navController = navController,
                 viewModel = authViewModel,
                 onLogoutClick = {
-                    //  Sign out Firebase user (works for both email/password and Google)
-                    FirebaseAuth.getInstance().signOut()
-
-                    //  Also sign out Google (if logged in with google)
-                    googleSignInClient.signOut()
-
-                    //  Navigate to Login screen and clear backstack
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Home.route) { inclusive = true }
+                    authViewModel.logout {
+                        // Navigate to Login screen and clear backstack
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Home.route) { inclusive = true }
+                        }
                     }
                 },
                 onBackClick = {
-                    //  Navigate back to Home screen
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Profile.route) { inclusive = true }
                     }
@@ -158,37 +158,28 @@ fun AuthNavGraph(
 
 
 
-
         composable(
-            route = "burgerDetail/{burgerId}",
+            route = Screen.BurgerDetail.route,
             arguments = listOf(navArgument("burgerId") { type = NavType.StringType })
         ) { backStackEntry ->
             val detailViewModel: DetailViewModel = hiltViewModel()
             val burgerId = backStackEntry.arguments?.getString("burgerId") ?: ""
 
-            // Load burger when this screen appears
-            LaunchedEffect(burgerId) {
-                detailViewModel.loadBurger(burgerId)
-            }
+            LaunchedEffect(burgerId) { detailViewModel.loadBurger(burgerId) }
 
-            // Collect the burger StateFlow
             val burgerState by detailViewModel.burger.collectAsState()
-
-            // Show the screen only if burger is not null
             burgerState?.let { burger ->
                 BurgerDetailScreen(
                     burger = burger,
-                    navController = navController, // pass NavController
+                    navController = navController,
                     onBackClick = { navController.popBackStack() }
                 )
             }
-
         }
 
-
-//  Custom Screen
+        // --- Custom Screen ---
         composable(
-            route = "customScreen/{burgerId}/{portion}/{spiceLevel}",
+            route = Screen.CustomScreen.route,
             arguments = listOf(
                 navArgument("burgerId") { type = NavType.StringType },
                 navArgument("portion") { type = NavType.IntType },
@@ -200,9 +191,7 @@ fun AuthNavGraph(
             val portion = backStackEntry.arguments?.getInt("portion") ?: 1
             val spiceLevel = backStackEntry.arguments?.getFloat("spiceLevel") ?: 0.5f
 
-            LaunchedEffect(burgerId) {
-                detailViewModel.loadBurger(burgerId)
-            }
+            LaunchedEffect(burgerId) { detailViewModel.loadBurger(burgerId) }
 
             val burgerState by detailViewModel.burger.collectAsState()
             burgerState?.let { burger ->
@@ -216,11 +205,9 @@ fun AuthNavGraph(
             }
         }
 
-        //  Payment Screen
-
-
+        // --- Payment Screen ---
         composable(
-            route = "paymentScreen/{burgerId}/{portion}/{spiceLevel}/{totalPrice}/{burgerName}",
+            route = Screen.PaymentScreen.route,
             arguments = listOf(
                 navArgument("burgerId") { type = NavType.StringType },
                 navArgument("portion") { type = NavType.IntType },
@@ -243,8 +230,18 @@ fun AuthNavGraph(
                 totalPrice = totalPrice,
                 onBackClick = { navController.popBackStack() },
                 onPaymentSuccess = {
-                    navController.navigate("successScreen") {
-                        popUpTo("paymentScreen/$burgerId/$portion/$spiceLevel/$totalPrice/$burgerName") { inclusive = true }
+                    navController.navigate(
+                        Screen.Success.route
+                    ) {
+                        popUpTo(
+                            Screen.PaymentScreen.createRoute(
+                                burgerId,
+                                portion,
+                                spiceLevel,
+                                totalPrice,
+                                burgerName
+                            )
+                        ) { inclusive = true }
                     }
                 }
             )

@@ -1,6 +1,7 @@
 package com.example.burgerapp.ui.presentation.detail_screen
 
 import androidx.compose.ui.res.stringResource
+import androidx.compose.material.icons.filled.Star
 import com.example.burgerapp.R
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.animateFloatAsState
@@ -33,11 +34,13 @@ import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Red
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -59,10 +62,6 @@ fun DraggableSpicySlider(
     spiceLevel: Float,
     onSpiceChange: (Float) -> Unit
 ) {
-    val sliderWidth = 150.dp
-    val sliderHeight = 8.dp
-    val thumbSize = 25.dp
-
     val animatedOffset by animateFloatAsState(
         targetValue = spiceLevel,
         label = "thumbAnimation"
@@ -72,8 +71,8 @@ fun DraggableSpicySlider(
 
     Box(
         modifier = Modifier
-            .width(sliderWidth)
-            .height(thumbSize)
+            .width(SliderDefaults.sliderWidth)
+            .height(SliderDefaults.thumbSize)
             .pointerInput(Unit) {
                 detectDragGestures { change, dragAmount ->
                     change.consume()
@@ -89,7 +88,7 @@ fun DraggableSpicySlider(
                 .fillMaxWidth()
                 .align(Alignment.Center)
         ) {
-            val trackHeightPx = with(density) { sliderHeight.toPx() }
+            val trackHeightPx = with(density) { SliderDefaults.sliderHeight.toPx() }
             val trackY = (size.height - trackHeightPx) / 2  // center track vertically
 
             // Track
@@ -109,23 +108,20 @@ fun DraggableSpicySlider(
             )
         }
 
-
         // Thumb
         Box(
             modifier = Modifier
                 .offset {
-                    val maxOffsetPx = with(density) { (sliderWidth - 15.dp).toPx() }
+                    val maxOffsetPx = with(density) { (SliderDefaults.sliderWidth - SliderDefaults.thumbSize / 2).toPx() }
                     val xPx = (animatedOffset * maxOffsetPx).coerceIn(0f, maxOffsetPx)
                     IntOffset(xPx.roundToInt(), 0)
                 }
-                .width(15.dp)
-                .height(25.dp)
-                .clip(RoundedCornerShape(4.dp))  // <-- ensures color stays inside the rounded shape
+                .width(SliderDefaults.thumbSize)
+                .height(SliderDefaults.thumbSize)
+                .clip(RoundedCornerShape(4.dp))
                 .background(CherryRed)
                 .align(Alignment.CenterStart)
-
         )
-
     }
 
     // Labels
@@ -136,11 +132,8 @@ fun DraggableSpicySlider(
         Text(stringResource(R.string.mild), fontSize = 12.sp, color = green)
         Text(stringResource(R.string.medium), fontSize = 12.sp, color = yellow)
         Text(stringResource(R.string.spicy), fontSize = 12.sp, color = Red)
-
-
     }
 }
-
 //  Burger Detail Screen
 @SuppressLint("DefaultLocale")
 @Composable
@@ -223,12 +216,25 @@ fun BurgerDetailScreen(
                 color = Black,
                 modifier = Modifier.fillMaxWidth()
             )
-            Text(
-                text = "⭐ ${burger.rating}",
-                style = MaterialTheme.typography.bodyMedium,
-                color =Black,
+
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.padding(vertical = 4.dp)
-            )
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = "Rating Star",
+                    tint = Color.Yellow
+                )
+                Spacer(modifier = Modifier.width(4.dp)) // space between icon and text
+                Text(
+                    text = "${burger.rating}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Black
+                )
+            }
+
             Text(
                 text = burger.description.ifBlank {  stringResource(R.string.no_description) },
                 fontSize = 16.sp,
@@ -364,5 +370,10 @@ fun BurgerDetailScreen(
             }
         }
     }
+}
+ object SliderDefaults {
+    val sliderWidth: Dp = 150.dp
+    val sliderHeight: Dp = 8.dp
+    val thumbSize: Dp = 25.dp
 }
 

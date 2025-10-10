@@ -94,6 +94,7 @@ class HomeViewModel @Inject constructor(
 
     // --- Load current user ---
     private fun loadCurrentUser() {
+
         val auth = FirebaseAuth.getInstance()
         val user = auth.currentUser ?: return
 

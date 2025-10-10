@@ -7,6 +7,7 @@ import com.example.burgerapp.AuthState
 import com.example.burgerapp.repository.AuthRepository
 import com.example.burgerapp.utils.AuthMessages
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.userProfileChangeRequest
@@ -27,7 +28,8 @@ import com.google.firebase.database.ValueEventListener
 @HiltViewModel
 class AuthViewModel @Inject constructor(
     private val repository: AuthRepository,
-    auth: FirebaseAuth
+    private val googleSignInClient: GoogleSignInClient,
+   private val  auth: FirebaseAuth
 ) : ViewModel() {
 
     // --- StateFlows ---
@@ -169,6 +171,18 @@ class AuthViewModel @Inject constructor(
             } catch (e: Exception) {
                 _authState.value = AuthState.Error(e.message ?: AuthMessages.GOOGLE_FAILED)
             }
+        }
+    }
+
+    fun logout(onComplete: () -> Unit) {
+        try {
+            auth.signOut() // Firebase sign-out
+            googleSignInClient.signOut().addOnCompleteListener {
+                onComplete() // navigate after both are done
+            }
+        } catch (e: Exception) {
+            Log.e("AuthViewModel", "Logout failed: ${e.message}")
+            onComplete()
         }
     }
 }

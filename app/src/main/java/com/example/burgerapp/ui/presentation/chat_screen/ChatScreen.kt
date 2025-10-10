@@ -41,12 +41,13 @@ import androidx.navigation.NavHostController
 import com.example.burgerapp.ui.theme.*
 import com.example.burgerapp.viewmodel.ChatViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.burgerapp.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatScreen(
-    navController: NavHostController,
-    viewModel: ChatViewModel = hiltViewModel() // Hilt injects the ViewModel
+    viewModel: ChatViewModel = hiltViewModel(),
+    onBackClick: () -> Unit
 ) {
     var messageText by remember { mutableStateOf("") }
     val messages = viewModel.messages
@@ -56,16 +57,8 @@ fun ChatScreen(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.chat_title), color = WhiteText) },
-
                 navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            navController.navigate("Home") {
-                                popUpTo("Home") { inclusive = true }
-                                launchSingleTop = true
-                            }
-                        }
-                    ) {
+                    IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back_button),
@@ -73,9 +66,7 @@ fun ChatScreen(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = CherryRed
-                )
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = CherryRed)
             )
         },
         content = { paddingValues ->
@@ -160,8 +151,10 @@ fun ChatScreen(
 
                             IconButton(
                                 onClick = {
-                                    viewModel.sendMessage(messageText)
-                                    messageText = ""
+                                    if (messageText.isNotBlank()) {
+                                        viewModel.sendMessage(messageText)
+                                        messageText = ""
+                                    }
                                 },
                                 modifier = Modifier
                                     .size(48.dp)

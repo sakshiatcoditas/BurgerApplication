@@ -55,6 +55,8 @@ fun CustomScreen(
 
 
 
+
+
     val toppingsList = listOf(
         Topping("bacon", R.drawable.bacon),
         Topping("tomato", R.drawable.tomato),
@@ -218,7 +220,7 @@ fun CustomScreen(
         )
         Spacer(modifier = Modifier.height(8.dp))
 
-        // TODO: separate widget
+
         LazyRow(
             contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)

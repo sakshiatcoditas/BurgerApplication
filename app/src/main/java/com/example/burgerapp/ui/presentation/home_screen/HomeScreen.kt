@@ -21,17 +21,22 @@ import com.example.burgerapp.ui.presentation.home_screen.components.*
 import com.example.burgerapp.viewmodel.FavoriteViewModel
 
 @Composable
-fun HomeScreen(
-    navController: NavHostController,
-    homeViewModel: HomeViewModel = hiltViewModel(),
-    favoriteViewModel: FavoriteViewModel = hiltViewModel()
 
-) {
+fun HomeScreen(navController: NavHostController) {
+
+    val homeViewModel: HomeViewModel = hiltViewModel()
+    val favoriteViewModel: FavoriteViewModel = hiltViewModel()
+
+    // Collect state
     val uiState by homeViewModel.uiState.collectAsState()
     val filteredBurgers by homeViewModel.filteredBurgers.collectAsState()
     val isOnline by homeViewModel.isOnline.collectAsState()
+
     var selectedBottomItem by remember { mutableStateOf("Home") }
     var showFilterDialog by remember { mutableStateOf(false) }
+
+    // Now you can use homeViewModel and favoriteViewModel as needed
+
 
     Scaffold(
         topBar = {
