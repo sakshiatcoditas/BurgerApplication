@@ -27,6 +27,7 @@ import com.example.burgerapp.viewmodel.AuthViewModel
 
 
 
+
 @Composable
 fun ProfileScreen(
     viewModel: AuthViewModel = hiltViewModel(),
@@ -35,6 +36,8 @@ fun ProfileScreen(
     navController: NavController
 
 ) {
+    val isProfileEditingEnabled by viewModel.isProfileEditingEnabled.collectAsState()
+
     val user by viewModel.currentUser.collectAsState()
     val emailUserName by viewModel.emailUserName.collectAsState()
     val deliveryAddress by viewModel.deliveryAddress.collectAsState()
@@ -48,6 +51,9 @@ fun ProfileScreen(
 
     val displayName = user?.displayName ?: emailUserName ?: "User"
 
+    LaunchedEffect(Unit) {
+        viewModel.fetchRemoteConfig()
+    }
 
 
     // Sync address from ViewModel
@@ -212,7 +218,10 @@ fun ProfileScreen(
                         }
                         isEditing = !isEditing
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
+                    enabled = isProfileEditingEnabled,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isProfileEditingEnabled) Color.Black else Color.Gray
+                    ),
                     shape = RoundedCornerShape(20.dp),
                     modifier = Modifier
                         .weight(1f)

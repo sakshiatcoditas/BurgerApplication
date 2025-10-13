@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.burgerapp.AuthState
+import com.example.burgerapp.remoteconfig.RemoteConfigManager
 import com.example.burgerapp.repository.AuthRepository
 import com.example.burgerapp.utils.AuthMessages
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -32,6 +33,9 @@ class AuthViewModel @Inject constructor(
    private val  auth: FirebaseAuth
 ) : ViewModel() {
 
+    private val _isProfileEditingEnabled = MutableStateFlow(true)
+    val isProfileEditingEnabled: StateFlow<Boolean> get() = _isProfileEditingEnabled
+
     // --- StateFlows ---
     private val _emailUserName = MutableStateFlow<String?>(null)
     val emailUserName: StateFlow<String?> get() = _emailUserName
@@ -59,6 +63,15 @@ class AuthViewModel @Inject constructor(
                 AuthState.Success("Logged in as ${user.email}")
             } else {
                 AuthState.Error("No user detected")
+            }
+        }
+    }
+
+    fun fetchRemoteConfig() {
+        viewModelScope.launch {
+            val success = RemoteConfigManager.fetchAndActivate()
+            if (success) {
+                _isProfileEditingEnabled.value = RemoteConfigManager.isProfileEditingEnabled()
             }
         }
     }
