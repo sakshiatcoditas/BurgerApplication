@@ -26,7 +26,7 @@ import com.example.burgerapp.ui.presentation.splash_screen.SplashScreen
 import com.example.burgerapp.viewmodel.AuthViewModel
 import com.example.burgerapp.viewmodel.ChatViewModel
 import com.example.burgerapp.viewmodel.DetailViewModel
-import com.example.burgerapp.viewmodel.HomeViewModel
+
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 
