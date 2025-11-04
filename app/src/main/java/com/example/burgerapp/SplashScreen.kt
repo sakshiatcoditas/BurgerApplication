@@ -1,5 +1,4 @@
 package com.example.burgerapp
-
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.example.burgerapp.R
 import com.example.burgerapp.ui.theme.LobsterFont
+
 
 @Composable
 fun SplashScreen() {
